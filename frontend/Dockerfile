@@ -8,7 +8,7 @@ WORKDIR /app
 RUN npm install -g @vue/cli
 
 # Create a new Vue project (This will use default presets. For custom configuration, this step should be run interactively or modify as needed)
-RUN vue create ui -d
+RUN vue create frontend -d
 
 # Expose the port Vue CLI serve runs on
 EXPOSE 8080

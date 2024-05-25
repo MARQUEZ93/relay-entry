@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -121,3 +123,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'relaydb'),  # Default values are optional
+        'USER': os.getenv('DB_USER', 'relayuser'),
+        'PASSWORD': os.getenv('DB_PASS', 'relaypassword'),
+        'HOST': os.getenv('DB_HOST', 'postgres'),  # Set to the name of the postgres service in docker-compose
+        'PORT': os.getenv('DB_PORT', '5432'),
+    }
+}

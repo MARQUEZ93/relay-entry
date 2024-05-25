@@ -9,8 +9,12 @@ docker-compose up --build
  source venv/bin/activatede
  deactivate
 
- docker-compose exec backend python manage.py createsuperuser
  docker-compose exec backend python manage.py migrate
+ docker-compose exec backend python manage.py createsuperuser
+
+ docker-compose exec backend python manage.py makemigrations backend
+
+ docker-compose restart
 
 
 root / p

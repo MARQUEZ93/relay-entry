@@ -10,8 +10,7 @@ docker-compose up --build
  deactivate
 
  docker-compose exec backend python manage.py createsuperuser
- docker-compose exec relay-entry-backend-1 python manage.py migrate
- docker-compose exec relay-entry-backend-1 python manage.py createsuperuser
+ docker-compose exec backend python manage.py migrate
 
 
 root / p

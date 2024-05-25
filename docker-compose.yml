@@ -7,11 +7,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-        - POSTGRES_DB=relaydb
-        - POSTGRES_USER=relayuser
-        - POSTGRES_PASSWORD=relaypassword
-        - DB_HOST=postgres
-        - DB_PORT=5432
+      - POSTGRES_DB=relaydb
+      - POSTGRES_USER=relayuser
+      - POSTGRES_PASSWORD=relaypassword
+      - DB_HOST=postgres
+      - DB_PORT=5432
     depends_on:
       - postgres
   postgres:
@@ -26,13 +26,11 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: ./frontend
     ports:
       - "8080:8080"
     volumes:
       - ./frontend:/app
 
 volumes:
-  pgdata: {}  # This defines 'pgdata' as a named volume at the Docker engine level
+  pgdata: {}

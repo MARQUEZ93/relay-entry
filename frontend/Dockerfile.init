@@ -1,0 +1,11 @@
+# Use the official Node.js image from the Docker Hub
+FROM node:14
+
+# Set work directory
+WORKDIR /app
+
+# Install Vue CLI globally
+RUN npm install -g @vue/cli
+
+# Set the command to an interactive shell
+CMD ["sh"]

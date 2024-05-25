@@ -3,7 +3,7 @@ services:
   backend:
     build: ./backend
     volumes:
-      - ./backend:/code
+      - ./backend:/app
     ports:
       - "8000:8000"
     environment:
@@ -26,7 +26,9 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     volumes:

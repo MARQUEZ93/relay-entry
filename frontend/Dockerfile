@@ -1,17 +1,20 @@
-# Use official Node.js as a parent image
-FROM node:lts-alpine
+# Use the official Node.js image from the Docker Hub
+FROM node:14
 
 # Set work directory
 WORKDIR /app
 
-# Install Vue CLI globally
-RUN npm install -g @vue/cli
+# Copy package.json and package-lock.json
+COPY package.json package-lock.json /app/
 
-# Create a new Vue project (This will use default presets. For custom configuration, this step should be run interactively or modify as needed)
-RUN vue create frontend -d
+# Install dependencies
+RUN npm install
 
-# Expose the port Vue CLI serve runs on
+# Copy project files
+COPY . /app/
+
+# Expose the port that the app runs on
 EXPOSE 8080
 
-# Command to serve the app
+# Run the application
 CMD ["npm", "run", "serve"]

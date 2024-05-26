@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+import uuid
 
 class Document(models.Model):
     file = models.FileField(upload_to='event_documents/')
@@ -202,20 +203,14 @@ class CouponCode(models.Model):
     def __str__(self):
         return self.code
     
-class PhotoPackage(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return self.name
-    
 class Registration(models.Model):
+    confirmation_code = models.CharField(max_length=16, unique=True, editable=False)  # Increased length to 16
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations')
     anon_user_email = models.EmailField()
     registered_at = models.DateTimeField(auto_now_add=True)
     amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
 
+    dob = models.DateField(null=True, blank=True)  # Date of Birth field
     photo_package = models.ForeignKey(PhotoPackage, null=True, blank=True, on_delete=models.SET_NULL)
     race_price = models.ForeignKey(RacePrice, on_delete=models.PROTECT)
     coupon_code = models.ForeignKey(CouponCode, null=True, blank=True, on_delete=models.SET_NULL)
@@ -224,6 +219,8 @@ class Registration(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
+        if not self.confirmation_code:
+            self.confirmation_code = str(uuid.uuid4()).replace('-', '')[:16]  # Generate a 16-character unique code
         # Set the price from the RacePrice model
         if not self.race_price:
             raise ValueError("Race price must be set.")
@@ -246,6 +243,7 @@ class Registration(models.Model):
         return f'{self.anon_user_email} - {self.race.name}'
 
 class TeamMember(models.Model):
+    dob = models.DateField(null=True, blank=True)  # Date of Birth field
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE, related_name='team_members')
     name = models.CharField(max_length=100)
     email = models.EmailField()

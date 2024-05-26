@@ -18,3 +18,5 @@ docker-compose up --build
 
 
 root / p
+# shell
+docker-compose exec backend python manage.py shell

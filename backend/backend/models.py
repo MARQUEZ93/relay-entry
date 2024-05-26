@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
+class Document(models.Model):
+    file = models.FileField(upload_to='event_documents/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.file.name
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(blank=True, null=True)
@@ -14,11 +21,74 @@ class UserProfile(models.Model):
         return self.user.username
 
 class Event(models.Model):
+
+    STATE_CHOICES = [
+        ('AL', 'Alabama'),
+        ('AK', 'Alaska'),
+        ('AZ', 'Arizona'),
+        ('AR', 'Arkansas'),
+        ('CA', 'California'),
+        ('CO', 'Colorado'),
+        ('CT', 'Connecticut'),
+        ('DE', 'Delaware'),
+        ('FL', 'Florida'),
+        ('GA', 'Georgia'),
+        ('HI', 'Hawaii'),
+        ('ID', 'Idaho'),
+        ('IL', 'Illinois'),
+        ('IN', 'Indiana'),
+        ('IA', 'Iowa'),
+        ('KS', 'Kansas'),
+        ('KY', 'Kentucky'),
+        ('LA', 'Louisiana'),
+        ('ME', 'Maine'),
+        ('MD', 'Maryland'),
+        ('MA', 'Massachusetts'),
+        ('MI', 'Michigan'),
+        ('MN', 'Minnesota'),
+        ('MS', 'Mississippi'),
+        ('MO', 'Missouri'),
+        ('MT', 'Montana'),
+        ('NE', 'Nebraska'),
+        ('NV', 'Nevada'),
+        ('NH', 'New Hampshire'),
+        ('NJ', 'New Jersey'),
+        ('NM', 'New Mexico'),
+        ('NY', 'New York'),
+        ('NC', 'North Carolina'),
+        ('ND', 'North Dakota'),
+        ('OH', 'Ohio'),
+        ('OK', 'Oklahoma'),
+        ('OR', 'Oregon'),
+        ('PA', 'Pennsylvania'),
+        ('RI', 'Rhode Island'),
+        ('SC', 'South Carolina'),
+        ('SD', 'South Dakota'),
+        ('TN', 'Tennessee'),
+        ('TX', 'Texas'),
+        ('UT', 'Utah'),
+        ('VT', 'Vermont'),
+        ('VA', 'Virginia'),
+        ('WA', 'Washington'),
+        ('WV', 'West Virginia'),
+        ('WI', 'Wisconsin'),
+        ('WY', 'Wyoming'),
+    ]
+
     name = models.CharField(max_length=200)
     date = models.DateField()
     created_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='events')
     published = models.BooleanField(default=False)  # New field for published status
 
+    address = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=2, choices=STATE_CHOICES, blank=True)
+    postal_code = models.CharField(max_length=10, blank=True)
+    google_maps_link = models.URLField(max_length=200, blank=True)
+    media_file = models.FileField(upload_to='event_media/', blank=True, null=True)
+    logo_or_branch_photo = models.ImageField(upload_to='event_logos/', blank=True, null=True)
+    documents = models.ManyToManyField(Document, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

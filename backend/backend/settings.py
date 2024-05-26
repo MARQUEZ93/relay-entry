@@ -136,10 +136,22 @@ DATABASES = {
 }
 
 # SMTP configuration for development
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.example.com'  # Use your SMTP server
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'your_email@example.com'
 EMAIL_HOST_PASSWORD = 'your_password'
 DEFAULT_FROM_EMAIL = 'your_email@example.com'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'mailhog')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 1025))
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+import os
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass

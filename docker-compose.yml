@@ -12,8 +12,11 @@ services:
       - POSTGRES_PASSWORD=relaypassword
       - DB_HOST=postgres
       - DB_PORT=5432
+      - EMAIL_HOST=mailhog
+      - EMAIL_PORT=1025
     depends_on:
       - postgres
+      - mailhog
   postgres:
     image: postgres:13
     environment:
@@ -31,6 +34,11 @@ services:
       - "8080:8080"
     volumes:
       - ./frontend:/app
+  
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
 
 volumes:
   pgdata: {}

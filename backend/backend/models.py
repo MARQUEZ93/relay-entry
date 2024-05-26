@@ -9,7 +9,15 @@ class Document(models.Model):
 
     def __str__(self):
         return self.file.name
+    
+class PhotoPackage(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def __str__(self):
+        return self.name
+    
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(blank=True, null=True)
@@ -88,6 +96,12 @@ class Event(models.Model):
     media_file = models.FileField(upload_to='event_media/', blank=True, null=True)
     logo_or_branch_photo = models.ImageField(upload_to='event_logos/', blank=True, null=True)
     documents = models.ManyToManyField(Document, blank=True)
+
+    facebook_url = models.URLField(max_length=200, blank=True, null=True)
+    instagram_url = models.URLField(max_length=200, blank=True, null=True)
+    twitter_url = models.URLField(max_length=200, blank=True, null=True)
+    email_url = models.URLField(max_length=200, blank=True, null=True)
+    website_url = models.URLField(max_length=200, blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -176,14 +190,57 @@ class RacePrice(models.Model):
     def __str__(self):
         return f'{self.race.name} - {self.price} effective from {self.effective_date}'
 
+class CouponCode(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    valid_from = models.DateTimeField()
+    valid_to = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+    max_uses = models.PositiveIntegerField(default=1)
+    usage_count = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.code
+    
+class PhotoPackage(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.name
+    
 class Registration(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations')
     anon_user_email = models.EmailField()
     registered_at = models.DateTimeField(auto_now_add=True)
-    amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)  # Default value added
+    amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
+
+    photo_package = models.ForeignKey(PhotoPackage, null=True, blank=True, on_delete=models.SET_NULL)
+    race_price = models.ForeignKey(RacePrice, on_delete=models.PROTECT)
+    coupon_code = models.ForeignKey(CouponCode, null=True, blank=True, on_delete=models.SET_NULL)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # Set the price from the RacePrice model
+        if not self.race_price:
+            raise ValueError("Race price must be set.")
+
+        # If coupon code is used, check its usage and apply discount
+        if self.coupon_code and self._state.adding:
+            if self.coupon_code.usage_count < self.coupon_code.max_uses:
+                self.coupon_code.usage_count += 1
+                self.coupon_code.save()
+                discount = (self.coupon_code.discount_percentage / 100) * self.race_price.price
+                self.amount_paid = self.race_price.price - discount
+            else:
+                raise ValueError("Coupon code has reached its maximum number of uses.")
+        else:
+            self.amount_paid = self.race_price.price
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.anon_user_email} - {self.race.name}'

@@ -142,13 +142,13 @@ class Registration(models.Model):
 
     photo_package = models.ForeignKey(PhotoPackage, null=True, blank=True, on_delete=models.SET_NULL)
     coupon_code = models.ForeignKey(CouponCode, null=True, blank=True, on_delete=models.SET_NULL)
-    price = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     team = models.ForeignKey(Team, null=True, blank=True, on_delete=models.CASCADE)
 
     def clean(self):
-        if not self.race_price:
+        if not self.price:
             raise ValidationError("Race price must be set.")
         if self.coupon_code and self._state.adding:
             if self.coupon_code.usage_count >= self.coupon_code.max_uses:
@@ -167,10 +167,10 @@ class Registration(models.Model):
         if self.coupon_code and self._state.adding:
             self.coupon_code.usage_count += 1
             self.coupon_code.save()
-            discount = (self.coupon_code.discount_percentage / 100) * self.race_price.price
-            self.amount_paid = self.race_price.price - discount
+            discount = (self.coupon_code.discount_percentage / 100) * self.price
+            self.amount_paid = self.price - discount
         else:
-            self.amount_paid = self.race_price.price
+            self.amount_paid = self.price
 
         super().save(*args, **kwargs)
 

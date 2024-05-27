@@ -4,8 +4,8 @@ from .models import UserProfile, Event, Race, Registration, TeamMember, Document
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'role', 'created_at', 'updated_at')
-    search_fields = ('user__username', 'role')
+    list_display = ('user', 'created_at', 'updated_at')
+    search_fields = ('user__email',)
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
@@ -24,5 +24,5 @@ class RegistrationAdmin(admin.ModelAdmin):
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'phone', 'age', 'gender', 'registration')
+    list_display = ('name', 'email', 'phone', 'dob', 'gender', 'registration')
     search_fields = ('name', 'email', 'registration__race__name')

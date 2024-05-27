@@ -1,6 +1,6 @@
 # backend/backend/admin.py
 from django.contrib import admin
-from .models import UserProfile, Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode, RacePrice
+from .models import UserProfile, Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
@@ -16,11 +16,6 @@ class EventAdmin(admin.ModelAdmin):
 class RaceAdmin(admin.ModelAdmin):
     list_display = ('name', 'distance', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'event', 'created_at', 'updated_at')
     search_fields = ('name', 'event__name', 'distance')
-
-@admin.register(RacePrice)
-class RacePriceAdmin(admin.ModelAdmin):
-    list_display = ('race', 'price', 'effective_date')
-    search_fields = ('race__name', 'price')
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):

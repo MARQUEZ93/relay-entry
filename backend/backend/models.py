@@ -1,13 +1,15 @@
-# backend/backend/models.py
-from django.contrib.auth.models import User
 from django.db import models
-from django.utils import timezone
-import uuid
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+from .constants import STATES, TEAM_GENDER_CHOICES, GENDER_CHOICES, UNIT_CHOICES_CONSTANT
+import uuid
 
 class Document(models.Model):
     file = models.FileField(upload_to='event_documents/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
+    required = models.BooleanField(default=False)
 
     def __str__(self):
         return self.file.name
@@ -15,80 +17,27 @@ class Document(models.Model):
 class PhotoPackage(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
 
     def __str__(self):
         return self.name
     
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, null=True)
-    role = models.CharField(max_length=50, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self): 
-        return self.user.username
+        return self.user.email
 
 class Event(models.Model):
 
-    STATE_CHOICES = [
-        ('AL', 'Alabama'),
-        ('AK', 'Alaska'),
-        ('AZ', 'Arizona'),
-        ('AR', 'Arkansas'),
-        ('CA', 'California'),
-        ('CO', 'Colorado'),
-        ('CT', 'Connecticut'),
-        ('DE', 'Delaware'),
-        ('FL', 'Florida'),
-        ('GA', 'Georgia'),
-        ('HI', 'Hawaii'),
-        ('ID', 'Idaho'),
-        ('IL', 'Illinois'),
-        ('IN', 'Indiana'),
-        ('IA', 'Iowa'),
-        ('KS', 'Kansas'),
-        ('KY', 'Kentucky'),
-        ('LA', 'Louisiana'),
-        ('ME', 'Maine'),
-        ('MD', 'Maryland'),
-        ('MA', 'Massachusetts'),
-        ('MI', 'Michigan'),
-        ('MN', 'Minnesota'),
-        ('MS', 'Mississippi'),
-        ('MO', 'Missouri'),
-        ('MT', 'Montana'),
-        ('NE', 'Nebraska'),
-        ('NV', 'Nevada'),
-        ('NH', 'New Hampshire'),
-        ('NJ', 'New Jersey'),
-        ('NM', 'New Mexico'),
-        ('NY', 'New York'),
-        ('NC', 'North Carolina'),
-        ('ND', 'North Dakota'),
-        ('OH', 'Ohio'),
-        ('OK', 'Oklahoma'),
-        ('OR', 'Oregon'),
-        ('PA', 'Pennsylvania'),
-        ('RI', 'Rhode Island'),
-        ('SC', 'South Carolina'),
-        ('SD', 'South Dakota'),
-        ('TN', 'Tennessee'),
-        ('TX', 'Texas'),
-        ('UT', 'Utah'),
-        ('VT', 'Vermont'),
-        ('VA', 'Virginia'),
-        ('WA', 'Washington'),
-        ('WV', 'West Virginia'),
-        ('WI', 'Wisconsin'),
-        ('WY', 'Wyoming'),
-    ]
+    STATE_CHOICES = STATES
 
     name = models.CharField(max_length=200)
     date = models.DateField()
     created_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='events')
-    published = models.BooleanField(default=False)  # New field for published status
+    published = models.BooleanField(default=False)
 
     address = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=100, blank=True)
@@ -96,8 +45,8 @@ class Event(models.Model):
     postal_code = models.CharField(max_length=10, blank=True)
     google_maps_link = models.URLField(max_length=200, blank=True)
     media_file = models.FileField(upload_to='event_media/', blank=True, null=True)
-    logo_or_branch_photo = models.ImageField(upload_to='event_logos/', blank=True, null=True)
-    documents = models.ManyToManyField(Document, blank=True)
+    logo = models.ImageField(upload_to='event_logos/', blank=True, null=True)
+    waivers = models.ManyToManyField(Document, blank=True)
 
     facebook_url = models.URLField(max_length=200, blank=True, null=True)
     instagram_url = models.URLField(max_length=200, blank=True, null=True)
@@ -128,25 +77,9 @@ class Race(models.Model):
         (CUSTOM, 'Custom'),
     ]
 
-    MILES = 'mi'
-    KILOMETERS = 'km'
 
-    UNIT_CHOICES = [
-        (MILES, 'Miles'),
-        (KILOMETERS, 'Kilometers'),
-    ]
-
-    MALE = 'Male'
-    FEMALE = 'Female'
-    MIXED = 'Mixed'
-    COED = 'Coed'
-
-    TEAM_TYPE_CHOICES = [
-        (MALE, 'Male'),
-        (FEMALE, 'Female'),
-        (MIXED, 'Mixed'),
-        (COED, 'Coed'),
-    ]
+    UNIT_CHOICES = UNIT_CHOICES_CONSTANT
+    TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES
 
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='races')
     name = models.CharField(max_length=200)
@@ -166,20 +99,8 @@ class Race(models.Model):
         return f'{self.name} ({self.get_distance_display()}) - {self.event.name}'
 
     def save(self, *args, **kwargs):
-        if self.distance == self.ULTRA_MARATHON and not self.custom_distance_value:
-            raise ValueError('Ultra Marathon requires a custom distance value.')
-        if self.distance == self.CUSTOM and not self.custom_distance_value:
-            raise ValueError('Custom distance requires a custom distance value.')
-        if self.is_relay and not self.num_runners:
-            raise ValueError('Relay race requires the number of runners.')
+        self.full_clean()  # Ensure all validations are checked
         super().save(*args, **kwargs)
-
-    def get_current_price(self):
-        today = timezone.now().date()
-        prices = self.raceprice_set.filter(effective_date__lte=today).order_by('-effective_date')
-        if prices.exists():
-            return prices.first().price
-        return None
 
     def clean(self):
         if self.distance in [self.ULTRA_MARATHON, self.CUSTOM] and not self.custom_distance_value:
@@ -188,29 +109,13 @@ class Race(models.Model):
             raise ValidationError('Relay race requires the number of runners.')
         super().clean()
 
-    def save(self, *args, **kwargs):
-        self.full_clean()  # Ensure all validations are checked
-        super().save(*args, **kwargs)
-
     class Meta:
         ordering = ['name', 'event__name']
-
-class RacePrice(models.Model):
-    race = models.ForeignKey(Race, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=8, decimal_places=2)
-    effective_date = models.DateField()
-
-    class Meta:
-        unique_together = ('race', 'effective_date')
-
-    def __str__(self):
-        return f'{self.race.name} - {self.price} effective from {self.effective_date}'
 
 class CouponCode(models.Model):
     code = models.CharField(max_length=50, unique=True)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
-    valid_from = models.DateTimeField()
-    valid_to = models.DateTimeField()
+    valid_until = models.DateTimeField()
     is_active = models.BooleanField(default=True)
     max_uses = models.PositiveIntegerField(default=1)
     usage_count = models.PositiveIntegerField(default=0)
@@ -218,20 +123,29 @@ class CouponCode(models.Model):
     def __str__(self):
         return self.code
     
+class Team(models.Model):
+    name = models.CharField(max_length=255)
+    captain = models.ForeignKey('TeamMember', null=True, blank=True, on_delete=models.SET_NULL, related_name='captained_teams')
+    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
+
+    def __str__(self):
+        return f'{self.name} - {self.race.name}'
+    
 class Registration(models.Model):
     confirmation_code = models.CharField(max_length=16, unique=True, editable=False)  # Increased length to 16
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations')
-    anon_user_email = models.EmailField()
     registered_at = models.DateTimeField(auto_now_add=True)
     amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
 
-    dob = models.DateField(null=True, blank=True)  # Date of Birth field
-    photo_package = models.ForeignKey(PhotoPackage, null=True, blank=True, on_delete=models.SET_NULL)
-    race_price = models.ForeignKey(RacePrice, on_delete=models.PROTECT)
-    coupon_code = models.ForeignKey(CouponCode, null=True, blank=True, on_delete=models.SET_NULL)
+    anon_user_email = models.EmailField()
+    dob = models.DateField()
 
+    photo_package = models.ForeignKey(PhotoPackage, null=True, blank=True, on_delete=models.SET_NULL)
+    coupon_code = models.ForeignKey(CouponCode, null=True, blank=True, on_delete=models.SET_NULL)
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    team = models.ForeignKey(Team, null=True, blank=True, on_delete=models.CASCADE)
 
     def clean(self):
         if not self.race_price:
@@ -239,6 +153,9 @@ class Registration(models.Model):
         if self.coupon_code and self._state.adding:
             if self.coupon_code.usage_count >= self.coupon_code.max_uses:
                 raise ValidationError("Coupon code has reached its maximum number of uses.")
+        if self.race.is_relay and not self.team:
+            raise ValidationError('Relay race registration must be associated with a team.')
+        super().clean()
 
     def save(self, *args, **kwargs):
         if not self.confirmation_code:
@@ -263,13 +180,13 @@ class Registration(models.Model):
             ordering = ['-registered_at']
 
 class TeamMember(models.Model):
-    dob = models.DateField(null=True, blank=True)  # Date of Birth field
+    dob = models.DateField()
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE, related_name='team_members')
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=15, blank=True, null=True)
-    age = models.PositiveIntegerField(blank=True, null=True)
-    gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')], blank=True, null=True)
+    leg_order = models.PositiveIntegerField(blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return f'{self.name} ({self.email}) - {self.registration.race.name}'

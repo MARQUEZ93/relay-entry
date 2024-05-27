@@ -1,4 +1,3 @@
-# backend/backend/admin.py
 from django.contrib import admin
 from .models import UserProfile, Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode
 
@@ -10,7 +9,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ('name', 'date', 'created_by', 'created_at', 'updated_at')
-    search_fields = ('name', 'created_by__user__username')
+    search_fields = ('name', 'created_by__user__email')
 
 @admin.register(Race)
 class RaceAdmin(admin.ModelAdmin):
@@ -26,3 +25,18 @@ class RegistrationAdmin(admin.ModelAdmin):
 class TeamMemberAdmin(admin.ModelAdmin):
     list_display = ('name', 'email', 'phone', 'dob', 'gender', 'registration')
     search_fields = ('name', 'email', 'registration__race__name')
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = ('file', 'name', 'required', 'uploaded_at')
+    search_fields = ('file', 'name')
+
+@admin.register(PhotoPackage)
+class PhotoPackageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'description')
+    search_fields = ('name', 'description')
+
+@admin.register(CouponCode)
+class CouponCodeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'discount_percentage', 'valid_until', 'is_active', 'max_uses', 'usage_count')
+    search_fields = ('code',)

@@ -16,9 +16,9 @@ def save_user_profile(sender, instance, **kwargs):
 
 def send_welcome_email(user):
     send_mail(
-        'Welcome to My Site',
-        'Thank you for registering with our site. We are excited to have you on board!',
-        'your_email@example.com',  # Replace with your actual "from" email
+        'Welcome to RelayEntry',
+        "Thank you for registering with RelayEntry. Let's have a great race day!",
+        'admin@relayentry.com',
         [user.email],
         fail_silently=False,
     )

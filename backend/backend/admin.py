@@ -1,6 +1,6 @@
 # backend/backend/admin.py
 from django.contrib import admin
-from .models import UserProfile, Event, Race, RacePrice, Registration, TeamMember
+from .models import UserProfile, Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode, RacePrice
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):

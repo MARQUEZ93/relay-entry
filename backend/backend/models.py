@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 import uuid
+from django.core.exceptions import ValidationError
 
 class Document(models.Model):
     file = models.FileField(upload_to='event_documents/')
@@ -180,6 +181,20 @@ class Race(models.Model):
             return prices.first().price
         return None
 
+    def clean(self):
+        if self.distance in [self.ULTRA_MARATHON, self.CUSTOM] and not self.custom_distance_value:
+            raise ValidationError('Custom distance requires a custom distance value.')
+        if self.is_relay and not self.num_runners:
+            raise ValidationError('Relay race requires the number of runners.')
+        super().clean()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Ensure all validations are checked
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ['name', 'event__name']
+
 class RacePrice(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -218,22 +233,25 @@ class Registration(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def clean(self):
+        if not self.race_price:
+            raise ValidationError("Race price must be set.")
+        if self.coupon_code and self._state.adding:
+            if self.coupon_code.usage_count >= self.coupon_code.max_uses:
+                raise ValidationError("Coupon code has reached its maximum number of uses.")
+
     def save(self, *args, **kwargs):
         if not self.confirmation_code:
-            self.confirmation_code = str(uuid.uuid4()).replace('-', '')[:16]  # Generate a 16-character unique code
-        # Set the price from the RacePrice model
-        if not self.race_price:
-            raise ValueError("Race price must be set.")
+            self.confirmation_code = str(uuid.uuid4()).replace('-', '')[:16]
 
-        # If coupon code is used, check its usage and apply discount
+        self.full_clean()  # Ensure all validations are checked
+
+        # Set the price and handle coupon logic
         if self.coupon_code and self._state.adding:
-            if self.coupon_code.usage_count < self.coupon_code.max_uses:
-                self.coupon_code.usage_count += 1
-                self.coupon_code.save()
-                discount = (self.coupon_code.discount_percentage / 100) * self.race_price.price
-                self.amount_paid = self.race_price.price - discount
-            else:
-                raise ValueError("Coupon code has reached its maximum number of uses.")
+            self.coupon_code.usage_count += 1
+            self.coupon_code.save()
+            discount = (self.coupon_code.discount_percentage / 100) * self.race_price.price
+            self.amount_paid = self.race_price.price - discount
         else:
             self.amount_paid = self.race_price.price
 
@@ -241,6 +259,8 @@ class Registration(models.Model):
 
     def __str__(self):
         return f'{self.anon_user_email} - {self.race.name}'
+    class Meta:
+            ordering = ['-registered_at']
 
 class TeamMember(models.Model):
     dob = models.DateField(null=True, blank=True)  # Date of Birth field

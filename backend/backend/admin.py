@@ -1,10 +1,6 @@
 from django.contrib import admin
-from .models import UserProfile, Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode
-
-@admin.register(UserProfile)
-class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'created_at', 'updated_at')
-    search_fields = ('user__email',)
+from .models import Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode
+from django.contrib.auth.models import User
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
@@ -18,8 +14,8 @@ class RaceAdmin(admin.ModelAdmin):
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('race', 'anon_user_email', 'registered_at', 'amount_paid', 'created_at', 'updated_at')
-    search_fields = ('anon_user_email', 'race__name')
+    list_display = ('race', 'email', 'registered_at', 'amount_paid', 'created_at', 'updated_at')
+    search_fields = ('email', 'race__name')
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(admin.ModelAdmin):

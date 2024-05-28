@@ -10,6 +10,7 @@ class Document(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     required = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.file.name
@@ -18,25 +19,18 @@ class PhotoPackage(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
     
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self): 
-        return self.user.email
-
 class Event(models.Model):
 
     STATE_CHOICES = STATES
 
     name = models.CharField(max_length=200)
     date = models.DateField()
-    created_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='events')
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
     published = models.BooleanField(default=False)
 
     address = models.CharField(max_length=255, blank=True)
@@ -56,6 +50,7 @@ class Event(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -92,6 +87,7 @@ class Race(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         if self.distance in [self.CUSTOM, self.ULTRA_MARATHON]:
@@ -119,6 +115,7 @@ class CouponCode(models.Model):
     is_active = models.BooleanField(default=True)
     max_uses = models.PositiveIntegerField(default=1)
     usage_count = models.PositiveIntegerField(default=0)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.code
@@ -137,7 +134,7 @@ class Registration(models.Model):
     registered_at = models.DateTimeField(auto_now_add=True)
     amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
 
-    anon_user_email = models.EmailField()
+    email = models.EmailField()
     dob = models.DateField()
 
     photo_package = models.ForeignKey(PhotoPackage, null=True, blank=True, on_delete=models.SET_NULL)
@@ -175,7 +172,7 @@ class Registration(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.anon_user_email} - {self.race.name}'
+        return f'{self.email} - {self.race.name}'
     class Meta:
             ordering = ['-registered_at']
 

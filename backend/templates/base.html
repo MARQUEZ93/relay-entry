@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}My Site{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>My Site</h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/accounts/login/">Login</a></li>
+                    <li><a href="/signup/">Sign Up</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <div class="container">
+            <p>My Site &copy; 2024</p>
+        </div>
+    </footer>
+</body>
+</html>

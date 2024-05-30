@@ -16,6 +16,8 @@ docker-compose up --build
 
  docker-compose restart
 
+ docker-compose down
+
 
 root / p
 # shell

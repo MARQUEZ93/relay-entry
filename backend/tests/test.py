@@ -2,7 +2,7 @@
 from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.core import mail
-from backend.models import UserProfile
+from backend.my_app.models import UserProfile
 
 class UserSignalsTestCase(TestCase):
     

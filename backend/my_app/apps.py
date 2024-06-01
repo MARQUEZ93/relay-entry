@@ -1,8 +1,0 @@
-# backend/backend/apps.py
-from django.apps import AppConfig
-
-class BackendConfig(AppConfig):
-    name = 'backend'
-
-    def ready(self):
-        import backend.my_app.signals

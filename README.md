@@ -17,6 +17,7 @@ docker-compose up --build
  docker-compose restart
 
  docker-compose down
+docker-compose restart backend
 
 
 root / p

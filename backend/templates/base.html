@@ -2,19 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}My Site{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RelayEntry{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>My Site</h1>
+            <h1>RelayEntry</h1>
             <nav>
                 <ul>
                     <li><a href="/">Home</a></li>
-                    <li><a href="/accounts/login/">Login</a></li>
-                    <li><a href="/signup/">Sign Up</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="/accounts/logout/">Logout</a></li>
+                    {% else %}
+                        <li><a href="/accounts/login/">Login</a></li>
+                        <li><a href="/signup/">Sign Up</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
@@ -25,7 +30,7 @@
     </main>
     <footer>
         <div class="container">
-            <p>My Site &copy; 2024</p>
+            <p>RelayEntry &copy; 2024</p>
         </div>
     </footer>
 </body>

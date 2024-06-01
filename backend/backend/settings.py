@@ -145,4 +145,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-print(f"Template directories: {os.path.join(BASE_DIR, 'templates')}")
+LOGIN_URL = '/accounts/login/'

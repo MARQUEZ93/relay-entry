@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('waivers', models.ManyToManyField(blank=True, to='my_app.document')),
+                ('waivers', models.ManyToManyField(blank=True, to='RelayEntry.document')),
             ],
         ),
         migrations.CreateModel(
@@ -87,7 +87,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='races', to='my_app.event')),
+                ('event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='races', to='RelayEntry.event')),
             ],
             options={
                 'ordering': ['name', 'event__name'],
@@ -105,9 +105,9 @@ class Migration(migrations.Migration):
                 ('price', models.DecimalField(decimal_places=2, default=0.0, max_digits=10)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('coupon_code', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='my_app.couponcode')),
-                ('photo_package', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='my_app.photopackage')),
-                ('race', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='registrations', to='my_app.race')),
+                ('coupon_code', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='RelayEntry.couponcode')),
+                ('photo_package', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='RelayEntry.photopackage')),
+                ('race', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='registrations', to='RelayEntry.race')),
             ],
             options={
                 'ordering': ['-registered_at'],
@@ -131,7 +131,7 @@ class Migration(migrations.Migration):
                 ('phone', models.CharField(blank=True, max_length=15, null=True)),
                 ('leg_order', models.PositiveIntegerField(blank=True, null=True)),
                 ('gender', models.CharField(blank=True, choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')], max_length=10, null=True)),
-                ('registration', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='team_members', to='my_app.registration')),
+                ('registration', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='team_members', to='RelayEntry.registration')),
             ],
         ),
         migrations.CreateModel(
@@ -139,13 +139,13 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
-                ('captain', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='captained_teams', to='my_app.teammember')),
-                ('race', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='teams', to='my_app.race')),
+                ('captain', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='captained_teams', to='RelayEntry.teammember')),
+                ('race', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='teams', to='RelayEntry.race')),
             ],
         ),
         migrations.AddField(
             model_name='registration',
             name='team',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='my_app.team'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='RelayEntry.team'),
         ),
     ]

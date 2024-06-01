@@ -72,8 +72,10 @@ TEAM_GENDER_CHOICES = [
 
 MILES = 'mi'
 KILOMETERS = 'km'
+METERS = 'm'
 
 UNIT_CHOICES_CONSTANT = [
     (MILES, 'Miles'),
     (KILOMETERS, 'Kilometers'),
+    (METERS, 'Meters'),
 ]

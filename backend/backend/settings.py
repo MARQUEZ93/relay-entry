@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'my_app',
+    'RelayEntry',
 ]
 
 MIDDLEWARE = [
@@ -146,4 +146,4 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 LOGIN_URL = '/accounts/login/'
-AUTHENTICATION_BACKENDS = ['yourapp.backends.ApprovedUserBackend']
+AUTHENTICATION_BACKENDS = ['backend.backends.ApprovedUserBackend']

@@ -1,4 +1,4 @@
-# backend/my_app/urls.py
+# backend/RelayEntry/urls.py
 
 from django.urls import path
 from . import views

@@ -4,8 +4,12 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.validators import MinValueValidator, MaxValueValidator
 from .constants import STATES, TEAM_GENDER_CHOICES, GENDER_CHOICES, UNIT_CHOICES_CONSTANT
 import uuid
+
+UNIT_CHOICES = UNIT_CHOICES_CONSTANT
+TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -24,7 +28,6 @@ class Document(models.Model):
     file = models.FileField(upload_to='event_documents/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255, blank=True, null=True)
-    required = models.BooleanField(default=False)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -87,10 +90,6 @@ class Race(models.Model):
         (CUSTOM, 'Custom'),
     ]
 
-
-    UNIT_CHOICES = UNIT_CHOICES_CONSTANT
-    TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES
-
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='races')
     name = models.CharField(max_length=200)
     distance = models.CharField(max_length=50, choices=DISTANCE_CHOICES)
@@ -100,6 +99,7 @@ class Race(models.Model):
     num_runners = models.PositiveIntegerField(blank=True, null=True)
     team_type = models.CharField(max_length=10, choices=TEAM_TYPE_CHOICES, blank=True, null=True)
 
+    same_distance = models.BooleanField(default=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -125,7 +125,10 @@ class Race(models.Model):
 
 class CouponCode(models.Model):
     code = models.CharField(max_length=50, unique=True)
-    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    percentage = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(100)],
+        default=0
+    )
     valid_until = models.DateTimeField()
     is_active = models.BooleanField(default=True)
     max_uses = models.PositiveIntegerField(default=1)
@@ -179,7 +182,7 @@ class Registration(models.Model):
         if self.coupon_code and self._state.adding:
             self.coupon_code.usage_count += 1
             self.coupon_code.save()
-            discount = (self.coupon_code.discount_percentage / 100) * self.price
+            discount = (self.coupon_code.percentage / 100) * self.price
             self.amount_paid = self.price - discount
         else:
             self.amount_paid = self.price
@@ -191,6 +194,19 @@ class Registration(models.Model):
     class Meta:
             ordering = ['-registered_at']
 
+class Leg(models.Model):
+    race = models.ForeignKey(Race, related_name='legs', on_delete=models.CASCADE)
+    leg_number = models.PositiveIntegerField()
+
+    custom_distance_value = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    custom_distance_unit = models.CharField(max_length=2, choices=UNIT_CHOICES, blank=True, null=True)
+
+    class Meta:
+        unique_together = ('race', 'leg_number')
+
+    def __str__(self):
+        return f"Leg {self.leg_number} - {self.distance}"
+
 class TeamMember(models.Model):
     dob = models.DateField()
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE, related_name='team_members')
@@ -200,5 +216,6 @@ class TeamMember(models.Model):
     leg_order = models.PositiveIntegerField(blank=True, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
 
+    leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return f'{self.name} ({self.email}) - {self.registration.race.name}'

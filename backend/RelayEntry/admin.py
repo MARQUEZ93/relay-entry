@@ -1,6 +1,13 @@
 from django.contrib import admin
-from .models import Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode
+from .models import Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode, Leg
 from django.contrib.auth.models import User
+
+from django.contrib.admin import AdminSite
+
+# Customize the admin site header
+admin.site.site_header = "RelayEntry Administration"
+admin.site.site_title = "RelayEntry Admin Portal"
+admin.site.index_title = "Welcome to RelayEntry Admin"
 
 class BaseOwnerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
@@ -23,6 +30,11 @@ class BaseOwnerAdmin(admin.ModelAdmin):
         if obj and obj.created_by != request.user and not request.user.is_superuser:
             return False
         return super().has_delete_permission(request, obj)
+    
+    def get_readonly_fields(self, request, obj=None):
+        if obj:  # When editing an existing object
+            return self.readonly_fields + ('created_by',)
+        return self.readonly_fields
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
@@ -59,7 +71,7 @@ class RegistrationAdmin(admin.ModelAdmin):
 
 @admin.register(Document)
 class DocumentAdmin(BaseOwnerAdmin):
-    list_display = ('file', 'name', 'required', 'uploaded_at')
+    list_display = ('file', 'name', 'uploaded_at')
     search_fields = ('file', 'name')
 
 @admin.register(PhotoPackage)
@@ -69,5 +81,15 @@ class PhotoPackageAdmin(BaseOwnerAdmin):
 
 @admin.register(CouponCode)
 class CouponCodeAdmin(BaseOwnerAdmin):
-    list_display = ('code', 'discount_percentage', 'valid_until', 'is_active', 'max_uses', 'usage_count')
+    list_display = ('code', 'percentage', 'valid_until', 'is_active', 'max_uses', 'usage_count')
     search_fields = ('code',)
+
+    # Usage count read-only
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = super().get_readonly_fields(request, obj)
+        return readonly_fields + ('usage_count',)
+
+@admin.register(Leg)
+class LegAdmin(BaseOwnerAdmin):
+    list_display = ('race', 'leg_number', 'custom_distance_value', 'custom_distance_unit',)
+    search_fields = ('race__name',)

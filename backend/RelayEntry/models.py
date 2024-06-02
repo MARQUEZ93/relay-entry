@@ -89,7 +89,7 @@ class Race(models.Model):
     num_runners = models.PositiveIntegerField(blank=True, null=True)
     team_type = models.CharField(max_length=10, choices=TEAM_TYPE_CHOICES, blank=True, null=True)
 
-    same_distance = models.BooleanField(default=True, null=True, blank=True)
+    same_distance = models.BooleanField(default=False, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)

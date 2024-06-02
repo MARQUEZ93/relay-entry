@@ -76,11 +76,11 @@ class EventAdmin(BaseOwnerAdmin):
     list_display = ('name', 'date', 'created_by', 'created_at', 'updated_at')
     search_fields = ('name', 'created_by__user__email')
 
-    #  the waivers dropdown
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+     # Filter the waivers dropdown
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "waivers":
             kwargs["queryset"] = Document.objects.filter(created_by=request.user)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 @admin.register(Race)
 class RaceAdmin(BaseOwnerAdmin):

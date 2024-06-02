@@ -76,10 +76,22 @@ class EventAdmin(BaseOwnerAdmin):
     list_display = ('name', 'date', 'created_by', 'created_at', 'updated_at')
     search_fields = ('name', 'created_by__user__email')
 
+    #  the waivers dropdown
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "waivers":
+            kwargs["queryset"] = Document.objects.filter(created_by=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 @admin.register(Race)
 class RaceAdmin(BaseOwnerAdmin):
     list_display = ('name', 'distance', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'event', 'created_at', 'updated_at')
     search_fields = ('name', 'event__name', 'distance')
+
+    # the events dropdown
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "event":
+            kwargs["queryset"] = Event.objects.filter(created_by=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
@@ -114,10 +126,22 @@ class PhotoPackageAdmin(BaseOwnerAdmin):
     list_display = ('name', 'price', 'description')
     search_fields = ('name', 'description')
 
+    #  the event dropdown
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "event":
+            kwargs["queryset"] = Event.objects.filter(created_by=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 @admin.register(CouponCode)
 class CouponCodeAdmin(BaseOwnerAdmin):
     list_display = ('code', 'percentage', 'valid_until', 'is_active', 'max_uses', 'usage_count')
     search_fields = ('code',)
+
+    #  the event dropdown
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "event":
+            kwargs["queryset"] = Event.objects.filter(created_by=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     # Usage count read-only
     def get_readonly_fields(self, request, obj=None):
@@ -128,3 +152,9 @@ class CouponCodeAdmin(BaseOwnerAdmin):
 class LegAdmin(BaseOwnerAdmin):
     list_display = ('race', 'leg_number', 'custom_distance_value', 'custom_distance_unit',)
     search_fields = ('race__name',)
+
+    #  the race dropdown
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "race":
+            kwargs["queryset"] = Race.objects.filter(created_by=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)

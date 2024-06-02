@@ -27,7 +27,23 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(Group, CustomGroupAdmin)
 admin.site.register(UserProfile, CustomUserProfileAdmin)
 
-class BaseOwnerAdmin(admin.ModelAdmin):
+class StaffUserPermissionsMixin:
+    def has_module_permission(self, request):
+        return request.user.is_staff
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_staff
+
+    def has_add_permission(self, request):
+        return request.user.is_staff
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_staff
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_staff
+
+class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_staff and not request.user.is_superuser:
@@ -55,7 +71,7 @@ class BaseOwnerAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
 @admin.register(Event)
-class EventAdmin(admin.ModelAdmin):
+class EventAdmin(BaseOwnerAdmin):
     list_display = ('name', 'date', 'created_by', 'created_at', 'updated_at')
     search_fields = ('name', 'created_by__user__email')
 

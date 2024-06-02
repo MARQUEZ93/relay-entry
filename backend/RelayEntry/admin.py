@@ -10,20 +10,22 @@ admin.site.site_header = "RelayEntry Administration"
 admin.site.site_title = "RelayEntry Admin Portal"
 admin.site.index_title = "Welcome to RelayEntry Admin"
 
-class CustomUserAdmin(BaseUserAdmin):
-    def has_module_permission(self, request):
-        return request.user.is_superuser
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser', 'is_active')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
+    ordering = ('username',)
 
 class CustomGroupAdmin(admin.ModelAdmin):
-    def has_module_permission(self, request):
-        return request.user.is_superuser
+    pass
+
+class CustomUserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'is_approved')
 
 admin.site.unregister(User)
 admin.site.unregister(Group)
-
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Group, CustomGroupAdmin)
-admin.site.register(UserProfile, CustomGroupAdmin)
+admin.site.register(UserProfile, CustomUserProfileAdmin)
 
 class BaseOwnerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):

@@ -15,15 +15,6 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.userprofile.save()
-
 class Document(models.Model):
     file = models.FileField(upload_to='event_documents/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -51,11 +42,11 @@ class Event(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
     published = models.BooleanField(default=False)
 
-    address = models.CharField(max_length=255, blank=True)
-    city = models.CharField(max_length=100, blank=True)
-    state = models.CharField(max_length=2, choices=STATE_CHOICES, blank=True)
-    postal_code = models.CharField(max_length=10, blank=True)
-    google_maps_link = models.URLField(max_length=200, blank=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=2, choices=STATE_CHOICES, blank=True, null=True)
+    postal_code = models.CharField(max_length=10, blank=True, null=True)
+    google_maps_link = models.URLField(max_length=200, blank=True, null=True)
     media_file = models.FileField(upload_to='event_media/', blank=True, null=True)
     logo = models.ImageField(upload_to='event_logos/', blank=True, null=True)
     waivers = models.ManyToManyField(Document, blank=True)
@@ -68,7 +59,6 @@ class Event(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

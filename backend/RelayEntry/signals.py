@@ -3,6 +3,8 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 
+from .models import UserProfile
+
 # @receiver(post_save, sender=User)
 # def send_welcome_email(sender, instance, created, **kwargs):
 #     if created:
@@ -13,3 +15,12 @@ from django.core.mail import send_mail
 #             [instance.email],
 #             fail_silently=False,
 #         )
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.userprofile.save()

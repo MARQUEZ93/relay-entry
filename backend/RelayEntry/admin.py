@@ -1,13 +1,29 @@
 from django.contrib import admin
-from .models import Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode, Leg
-from django.contrib.auth.models import User
+from .models import UserProfile, Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode, Leg
+from django.contrib.auth.models import User, Group
 
 from django.contrib.admin import AdminSite
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 # Customize the admin site header
 admin.site.site_header = "RelayEntry Administration"
 admin.site.site_title = "RelayEntry Admin Portal"
 admin.site.index_title = "Welcome to RelayEntry Admin"
+
+class CustomUserAdmin(BaseUserAdmin):
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+class CustomGroupAdmin(admin.ModelAdmin):
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+admin.site.unregister(User)
+admin.site.unregister(Group)
+
+admin.site.register(User, CustomUserAdmin)
+admin.site.register(Group, CustomGroupAdmin)
+admin.site.register(UserProfile, CustomGroupAdmin)
 
 class BaseOwnerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):

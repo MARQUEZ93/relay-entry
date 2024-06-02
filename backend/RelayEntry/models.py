@@ -117,7 +117,6 @@ class CouponCode(models.Model):
     code = models.CharField(max_length=50, unique=True)
     percentage = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(100)],
-        default=0
     )
     valid_until = models.DateTimeField()
     is_active = models.BooleanField(default=True)
@@ -181,8 +180,9 @@ class Registration(models.Model):
 
     def __str__(self):
         return f'{self.email} - {self.race.name}'
+
     class Meta:
-            ordering = ['-registered_at']
+        ordering = ['-registered_at']
 
 class Leg(models.Model):
     race = models.ForeignKey(Race, related_name='legs', on_delete=models.CASCADE)

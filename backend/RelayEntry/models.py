@@ -190,6 +190,7 @@ class Leg(models.Model):
 
     custom_distance_value = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     custom_distance_unit = models.CharField(max_length=2, choices=UNIT_CHOICES, blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('race', 'leg_number')

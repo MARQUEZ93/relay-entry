@@ -44,6 +44,7 @@ class StaffUserPermissionsMixin:
         return request.user.is_staff
 
 class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
+    exclude = ('created_by',)  # Hide created_by field in the form
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_staff and not request.user.is_superuser:
@@ -51,7 +52,7 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
         return qs
 
     def save_model(self, request, obj, form, change):
-        if not change or not obj.created_by:
+        if not change or not obj.created_by_id:
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 

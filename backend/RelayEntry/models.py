@@ -13,7 +13,7 @@ TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    is_approved = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False, help_text="Whether user is approved to create content.")
 
 class Document(models.Model):
     file = models.FileField(upload_to='event_documents/')
@@ -40,7 +40,7 @@ class Event(models.Model):
     name = models.CharField(max_length=200)
     date = models.DateField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
-    published = models.BooleanField(default=False)
+    published = models.BooleanField(default=False, help_text="Whether the event can be viewed by the public.")
 
     address = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
@@ -49,7 +49,7 @@ class Event(models.Model):
     google_maps_link = models.URLField(max_length=200, blank=True, null=True)
     media_file = models.FileField(upload_to='event_media/', blank=True, null=True)
     logo = models.ImageField(upload_to='event_logos/', blank=True, null=True)
-    waivers = models.ManyToManyField(Document, blank=True)
+    waivers = models.ManyToManyField(Document, blank=True, help_text="Required waivers for registration.")
 
     facebook_url = models.URLField(max_length=200, blank=True, null=True)
     instagram_url = models.URLField(max_length=200, blank=True, null=True)
@@ -85,11 +85,11 @@ class Race(models.Model):
     distance = models.CharField(max_length=50, choices=DISTANCE_CHOICES)
     custom_distance_value = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     custom_distance_unit = models.CharField(max_length=2, choices=UNIT_CHOICES, blank=True, null=True)
-    is_relay = models.BooleanField(default=False)
-    num_runners = models.PositiveIntegerField(blank=True, null=True)
+    is_relay = models.BooleanField(default=False, help_text="Is a team relay race?")
+    num_runners = models.PositiveIntegerField(blank=True, null=True, help_text="The amount of runners per team in a relay race.")
     team_type = models.CharField(max_length=10, choices=TEAM_TYPE_CHOICES, blank=True, null=True)
 
-    same_distance = models.BooleanField(default=False, blank=True, null=True)
+    same_distance = models.BooleanField(default=False, blank=True, null=True, help_text="Whether each leg of the team relay race is the same distance.")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -118,10 +118,10 @@ class CouponCode(models.Model):
     percentage = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(100)],
     )
-    valid_until = models.DateTimeField()
+    valid_until = models.DateTimeField(help_text="When the coupon code expires.")
     is_active = models.BooleanField(default=True)
-    max_uses = models.PositiveIntegerField(default=1)
-    usage_count = models.PositiveIntegerField(default=0)
+    max_uses = models.PositiveIntegerField(default=1, help_text="Max number of times the coupon code can be used.")
+    usage_count = models.PositiveIntegerField(default=0, help_text="The amount of times the coupon code has been used.")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -146,10 +146,10 @@ class Registration(models.Model):
 
     photo_package = models.ForeignKey(PhotoPackage, null=True, blank=True, on_delete=models.SET_NULL)
     coupon_code = models.ForeignKey(CouponCode, null=True, blank=True, on_delete=models.SET_NULL)
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    team = models.ForeignKey(Team, null=True, blank=True, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, null=True, blank=True, on_delete=models.CASCADE, help_text="The team the registration is associated with (if applicable).")
 
     def clean(self):
         if not self.price:
@@ -203,9 +203,8 @@ class TeamMember(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=15, blank=True, null=True)
-    leg_order = models.PositiveIntegerField(blank=True, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
 
-    leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True)
+    leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True, help_text="The leg the team member is running (if applicable).")
     def __str__(self):
         return f'{self.name} ({self.email}) - {self.registration.race.name}'

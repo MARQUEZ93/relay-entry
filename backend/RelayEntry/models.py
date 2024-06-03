@@ -30,6 +30,7 @@ class Event(models.Model):
 
     name = models.CharField(max_length=200)
     date = models.DateField()
+    end_date = models.DateField(blank=True, null=True, help_text="Only if the event spans multiple days. Must be after the date field.")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
     published = models.BooleanField(default=False, help_text="Whether the event can be viewed by the public.")
 
@@ -59,7 +60,8 @@ class PhotoPackage(models.Model):
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    event = models.ForeignKey('Event', on_delete=models.CASCADE, related_name='photo_packages')
+    event = models.ForeignKey('Event', on_delete=models.CASCADE, related_name='photo_packages',
+                              help_text="Which event the photo package is associated with.")
 
     def __str__(self):
         return self.name
@@ -81,12 +83,13 @@ class Race(models.Model):
         (CUSTOM, 'Custom'),
     ]
 
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='races')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='races', 
+                              help_text="The event you created that this race belongs to.")
     name = models.CharField(max_length=200)
     distance = models.CharField(max_length=50, choices=DISTANCE_CHOICES)
     custom_distance_value = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     custom_distance_unit = models.CharField(max_length=2, choices=UNIT_CHOICES, blank=True, null=True)
-    is_relay = models.BooleanField(default=False, help_text="Is a team relay race?")
+    is_relay = models.BooleanField(default=False, help_text="Is the race a team relay race?")
     num_runners = models.PositiveIntegerField(blank=True, null=True, help_text="The amount of runners per team in a relay race.")
     team_type = models.CharField(max_length=10, choices=TEAM_TYPE_CHOICES, blank=True, null=True)
 
@@ -95,6 +98,7 @@ class Race(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    start_time = models.DateTimeField(help_text="The time the race starts.")
     def __str__(self):
         if self.distance in [self.CUSTOM, self.ULTRA_MARATHON]:
             return f'{self.name} ({self.custom_distance_value} {self.get_custom_distance_unit_display()}) - {self.event.name}'

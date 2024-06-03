@@ -147,3 +147,6 @@ LOGOUT_REDIRECT_URL = '/'
 
 LOGIN_URL = '/accounts/login/'
 AUTHENTICATION_BACKENDS = ['backend.backends.ApprovedUserBackend']
+
+STRIPE_SECRET_KEY = 'your_secret_key'
+STRIPE_PUBLISHABLE_KEY = 'your_publishable_key'

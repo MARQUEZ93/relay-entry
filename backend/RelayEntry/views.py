@@ -5,6 +5,7 @@ from .decorators import anonymous_required
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User
+import stripe
 
 @login_required
 def index(request):
@@ -39,3 +40,33 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+@login_required
+def connect_stripe_account(request):
+    if request.method == 'POST':
+        account = stripe.Account.create(
+            type='standard',
+            country='US',
+            email=request.user.email,
+        )
+        UserProfile.objects.update_or_create(
+            user=request.user,
+            defaults={'stripe_account_id': account.id}
+        )
+        return redirect(account.links.url)
+    return render(request, 'connect_stripe.html')
+
+@login_required
+def stripe_callback(request):
+    code = request.GET.get('code')
+    if code:
+        account_response = stripe.OAuth.token(grant_type='authorization_code', code=code)
+        account_id = account_response['stripe_user_id']
+        UserProfile.objects.update_or_create(
+            user=request.user,
+            defaults={'stripe_account_id': account_id, 'stripe_account_verified': True}
+        )
+        return redirect('profile')
+    return redirect('connect_stripe')

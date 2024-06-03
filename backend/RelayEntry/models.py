@@ -15,6 +15,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False, help_text="Whether user is approved to create content.")
 
+    stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_account_verified = models.BooleanField(default=False)
+
 class Document(models.Model):
     file = models.FileField(upload_to='event_documents/')
     uploaded_at = models.DateTimeField(auto_now_add=True)

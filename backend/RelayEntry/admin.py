@@ -4,6 +4,8 @@ from django.contrib.auth.models import User, Group
 
 from django.contrib.admin import AdminSite
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.urls import reverse
+from django.utils.html import format_html
 
 # Customize the admin site header
 admin.site.site_header = "RelayEntry Administration"
@@ -19,7 +21,12 @@ class CustomGroupAdmin(admin.ModelAdmin):
     pass
 
 class CustomUserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'is_approved')
+    list_display = ('user', 'stripe_account_id', 'stripe_account_verified', 'connect_stripe_link')
+    def connect_stripe_link(self, obj):
+        url = reverse('connect_stripe')
+        return format_html('<a href="{}">Connect Stripe</a>', url)
+
+    connect_stripe_link.short_description = 'Connect Stripe'
 
 admin.site.unregister(User)
 admin.site.unregister(Group)

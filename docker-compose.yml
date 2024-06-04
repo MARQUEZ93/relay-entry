@@ -6,29 +6,23 @@ services:
       - ./backend:/app
     ports:
       - "8000:8000"
-    environment:
-      - POSTGRES_DB=relaydb
-      - POSTGRES_USER=relayuser
-      - POSTGRES_PASSWORD=relaypassword
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - EMAIL_HOST=mailhog
-      - EMAIL_PORT=1025
+    env_file:
+      - .env
     depends_on:
       - postgres
       - mailhog
   postgres:
     image: postgres:13
-    environment:
-      - POSTGRES_DB=relaydb
-      - POSTGRES_USER=relayuser
-      - POSTGRES_PASSWORD=relaypassword
+    env_file:
+      - .env
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   frontend:
+    env_file:
+      - .env
     build: ./frontend
     ports:
       - "8080:8080"

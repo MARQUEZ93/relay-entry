@@ -15,7 +15,8 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv()
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path)
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
@@ -154,5 +155,6 @@ LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
 AUTHENTICATION_BACKENDS = ['backend.backends.ApprovedUserBackend']
 
-STRIPE_SECRET_KEY = 'your_secret_key'
-STRIPE_PUBLISHABLE_KEY = 'your_publishable_key'
+# Access the Stripe API key from environment variables
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')

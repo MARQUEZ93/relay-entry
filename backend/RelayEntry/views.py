@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User
 import stripe
+import os
 
 @login_required
 def index(request):
@@ -41,7 +42,8 @@ def signup(request):
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
+# Initialize the Stripe API key
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
 @login_required
 def connect_stripe_account(request):

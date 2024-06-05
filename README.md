@@ -20,7 +20,7 @@ docker-compose up --build
 docker-compose restart backend
 
 
-root / p
+admin / p
 u / p
 # shell
 docker-compose exec backend python manage.py shell

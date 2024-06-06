@@ -8,4 +8,6 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('connect_stripe/', views.connect_stripe_account, name='connect_stripe'),
     path('stripe_callback/', views.stripe_callback, name='stripe_callback'),
+    path('create-payment-intent/', views.create_payment_intent, name='create-payment-intent'),
+    path('confirm-payment-intent/', views.confirm_payment_intent, name='confirm-payment-intent'),
 ]

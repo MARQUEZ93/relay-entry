@@ -37,3 +37,21 @@ make all UserProfiles is_approved
 for user in UserProfile.objects.all():
     user.is_approved = True
     user.save()
+
+
+# Stripe Test Cards
+Successful payment:
+
+Card number: 4242 4242 4242 4242
+Any future expiration date
+Any CVC
+Declined payment:
+
+Card number: 4000 0000 0000 9995
+Any future expiration date
+Any CVC
+Insufficient funds:
+
+Card number: 4000 0000 0000 9995
+Any future expiration date
+Any CVC

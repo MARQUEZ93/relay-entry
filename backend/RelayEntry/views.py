@@ -5,8 +5,11 @@ from .decorators import anonymous_required
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 import stripe
 import os
+import json
+from .models import UserProfile
 
 @login_required
 def index(request):
@@ -72,3 +75,52 @@ def stripe_callback(request):
         )
         return redirect('profile')
     return redirect('connect_stripe')
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def create_payment_intent(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            amount = data['amount']  # Ensure the amount is sent in the request body
+
+            # Create a PaymentIntent with the specified amount in test mode
+            intent = stripe.PaymentIntent.create(
+                amount=amount,
+                currency='usd',
+                payment_method_types=['card'],
+            )
+
+            return JsonResponse({
+                'status': intent['status'],
+                'clientSecret': intent['client_secret'],
+                'id': intent['id']  # Make sure to include the ID here
+            })
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def confirm_payment_intent(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            payment_intent_id = data['payment_intent_id']
+
+            # Confirm the PaymentIntent using a test payment method
+            intent = stripe.PaymentIntent.confirm(
+                payment_intent_id,
+                payment_method='pm_card_visa',  # Use a test payment method ID
+            )
+
+            return JsonResponse({
+                'status': intent['status'],
+                'clientSecret': intent['client_secret'],
+                'id': intent['id']  # Make sure to include the ID here
+            })
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)

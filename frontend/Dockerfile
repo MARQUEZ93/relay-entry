@@ -4,14 +4,9 @@ FROM node:14
 # Set work directory
 WORKDIR /app
 
-# Copy package.json first
-COPY package.json /app/
-
-# Install dependencies (and generate package-lock.json)
+COPY ./package.json ./
 RUN npm install
-
-# Copy project files
-COPY . /app/
+COPY . .
 
 # Expose the port that the app runs on
 EXPOSE 8080

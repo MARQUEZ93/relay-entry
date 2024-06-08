@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   backend:
+    restart: always
     build: ./backend
     volumes:
       - ./backend:/app
@@ -20,13 +21,21 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
   frontend:
+    restart: always
+    environment:
+      - NODE_ENV=development
     env_file:
       - .env
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      - backend
     volumes:
       - ./frontend:/app
+      - /app/node_modules
   
   mailhog:
     image: mailhog/mailhog

@@ -3,6 +3,8 @@
 ### 
 
 docker-compose up --build
+Purpose: This command combines the building of Docker images and starting of the containers. It will build the images if there have been changes and then start the containers.
+Use Case: Use this command when you want to ensure the images are up-to-date and immediately run the containers.
 
 ### 
  python3 -m venv venv

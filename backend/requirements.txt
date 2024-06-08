@@ -4,3 +4,4 @@ psycopg2-binary
 stripe
 pillow
 python-dotenv
+django-cors-headers

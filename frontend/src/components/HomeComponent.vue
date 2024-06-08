@@ -1,32 +1,22 @@
 <template>
-  <v-app>
-    <v-app-bar app color="primary" dark>
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
-      <v-toolbar-title>RelayEntry</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn text>Home</v-btn>
-      <v-btn text>About</v-btn>
-      <v-btn text>Contact</v-btn>
-    </v-app-bar>
-
-    <v-main>
-      <v-container>
-        <v-row>
-          <v-col>
-            <h1>Welcome to RelayEntry</h1>
-            <p>Your ultimate solution for race registrations.</p>
-            <!-- Add more content here as needed -->
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-
-    <v-footer app color="primary" dark>
-      <v-col class="text-center" cols="12">
-        &copy; 2024 RelayEntry
+  <v-container>
+    <v-row>
+      <v-col cols="12">
+        <h1>Welcome to RelayEntry</h1>
+        <p>Your ultimate solution for race registrations.</p>
       </v-col>
-    </v-footer>
-  </v-app>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-sheet class="my-5 pa-5" elevation="2">
+          <h2>Race Day is the Best Day</h2>
+          <p>
+            Experience the best race day with our affordable and transparent pricing. Our platform is designed to make managing races easier and more accessible for everyone. Ensure that all racers sign their waivers and collect all necessary racer data efficiently. Relay Entry is built with a mobile-first approach, ensuring that your team relay races are smoothly managed from any device.
+          </p>
+        </v-sheet>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -37,22 +27,48 @@ export default {
 
 <style scoped>
 h1 {
-  color: #2c3a50;
+  color: #2c3e50;
   margin-top: 20px;
+}
+
+h2 {
+  color: #4caf50;
+  margin-bottom: 10px;
 }
 
 p {
   font-size: 1.2em;
+  color: #2c3e50;
+}
+
+.features-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.features-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+.features-list li v-icon {
+  margin-right: 8px;
   color: #4caf50;
 }
 
-.v-app-bar {
-  background-color: #4caf50;
-}
+@media (max-width: 600px) {
+  h1, h2 {
+    font-size: 1.5em;
+  }
 
-.v-footer {
-  background-color: #4caf50;
-  padding: 10px;
+  p {
+    font-size: 1em;
+  }
+
+  .features-list li {
+    font-size: 1em;
+  }
 }
 </style>
-

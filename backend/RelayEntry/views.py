@@ -9,7 +9,16 @@ from django.http import JsonResponse
 import stripe
 import os
 import json
-from .models import UserProfile
+from .models import UserProfile, Event
+from .serializers import EventSerializer
+from rest_framework import generics
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+@method_decorator(csrf_exempt, name='dispatch')
+class EventDetailView(generics.RetrieveAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
 
 @login_required
 def index(request):

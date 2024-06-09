@@ -11,7 +11,7 @@
         <v-sheet class="my-5 pa-5" elevation="2">
           <h2>Race Day is the Best Day</h2>
           <p>
-            Experience the best race day with our affordable and transparent pricing. Our platform is designed to make managing races easier and more accessible for everyone. Ensure that all racers sign their waivers and collect all necessary racer data efficiently. Relay Entry is built with a mobile-first approach, ensuring that your team relay races are smoothly managed from any device.
+            Experience the best race day with RelayEntry's affordable pricing. Our platform is designed to simplify race management and enhance accessibility for all users. Ensure seamless waiver signing and efficient data collection for all participants. Built with a mobile-first approach, RelayEntry offers the best user experience tailored specifically for team relay races.
           </p>
         </v-sheet>
       </v-col>

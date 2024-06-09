@@ -5,17 +5,17 @@
         <v-card class="mx-auto my-5 pa-5" max-width="800">
           <v-img :src="event.logo" v-if="event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
           <v-card-title>
-            <h1>Event: {{ event.name }}</h1>
+            <h1>{{ event.name }}</h1>
           </v-card-title>
           <v-card-subtitle v-if="event.date">
-            <p><strong>Date:</strong> {{ event.date }} <span v-if="event.end_date">- {{ event.end_date }}</span></p>
+            <p><strong>Date:</strong> {{ formattedEventDate(event.date, event.end_date) }}</p>
           </v-card-subtitle>
           <v-card-subtitle v-if="event.address || event.city || event.state || event.postal_code">
-            <p><strong>Location:</strong>
+            <p><strong>Location: </strong>
               <span v-if="event.address">{{ event.address }}, </span>
               <span v-if="event.city">{{ event.city }}, </span>
-              <span v-if="event.state">{{ event.state }} </span>
-              <span v-if="event.postal_code">{{ event.postal_code }}</span>
+              <span v-if="event.state">{{ event.state }}</span>
+              <span v-if="event.postal_code"> {{ event.postal_code }} </span>
             </p>
           </v-card-subtitle>
           <v-card-subtitle v-if="event.google_maps_link">
@@ -41,10 +41,35 @@
               <v-icon>mdi-web</v-icon>
             </v-btn>
           </v-card-actions>
-          <v-card-subtitle v-if="event.media_file">
-            <p><a :href="event.media_file" target="_blank">Download Media File</a></p>
-          </v-card-subtitle>
         </v-card>
+        <v-row>
+          <v-col
+            v-for="race in event.races"
+            :key="race.id"
+            cols="12"
+            :md="event.races.length === 1 ? 12 : 4"
+            class="d-flex align-center justify-center"
+          >
+            <v-card class="mx-auto my-3" outlined>
+              <v-card-title>
+                <span v-if="race.is_relay">Team Relay Race</span>
+                <span v-else>{{ race.distance }}</span>
+              </v-card-title>
+              <v-card-subtitle v-if="race.description">
+                <p>{{ race.description }}</p>
+              </v-card-subtitle>
+              <v-card-subtitle>
+                <p><strong>Date:</strong> {{ formattedRaceDate(race.start_time) }}</p>
+              </v-card-subtitle>
+              <v-card-subtitle>
+                <p><strong>Price:</strong> ${{ formatPrice(race.price) }}</p>
+              </v-card-subtitle>
+              <v-card-actions class="justify-center">
+                <v-btn color="primary">Register</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
         <v-alert v-if="error" type="error">{{ error }}</v-alert>
         <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       </v-col>
@@ -52,11 +77,36 @@
   </v-container>
 </template>
 
+
 <script>
 import api from '@/services/api';
 
 export default {
   name: 'EventComponent',
+  methods: {
+    formattedEventDate(startDate, endDate) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      const start = new Date(startDate).toLocaleDateString(undefined, options);
+      if (endDate) {
+        const end = new Date(endDate).toLocaleDateString(undefined, options);
+        return `${start} - ${end}`;
+      }
+      return start;
+    },
+    formattedRaceDate(date) {
+      const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: 'numeric', 
+        minute: 'numeric' 
+      };
+        return new Date(date).toLocaleString(undefined, options);
+    },
+    formatPrice(price) {
+      return Number(price).toFixed(2);
+    },
+  },
   data() {
     return {
       event: {},
@@ -69,6 +119,7 @@ export default {
     try {
       const response = await api.getEvent(eventId);
       this.event = response.data;
+      console.log(response.data);
       this.loading = false;
     } catch (error) {
       this.error = 'Error fetching event details.';
@@ -92,4 +143,21 @@ p {
 .v-btn {
   margin: 0 5px;
 }
+
+.v-card {
+  max-width: 100%;
+}
+
+@media (min-width: 600px) {
+  .v-card {
+    max-width: 80%;
+  }
+}
+
+@media (min-width: 960px) {
+  .v-card {
+    max-width: 60%;
+  }
+}
 </style>
+

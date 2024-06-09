@@ -20,6 +20,9 @@ class EventDetailView(generics.RetrieveAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
 
+    def get_queryset(self):
+        return Event.objects.prefetch_related('races').filter(published=True)
+
 @login_required
 def index(request):
     return render(request, 'index.html')

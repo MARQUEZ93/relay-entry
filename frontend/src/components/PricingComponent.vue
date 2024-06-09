@@ -34,6 +34,10 @@
                     Perfect for races across the country.
                     </li>
                     <li>
+                    <v-icon left>mdi-map-marker</v-icon>
+                    Make your event page your race's website.
+                    </li>
+                    <li>
                     <v-icon left>mdi-pencil</v-icon>
                     Ensure waivers are signed by every racer.
                     </li>

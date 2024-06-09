@@ -52,6 +52,7 @@ class StaffUserPermissionsMixin:
 
 class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
     exclude = ('created_by',)  # Hide created_by field in the form
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_staff and not request.user.is_superuser:
@@ -78,6 +79,20 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
             return self.readonly_fields + ('created_by',)
         return self.readonly_fields
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "waivers":
+            if not request.user.is_superuser:
+                kwargs["queryset"] = Document.objects.filter(created_by=request.user)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "event":
+            if not request.user.is_superuser:
+                kwargs["queryset"] = Event.objects.filter(created_by=request.user)
+            else:
+                kwargs["queryset"] = Event.objects.all()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 @admin.register(Event)
 class EventAdmin(BaseOwnerAdmin):
     list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at')
@@ -91,7 +106,7 @@ class EventAdmin(BaseOwnerAdmin):
 
 @admin.register(Race)
 class RaceAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'description', 'distance', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'event', 'created_at', 'updated_at')
+    list_display = ('name', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at')
     search_fields = ('name', 'event__name', 'distance')
 
     # the events dropdown

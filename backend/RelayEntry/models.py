@@ -6,10 +6,20 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .constants import STATES, TEAM_GENDER_CHOICES, GENDER_CHOICES, UNIT_CHOICES_CONSTANT
+from timezone_field import TimeZoneField
 import uuid
 
 UNIT_CHOICES = UNIT_CHOICES_CONSTANT
 TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES
+
+class Waiver(models.Model):
+    name = models.CharField(max_length=255)
+    file = models.FileField(upload_to='waivers/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    required = models.BooleanField(default=False, help_text="Is this waiver required for registration?")
+
+    def __str__(self):
+        return self.name
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -17,15 +27,6 @@ class UserProfile(models.Model):
 
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
     stripe_account_verified = models.BooleanField(default=False)
-
-class Document(models.Model):
-    file = models.FileField(upload_to='event_documents/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(max_length=255, blank=True, null=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.file.name
     
 class Event(models.Model):
 
@@ -43,9 +44,10 @@ class Event(models.Model):
     state = models.CharField(max_length=2, choices=STATE_CHOICES, blank=True, null=True)
     postal_code = models.CharField(max_length=10, blank=True, null=True)
     google_maps_link = models.URLField(max_length=200, blank=True, null=True)
+    google_map_html = models.TextField(blank=True, null=True)
     media_file = models.FileField(upload_to='event_media/', blank=True, null=True)
     logo = models.ImageField(upload_to='event_logos/', blank=True, null=True)
-    waivers = models.ManyToManyField(Document, blank=True, help_text="Required waivers for registration.")
+    waivers = models.ManyToManyField(Waiver, blank=True, related_name='events', help_text="Waivers for registration.")
 
     facebook_url = models.URLField(max_length=200, blank=True, null=True)
     instagram_url = models.URLField(max_length=200, blank=True, null=True)
@@ -56,8 +58,15 @@ class Event(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    url_alias = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.url_alias:
+            self.url_alias = slugify(self.name)
+        super().save(*args, **kwargs)
 
 class PhotoPackage(models.Model):
     name = models.CharField(max_length=255)
@@ -104,7 +113,9 @@ class Race(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
 
-    start_time = models.DateTimeField(help_text="The time the race starts.")
+    course_map = models.FileField(upload_to='race_course_maps/', blank=True, null=True)
+    start_time = models.DateTimeField(help_text="The time the race starts per the timezone you select!")
+    timezone = TimeZoneField(default='UTC')
     def __str__(self):
         if self.distance in [self.CUSTOM, self.ULTRA_MARATHON]:
             return f'{self.name} ({self.custom_distance_value} {self.get_custom_distance_unit_display()}) - {self.event.name}'
@@ -199,6 +210,7 @@ class Registration(models.Model):
 class Leg(models.Model):
     race = models.ForeignKey(Race, related_name='legs', on_delete=models.CASCADE)
     leg_number = models.PositiveIntegerField()
+    leg_map = models.FileField(upload_to='leg_maps/', blank=True, null=True)
 
     custom_distance_value = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     custom_distance_unit = models.CharField(max_length=2, choices=UNIT_CHOICES, blank=True, null=True)

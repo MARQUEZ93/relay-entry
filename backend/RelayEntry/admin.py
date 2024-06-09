@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Event, Race, Registration, TeamMember, Document, PhotoPackage, CouponCode, Leg
+from .models import UserProfile, Event, Race, Registration, TeamMember, PhotoPackage, CouponCode, Leg, Waiver
 from django.contrib.auth.models import User, Group
 
 from django.contrib.admin import AdminSite
@@ -80,9 +80,6 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
         return self.readonly_fields
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == "waivers":
-            if not request.user.is_superuser:
-                kwargs["queryset"] = Document.objects.filter(created_by=request.user)
         return super().formfield_for_manytomany(db_field, request, **kwargs)
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -93,20 +90,22 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
                 kwargs["queryset"] = Event.objects.all()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+@admin.register(Waiver)
+class WaiverAdmin(BaseOwnerAdmin):
+    list_display = ('name', 'required', 'uploaded_at')
+    search_fields = ('name',)
 @admin.register(Event)
 class EventAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at')
-    search_fields = ('name', 'created_by__user__email')
+    list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at', 'url_alias')
+    search_fields = ('name', 'created_by__email')
+    prepopulated_fields = {"url_alias": ("name",)}
 
-     # Filter the waivers dropdown
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == "waivers":
-            kwargs["queryset"] = Document.objects.filter(created_by=request.user)
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 @admin.register(Race)
 class RaceAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at')
+    list_display = ('name', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'start_time', 'timezone')
     search_fields = ('name', 'event__name', 'distance')
 
     # the events dropdown
@@ -138,11 +137,6 @@ class RegistrationAdmin(admin.ModelAdmin):
         return super().has_delete_permission(request, obj)
 
 
-@admin.register(Document)
-class DocumentAdmin(BaseOwnerAdmin):
-    list_display = ('file', 'name', 'uploaded_at')
-    search_fields = ('file', 'name')
-
 @admin.register(PhotoPackage)
 class PhotoPackageAdmin(BaseOwnerAdmin):
     list_display = ('name', 'price', 'description')
@@ -172,10 +166,9 @@ class CouponCodeAdmin(BaseOwnerAdmin):
 
 @admin.register(Leg)
 class LegAdmin(BaseOwnerAdmin):
-    list_display = ('race', 'leg_number', 'custom_distance_value', 'custom_distance_unit',)
+    list_display = ('race', 'leg_number', 'custom_distance_value', 'custom_distance_unit', 'leg_map')
     search_fields = ('race__name',)
 
-    #  the race dropdown
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "race":
             kwargs["queryset"] = Race.objects.filter(created_by=request.user)

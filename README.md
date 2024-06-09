@@ -20,6 +20,7 @@ Use Case: Use this command when you want to ensure the images are up-to-date and
 
  docker-compose down
 docker-compose restart backend
+docker-compose exec backend sh
 
 
 admin / p

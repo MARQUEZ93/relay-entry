@@ -14,12 +14,13 @@
             <p><strong>Location: </strong>
               <span v-if="event.address">{{ event.address }}, </span>
               <span v-if="event.city">{{ event.city }}, </span>
-              <span v-if="event.state">{{ event.state }}</span>
-              <span v-if="event.postal_code"> {{ event.postal_code }} </span>
+              <span v-if="event.state">{{ event.state }}&nbsp;</span>
+              <span v-if="event.postal_code">{{ event.postal_code }} </span>
             </p>
           </v-card-subtitle>
-          <v-card-subtitle v-if="event.google_maps_link">
-            <p><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>
+          <v-card-subtitle v-if="event.google_maps_embed_html || event.google_maps_link">
+            <p v-if="event.google_maps_link"><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22208.00219000355!2d-97.76454786403019!3d30.265020118115423!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8644b5a014ac8dcf%3A0xcb6f5722a795d039!2sTexas%20Capitol!5e0!3m2!1sen!2sus!4v1717948358586!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           </v-card-subtitle>
           <v-card-text v-if="event.description">
             <p>{{ event.description }}</p>
@@ -101,11 +102,15 @@ export default {
         hour: 'numeric', 
         minute: 'numeric' 
       };
-        return new Date(date).toLocaleString(undefined, options);
+      return new Date(date).toLocaleString(undefined, options);
     },
     formatPrice(price) {
       return Number(price).toFixed(2);
     },
+    formattedGoogleMapsLink(link) {
+      const embedLink = link.replace('/maps', '/maps/embed');
+      return embedLink;
+    }
   },
   data() {
     return {

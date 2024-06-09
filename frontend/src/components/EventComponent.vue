@@ -18,9 +18,11 @@
               <span v-if="event.postal_code">{{ event.postal_code }} </span>
             </p>
           </v-card-subtitle>
-          <v-card-subtitle v-if="event.google_maps_embed_html || event.google_maps_link">
-            <p v-if="event.google_maps_link"><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22208.00219000355!2d-97.76454786403019!3d30.265020118115423!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8644b5a014ac8dcf%3A0xcb6f5722a795d039!2sTexas%20Capitol!5e0!3m2!1sen!2sus!4v1717948358586!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <v-card-subtitle v-if="event.google_maps_link">
+            <p v-if="event.google_maps_link"><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>           
+          </v-card-subtitle>
+          <v-card-subtitle v-if="event.google_maps_html">
+            <p v-if="event.google_maps_html" v-html="event.google_maps_html"></p>
           </v-card-subtitle>
           <v-card-text v-if="event.description">
             <p>{{ event.description }}</p>
@@ -66,7 +68,9 @@
                 <p><strong>Price:</strong> ${{ formatPrice(race.price) }}</p>
               </v-card-subtitle>
               <v-card-actions class="justify-center">
-                <v-btn color="primary">Register</v-btn>
+                <router-link :to="`/events/${event.url_alias}/${race.id}`">
+                  <v-btn color="primary">Register</v-btn>
+                </router-link>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -120,9 +124,10 @@ export default {
     };
   },
   async created() {
-    const eventId = this.$route.params.id;
+    const urlAlias = this.$route.params.eventUrlAlias;
     try {
-      const response = await api.getEvent(eventId);
+      console.log("hit");
+      const response = await api.getEvent(urlAlias);
       this.event = response.data;
       console.log(response.data);
       this.loading = false;

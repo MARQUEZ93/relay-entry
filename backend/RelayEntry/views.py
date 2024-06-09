@@ -9,13 +9,18 @@ from django.http import JsonResponse
 import stripe
 import os
 import json
-from .models import UserProfile, Event
-from .serializers import EventSerializer
+from .models import UserProfile, Event, Race
+from .serializers import EventSerializer, RaceSerializer
 from rest_framework import generics
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 @method_decorator(csrf_exempt, name='dispatch')
+class RaceDetailView(generics.RetrieveAPIView):
+    queryset = Race.objects.all()
+    serializer_class = RaceSerializer
+    lookup_field = 'id'
+
 class EventDetailView(generics.RetrieveAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer

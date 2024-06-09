@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeComponent from '../components/HomeComponent.vue';
 import PricingComponent from '../components/PricingComponent.vue';
 import EventComponent from '../components/EventComponent.vue';
+import RaceComponent from '../components/RaceComponent.vue';
 
 const routes = [
   {
@@ -16,9 +17,15 @@ const routes = [
     component: PricingComponent,
   },
   {
-    path: '/events/:id',
+    path: '/events/:eventUrlAlias',
     name: 'Event',
     component: EventComponent,
+  },
+  {
+    path: '/events/:eventUrlAlias/:id',
+    name: 'RaceComponent',
+    component: RaceComponent,
+    props: true
   },
 ];
 

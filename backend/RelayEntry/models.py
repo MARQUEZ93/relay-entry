@@ -1,13 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .constants import STATES, TEAM_GENDER_CHOICES, GENDER_CHOICES, UNIT_CHOICES_CONSTANT
-from timezone_field import TimeZoneField
 import uuid
+from zoneinfo import ZoneInfo
+
+from django.utils.text import slugify
 
 UNIT_CHOICES = UNIT_CHOICES_CONSTANT
 TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES
@@ -44,7 +45,7 @@ class Event(models.Model):
     state = models.CharField(max_length=2, choices=STATE_CHOICES, blank=True, null=True)
     postal_code = models.CharField(max_length=10, blank=True, null=True)
     google_maps_link = models.URLField(max_length=200, blank=True, null=True)
-    google_map_html = models.TextField(blank=True, null=True)
+    google_maps_html = models.TextField(blank=True, null=True, help_text="Embed HTML for the Google Maps location. You can get this from the 'Embed a map' section of the Google Maps share options.")
     media_file = models.FileField(upload_to='event_media/', blank=True, null=True)
     logo = models.ImageField(upload_to='event_logos/', blank=True, null=True)
     waivers = models.ManyToManyField(Waiver, blank=True, related_name='events', help_text="Waivers for registration.")
@@ -60,9 +61,12 @@ class Event(models.Model):
 
     url_alias = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
+    def get_event_url(self):
+        return f"http://localhost:8000/events/{self.url_alias}"
+
     def __str__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         if not self.url_alias:
             self.url_alias = slugify(self.name)
@@ -114,8 +118,8 @@ class Race(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
 
     course_map = models.FileField(upload_to='race_course_maps/', blank=True, null=True)
-    start_time = models.DateTimeField(help_text="The time the race starts per the timezone you select!")
-    timezone = TimeZoneField(default='UTC')
+    start_time = models.DateTimeField(help_text="The time the race starts")
+
     def __str__(self):
         if self.distance in [self.CUSTOM, self.ULTRA_MARATHON]:
             return f'{self.name} ({self.custom_distance_value} {self.get_custom_distance_unit_display()}) - {self.event.name}'

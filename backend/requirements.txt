@@ -5,4 +5,3 @@ stripe
 pillow
 python-dotenv
 django-cors-headers
-django-timezone-field

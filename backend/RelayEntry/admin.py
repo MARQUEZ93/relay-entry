@@ -96,16 +96,20 @@ class WaiverAdmin(BaseOwnerAdmin):
     search_fields = ('name',)
 @admin.register(Event)
 class EventAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at', 'url_alias')
-    search_fields = ('name', 'created_by__email')
+    list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at', 'url_alias', 'event_url',)
+    search_fields = ('name', 'created_by__email',)
     prepopulated_fields = {"url_alias": ("name",)}
+
+    def event_url(self, obj):
+        return format_html('<a href="{}" target="_blank">{}</a>', obj.get_event_url(), obj.get_event_url())
+    event_url.short_description = 'Event URL'
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 @admin.register(Race)
 class RaceAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'start_time', 'timezone')
+    list_display = ('name', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'start_time',)
     search_fields = ('name', 'event__name', 'distance')
 
     # the events dropdown

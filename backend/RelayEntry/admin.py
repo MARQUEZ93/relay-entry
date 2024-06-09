@@ -80,7 +80,7 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
 
 @admin.register(Event)
 class EventAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'date', 'created_by', 'created_at', 'updated_at')
+    list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at')
     search_fields = ('name', 'created_by__user__email')
 
      # Filter the waivers dropdown
@@ -91,7 +91,7 @@ class EventAdmin(BaseOwnerAdmin):
 
 @admin.register(Race)
 class RaceAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'distance', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'event', 'created_at', 'updated_at')
+    list_display = ('name', 'description', 'distance', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'event', 'created_at', 'updated_at')
     search_fields = ('name', 'event__name', 'distance')
 
     # the events dropdown

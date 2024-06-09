@@ -32,6 +32,7 @@ class Event(models.Model):
     STATE_CHOICES = STATES
 
     name = models.CharField(max_length=200)
+    description = models.TextField(null=True, blank=True)
     date = models.DateField()
     end_date = models.DateField(blank=True, null=True, help_text="Only if the event spans multiple days. Must be after the date field.")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
@@ -89,6 +90,7 @@ class Race(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='races', 
                               help_text="The event you created that this race belongs to.")
     name = models.CharField(max_length=200)
+    description = models.TextField(null=True, blank=True)
     distance = models.CharField(max_length=50, choices=DISTANCE_CHOICES)
     custom_distance_value = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     custom_distance_unit = models.CharField(max_length=2, choices=UNIT_CHOICES, blank=True, null=True)

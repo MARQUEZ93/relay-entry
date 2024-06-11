@@ -1,7 +1,9 @@
 const { defineConfig } = require('@vue/cli-service');
 
 module.exports = defineConfig({
-  transpileDependencies: true,
+  transpileDependencies: [
+    'vuetify',
+  ],
   devServer: {
     hot: true,
     liveReload: true,
@@ -9,7 +11,7 @@ module.exports = defineConfig({
     port: '8080',
     host: '0.0.0.0',
     client: {
-      webSocketURL: 'ws://localhost:8080/ws',
+      webSocketURL: process.env.VUE_APP_WEBSOCKET_URL,
       overlay: {
         warnings: false,
         errors: true,

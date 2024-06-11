@@ -22,9 +22,9 @@
           <v-card-text v-if="event.description">
             <p>{{ event.description }}</p>
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions class="social-icons">
             <v-btn v-for="icon in socialIcons" :key="icon.name" :href="icon.url" target="_blank" icon>
-              <v-icon>{{ icon.icon }}</v-icon>
+              <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -101,11 +101,11 @@ export default {
     },
     socialIcons() {
       return [
-        { name: 'facebook', icon: 'mdi-facebook', url: this.event.facebook_url },
-        { name: 'instagram', icon: 'mdi-instagram', url: this.event.instagram_url },
-        { name: 'twitter', icon: 'mdi-twitter', url: this.event.twitter_url },
-        { name: 'email', icon: 'mdi-email', url: this.event.email_url },
-        { name: 'website', icon: 'mdi-web', url: this.event.website_url },
+        { name: 'facebook', icon: 'mdi-facebook', iconClass: 'facebook-icon', url: this.event.facebook_url },
+        { name: 'instagram', icon: 'mdi-instagram', iconClass: 'instagram-icon', url: this.event.instagram_url },
+        { name: 'twitter', icon: 'mdi-twitter', iconClass: 'twitter-icon', url: this.event.twitter_url },
+        { name: 'email', icon: 'mdi-email', iconClass: 'email-icon', url: this.event.email_url },
+        { name: 'website', icon: 'mdi-web', iconClass: 'website-icon', url: this.event.website_url },
       ].filter(icon => icon.url);
     },
   },
@@ -161,5 +161,49 @@ p {
   .v-card {
     max-width: 60%;
   }
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.social-icons .v-btn {
+  margin: 0 10px;
+}
+
+.social-icons .v-icon {
+  font-size: 30px;
+}
+
+.facebook-icon {
+  color: #3b5998;
+  background-color: #e9ebee;
+  border-radius: 50%;
+}
+
+.instagram-icon {
+  color: #e1306c;
+  background-color: #f7f7f7;
+  border-radius: 50%;
+}
+
+.twitter-icon {
+  color: #1da1f2;
+  background-color: #e8f5fd;
+  border-radius: 50%;
+}
+
+.email-icon {
+  color: #ea4335;
+  background-color: #fce8e6;
+  border-radius: 50%;
+}
+
+.website-icon {
+  color: #4285f4;
+  background-color: #e8f0fe;
+  border-radius: 50%;
 }
 </style>

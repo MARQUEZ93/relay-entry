@@ -28,6 +28,8 @@ u / p
 # shell
 docker-compose exec backend python manage.py shell
 
+npm install vuetify @mdi/font
+
 # Create superuser, two users in shell
 from django.contrib.auth.models import User
 from RelayEntry.models import UserProfile

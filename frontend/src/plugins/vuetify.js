@@ -6,14 +6,9 @@ import * as directives from 'vuetify/directives';
 const vuetify = createVuetify({
   components,
   directives,
-  // theme: {
-  //   themes: {
-  //     light: {
-  //       primary: '#2ecc71', // Emerald Green as the primary color
-  //       secondary: '#4caf50', // Optional: Define a secondary color
-  //     },
-  //   },
-  // }
+  icons: {
+    iconfont: 'mdi', // Ensure you are using 'mdi' for Material Design Icons
+  },
 });
 
 export default vuetify;

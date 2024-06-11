@@ -16,9 +16,9 @@
           <v-card-subtitle v-if="event.google_maps_link">
             <p><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>
           </v-card-subtitle>
-          <v-card-subtitle v-if="event.google_maps_html">
+          <!-- <v-card-subtitle v-if="event.google_maps_html">
             <p v-html="event.google_maps_html"></p>
-          </v-card-subtitle>
+          </v-card-subtitle> -->
           <v-card-text v-if="event.description">
             <p>{{ event.description }}</p>
           </v-card-text>
@@ -36,7 +36,7 @@
             :md="event.races.length === 1 ? 12 : 4"
             class="d-flex align-center justify-center"
           >
-            <v-card class="mx-auto my-3" outlined>
+            <v-card class="mx-auto my-3 race-card" outlined>
               <v-card-title>
                 <span v-if="race.is_relay">Team Relay Race</span>
                 <span v-else>{{ race.distance }}</span>
@@ -205,5 +205,13 @@ p {
   color: #4285f4;
   background-color: #e8f0fe;
   border-radius: 50%;
+}
+.race-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.race-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 </style>

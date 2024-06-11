@@ -29,15 +29,15 @@
             </v-stepper-header>
   
             <v-stepper-items>
-              <v-stepper-content step="1">
-                <WaiverComponent @next="nextStep" />
-              </v-stepper-content>
-              <v-stepper-content step="2">
-                <RacerDataComponent @next="nextStep" @previous="previousStep" />
-              </v-stepper-content>
-              <v-stepper-content step="3">
-                <CheckoutComponent @previous="previousStep" />
-              </v-stepper-content>
+                <v-stepper-content step="1">
+                    <RacerDataComponent @next="nextStep" />
+                </v-stepper-content>
+                <v-stepper-content step="2">
+                    <WaiverComponent @next="nextStep" @previous="previousStep" />
+                </v-stepper-content>
+                <v-stepper-content step="3">
+                    <CheckoutComponent @previous="previousStep" />
+                </v-stepper-content>
             </v-stepper-items>
           </v-stepper>
         </v-col>
@@ -53,9 +53,9 @@
   
   export default {
     components: {
-      WaiverComponent,
-      RacerDataComponent,
-      CheckoutComponent,
+        RacerDataComponent,
+        WaiverComponent,
+        CheckoutComponent,
     },
     data() {
       return {

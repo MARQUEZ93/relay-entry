@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
-      <router-link to="/" class="white--text">
-        <v-toolbar-title>RelayEntry</v-toolbar-title>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <router-link to="/">
+        <v-img :src="brandLogo" alt="RelayEntry Logo" class="logo-image"></v-img>
       </router-link>
       <v-spacer></v-spacer>
       <router-link to="/" class="white--text">
@@ -14,6 +14,26 @@
       </router-link>
       <v-btn text href="mailto:contact@relayentry.com" class="white--text">Contact</v-btn>
     </v-app-bar>
+
+    <v-navigation-drawer app v-model="drawer" color="primary" dark>
+      <v-list dense>
+        <router-link to="/" @click="drawer = false">
+          <v-list-item>
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item>
+        </router-link>
+        <router-link to="/pricing" @click="drawer = false">
+          <v-list-item>
+            <v-list-item-title>Pricing</v-list-item-title>
+          </v-list-item>
+        </router-link>
+        <a href="mailto:contact@relayentry.com" @click="drawer = false">
+          <v-list-item>
+            <v-list-item-title>Contact</v-list-item-title>
+          </v-list-item>
+        </a>
+      </v-list>
+    </v-navigation-drawer>
 
     <v-main>
       <router-view></router-view>
@@ -28,8 +48,15 @@
 </template>
 
 <script>
+import brandLogo from '@/assets/brand.svg';
 export default {
   name: 'App',
+  data() {
+    return {
+      drawer: false,
+      brandLogo
+    };
+  },
 };
 </script>
 
@@ -42,8 +69,26 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
-
 .white--text {
   color: white !important;
+}
+.logo-image {
+  height: 340px; /* Adjust height as needed */
+  width: 300px;
+  display: block !important; /* Ensure the logo is displayed */
+}
+.v-navigation-drawer .v-list-item-title {
+  font-weight: 500; /* Make the text bolder */
+  text-transform: uppercase; /* Make the text all caps */
+  color: white; /* Ensure the text color matches the header */
+}
+/* Remove underline from links */
+.v-navigation-drawer a {
+  text-decoration: none;
+  color: inherit; /* Ensure the text color is inherited */
+}
+
+.v-navigation-drawer a:hover {
+  text-decoration: underline;
 }
 </style>

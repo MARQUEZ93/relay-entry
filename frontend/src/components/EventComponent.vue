@@ -7,41 +7,24 @@
           <v-card-title>
             <h1>{{ event.name }}</h1>
           </v-card-title>
-          <v-card-subtitle v-if="event.date">
-            <p><strong>Date:</strong> {{ formattedEventDate(event.date, event.end_date) }}</p>
+          <v-card-subtitle v-if="formattedEventDate">
+            <p><strong>Date:</strong> {{ formattedEventDate }}</p>
           </v-card-subtitle>
-          <v-card-subtitle v-if="event.address || event.city || event.state || event.postal_code">
-            <p><strong>Location: </strong>
-              <span v-if="event.address">{{ event.address }}, </span>
-              <span v-if="event.city">{{ event.city }}, </span>
-              <span v-if="event.state">{{ event.state }}&nbsp;</span>
-              <span v-if="event.postal_code">{{ event.postal_code }} </span>
-            </p>
+          <v-card-subtitle v-if="formattedEventLocation">
+            <p><strong>Location:</strong> {{ formattedEventLocation }}</p>
           </v-card-subtitle>
           <v-card-subtitle v-if="event.google_maps_link">
-            <p v-if="event.google_maps_link"><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>           
+            <p><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>
           </v-card-subtitle>
           <v-card-subtitle v-if="event.google_maps_html">
-            <p v-if="event.google_maps_html" v-html="event.google_maps_html"></p>
+            <p v-html="event.google_maps_html"></p>
           </v-card-subtitle>
           <v-card-text v-if="event.description">
             <p>{{ event.description }}</p>
           </v-card-text>
           <v-card-actions>
-            <v-btn v-if="event.facebook_url" :href="event.facebook_url" target="_blank" icon>
-              <v-icon>mdi-facebook</v-icon>
-            </v-btn>
-            <v-btn v-if="event.instagram_url" :href="event.instagram_url" target="_blank" icon>
-              <v-icon>mdi-instagram</v-icon>
-            </v-btn>
-            <v-btn v-if="event.twitter_url" :href="event.twitter_url" target="_blank" icon>
-              <v-icon>mdi-twitter</v-icon>
-            </v-btn>
-            <v-btn v-if="event.email_url" :href="event.email_url" target="_blank" icon>
-              <v-icon>mdi-email</v-icon>
-            </v-btn>
-            <v-btn v-if="event.website_url" :href="event.website_url" target="_blank" icon>
-              <v-icon>mdi-web</v-icon>
+            <v-btn v-for="icon in socialIcons" :key="icon.name" :href="icon.url" target="_blank" icon>
+              <v-icon>{{ icon.icon }}</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -82,40 +65,11 @@
   </v-container>
 </template>
 
-
 <script>
 import api from '@/services/api';
 
 export default {
   name: 'EventComponent',
-  methods: {
-    formattedEventDate(startDate, endDate) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      const start = new Date(startDate).toLocaleDateString(undefined, options);
-      if (endDate) {
-        const end = new Date(endDate).toLocaleDateString(undefined, options);
-        return `${start} - ${end}`;
-      }
-      return start;
-    },
-    formattedRaceDate(date) {
-      const options = { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric', 
-        hour: 'numeric', 
-        minute: 'numeric' 
-      };
-      return new Date(date).toLocaleString(undefined, options);
-    },
-    formatPrice(price) {
-      return Number(price).toFixed(2);
-    },
-    formattedGoogleMapsLink(link) {
-      const embedLink = link.replace('/maps', '/maps/embed');
-      return embedLink;
-    }
-  },
   data() {
     return {
       event: {},
@@ -123,13 +77,52 @@ export default {
       error: null,
     };
   },
+  computed: {
+    formattedEventDate() {
+      if (this.event.date) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const start = new Date(this.event.date).toLocaleDateString(undefined, options);
+        if (this.event.end_date) {
+          const end = new Date(this.event.end_date).toLocaleDateString(undefined, options);
+          return `${start} - ${end}`;
+        }
+        return start;
+      }
+      return null;
+    },
+    formattedEventLocation() {
+      const parts = [
+        this.event.address,
+        this.event.city,
+        this.event.state,
+        this.event.postal_code,
+      ].filter(Boolean);
+      return parts.join(', ');
+    },
+    socialIcons() {
+      return [
+        { name: 'facebook', icon: 'mdi-facebook', url: this.event.facebook_url },
+        { name: 'instagram', icon: 'mdi-instagram', url: this.event.instagram_url },
+        { name: 'twitter', icon: 'mdi-twitter', url: this.event.twitter_url },
+        { name: 'email', icon: 'mdi-email', url: this.event.email_url },
+        { name: 'website', icon: 'mdi-web', url: this.event.website_url },
+      ].filter(icon => icon.url);
+    },
+  },
+  methods: {
+    formattedRaceDate(date) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+      return new Date(date).toLocaleString(undefined, options);
+    },
+    formatPrice(price) {
+      return Number(price).toFixed(2);
+    },
+  },
   async created() {
     const urlAlias = this.$route.params.eventUrlAlias;
     try {
-      console.log("hit");
       const response = await api.getEvent(urlAlias);
       this.event = response.data;
-      console.log(response.data);
       this.loading = false;
     } catch (error) {
       this.error = 'Error fetching event details.';
@@ -170,4 +163,3 @@ p {
   }
 }
 </style>
-

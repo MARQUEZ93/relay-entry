@@ -73,8 +73,9 @@ export default {
   color: white !important;
 }
 .logo-image {
-  height: 340px; /* Adjust height as needed */
-  width: 300px;
+  height: 130px; /* Adjust height as needed */
+  width: 130px;
+  max-width: 100%;
   display: block !important; /* Ensure the logo is displayed */
 }
 .v-navigation-drawer .v-list-item-title {

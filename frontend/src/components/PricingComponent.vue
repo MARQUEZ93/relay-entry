@@ -27,31 +27,31 @@
                 <ul class="pricing-list">
                     <li>
                     <v-icon left>mdi-currency-usd</v-icon>
-                    The lowest transaction fees.
+                    &nbsp;The lowest transaction fees.
                     </li>
                     <li>
                     <v-icon left>mdi-map-marker</v-icon>
-                    Perfect for races across the country.
+                    &nbsp;Perfect for races across the country.
                     </li>
                     <li>
                     <v-icon left>mdi-map-marker</v-icon>
-                    Make your event page your race's website.
+                    &nbsp;Make your event page your race's website.
                     </li>
                     <li>
                     <v-icon left>mdi-pencil</v-icon>
-                    Ensure waivers are signed by every racer.
+                    &nbsp;Ensure waivers are signed by every racer.
                     </li>
                     <li>
                     <v-icon left>mdi-access-point</v-icon>
-                    Accessible software for all participants, including the visually impaired.
+                    &nbsp;Accessible software for all participants, including the visually impaired.
                     </li>
                     <li>
                     <v-icon left>mdi-run-fast</v-icon>
-                    Designed for team relay races.
+                    &nbsp;Designed for team relay races.
                     </li>
                     <li>
                     <v-icon left>mdi-cellphone</v-icon>
-                    Mobile-first platform for easy access.
+                    &nbsp;Mobile-first platform for easy access.
                     </li>
                 </ul>
                 </v-col>

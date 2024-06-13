@@ -3,7 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeComponent from '../components/HomeComponent.vue';
 import PricingComponent from '../components/PricingComponent.vue';
 import EventComponent from '../components/EventComponent.vue';
-import RaceRegistrationComponent from '@/components/RaceRegistrationComponent.vue';
+import NotFound from '../components/NotFound.vue';
+import RaceRegistrationComponent from '../components/RaceRegistrationComponent.vue';
 
 const routes = [
   {
@@ -27,6 +28,11 @@ const routes = [
     component: RaceRegistrationComponent,
     props: true
   },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: NotFound,
+  }
 ];
 
 const router = createRouter({

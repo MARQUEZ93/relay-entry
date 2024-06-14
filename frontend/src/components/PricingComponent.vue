@@ -9,16 +9,15 @@
                 <v-col cols="12">
                 <h2>Transparent Pricing</h2>
                 <p class="texas-transaction"><strong>
-                    3.1% + $1 per Transaction in Texas*
+                    3.6% + $1 per Transaction*
                     <v-tooltip
                         activator="parent"
                         location="top"
                         color="primary"
                     >
-                        <span>Texas has lower rates because RelayEntry is a Texas small business. The creator participates in local races.</span>
+                        <span>Races in the state of Texas are eligible for lower rates because RelayEntry is a Texas small business. The creator participates in local races. Contact us!</span>
                     </v-tooltip>
                 </strong></p>
-                <p><strong>3.6% + $1 per Transaction in Other States</strong></p>
                 </v-col>
             </v-row>
             <v-divider class="my-5"></v-divider>

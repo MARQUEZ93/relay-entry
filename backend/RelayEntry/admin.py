@@ -92,7 +92,7 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
 
 @admin.register(Waiver)
 class WaiverAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'required', 'uploaded_at')
+    list_display = ('name', 'text', 'updated_at')
     search_fields = ('name',)
 @admin.register(Event)
 class EventAdmin(BaseOwnerAdmin):

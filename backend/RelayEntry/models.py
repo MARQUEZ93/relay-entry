@@ -15,9 +15,8 @@ TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES
 
 class Waiver(models.Model):
     name = models.CharField(max_length=255)
-    file = models.FileField(upload_to='waivers/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    required = models.BooleanField(default=False, help_text="Is this waiver required for registration?")
+    text = models.TextField()
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -119,6 +118,9 @@ class Race(models.Model):
 
     course_map = models.FileField(upload_to='race_course_maps/', blank=True, null=True)
     start_time = models.DateTimeField(help_text="The time the race starts")
+
+    waiver_text = models.TextField()  # Store the waiver text at the time of registration
+    signed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         if self.distance in [self.CUSTOM, self.ULTRA_MARATHON]:

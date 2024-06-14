@@ -163,6 +163,7 @@ class Team(models.Model):
         return f'{self.name} - {self.race.name}'
     
 class Registration(models.Model):
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
     confirmation_code = models.CharField(max_length=16, unique=True, editable=False)  # Increased length to 16
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations')
     registered_at = models.DateTimeField(auto_now_add=True)

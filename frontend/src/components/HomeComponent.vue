@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <h1>Welcome to RelayEntry</h1>
-        <p>Your ultimate solution for race registrations.</p>
+        <p>Your premier solution for race registrations.</p>
       </v-col>
     </v-row>
     <v-row>
@@ -11,7 +11,7 @@
         <v-sheet class="my-5 pa-5" elevation="2">
           <h2>Race Day is the Best Day</h2>
           <p>
-            Experience the best race day with RelayEntry's affordable pricing. Our platform is designed to simplify race management. Ensure seamless waiver signing, efficient data collection and enhanced accessibility for all participants. Built with a mobile-first approach, RelayEntry offers the best user experience tailored specifically for team relay races.
+            Experience the best race day with RelayEntry's budget-friendly pricing. Our platform streamlines race management: seamless waiver signing, efficient data collection, and enhanced accessibility for all participants. Designed with a mobile-first approach, RelayEntry provides an exceptional user experience, especially crafted for team relay races.
           </p>
         </v-sheet>
       </v-col>

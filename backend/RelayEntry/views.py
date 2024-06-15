@@ -10,7 +10,7 @@ import stripe
 import os
 import json
 from .models import UserProfile, Event, Race
-from .serializers import EventSerializer, RaceSerializer
+from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer
 from rest_framework import generics
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -23,7 +23,7 @@ class RaceDetailView(generics.RetrieveAPIView):
 
 class EventDetailView(generics.RetrieveAPIView):
     queryset = Event.objects.all()
-    serializer_class = EventSerializer
+    serializer_class = EventWithRacesSerializer
 
     lookup_field = 'url_alias'    
 

@@ -26,8 +26,11 @@ export default {
       try {
         const response = await api.getRace(eventSlug, raceId);
         this.race = response.data;
+        console.log(response);
+        console.log("hi");
         this.loading = false;
       } catch (error) {
+        console.log(error);
         this.error = 'Error fetching race details.';
         this.loading = false;
       }
@@ -38,6 +41,9 @@ export default {
     },
     formatPrice(price) {
       return parseFloat(price).toFixed(2);
+    },
+    goToEventPage() {
+      this.$router.push({ name: 'Event', params: { eventUrlAlias: this.race.event.url_alias } });
     },
     selectTab(tabIndex) {
       if (tabIndex <= this.activeTab) {
@@ -77,6 +83,8 @@ export default {
   async created() {
     const eventSlug = this.$route.params.url_alias;
     const raceId = this.$route.params.id;
+    console.log(eventSlug);
+    console.log(raceId);
     await this.fetchRace(eventSlug, raceId);
   },
 };
@@ -84,6 +92,14 @@ export default {
 
 <template>
   <v-container>
+    <v-row justify="center">
+      <v-col cols="12" md="8">
+        <v-btn color="primary" @click="goToEventPage">
+          <v-icon left>mdi-arrow-left</v-icon>
+          Back to Event Page
+        </v-btn>
+      </v-col>
+    </v-row>
     <v-row justify="center">
       <v-col cols="12" md="8">
         <v-card class="mx-auto my-5 pa-5" max-width="800">

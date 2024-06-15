@@ -10,10 +10,10 @@ const apiClient = axios.create({
 });
 
 export default {
-  getEvent(url_alias) {
-    return apiClient.get(`/events/${url_alias}/`);
+  getEvent(eventSlug) {
+    return apiClient.get(`/events/${eventSlug}/`);
   },
   getRace(eventSlug, raceId) {
-    return axios.get(`/api/events/${eventSlug}/races/${raceId}/`);
+    return apiClient.get(`/events/${eventSlug}/races/${raceId}/`);
   },
 };

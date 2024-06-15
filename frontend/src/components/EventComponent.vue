@@ -125,9 +125,9 @@ export default {
     },
   },
   async created() {
-    const urlAlias = this.$route.params.eventUrlAlias;
+    const eventSlug = this.$route.params.eventUrlAlias;
     try {
-      const response = await api.getEvent(urlAlias);
+      const response = await api.getEvent(eventSlug);
       this.event = response.data;
       this.loading = false;
     } catch (error) {

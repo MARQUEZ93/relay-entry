@@ -13,14 +13,6 @@ from django.utils.text import slugify
 UNIT_CHOICES = UNIT_CHOICES_CONSTANT
 TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES
 
-class Waiver(models.Model):
-    name = models.CharField(max_length=255)
-    text = models.TextField()
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False, help_text="Whether user is approved to create content.")
@@ -47,13 +39,14 @@ class Event(models.Model):
     google_maps_html = models.TextField(blank=True, null=True, help_text="Embed HTML for the Google Maps location. You can get this from the 'Embed a map' section of the Google Maps share options.")
     media_file = models.FileField(upload_to='event_media/', blank=True, null=True)
     logo = models.ImageField(upload_to='event_logos/', blank=True, null=True)
-    waivers = models.ManyToManyField(Waiver, blank=True, related_name='events', help_text="Waivers for registration.")
 
     facebook_url = models.URLField(max_length=200, blank=True, null=True)
     instagram_url = models.URLField(max_length=200, blank=True, null=True)
     twitter_url = models.URLField(max_length=200, blank=True, null=True)
     email_url = models.URLField(max_length=200, blank=True, null=True)
     website_url = models.URLField(max_length=200, blank=True, null=True)
+
+    waiver_text = models.TextField()
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -132,7 +125,6 @@ class Race(models.Model):
         default=AM,
     )
 
-    waiver_text = models.TextField()  # Store the waiver text at the time of registration
     signed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -194,6 +186,7 @@ class Registration(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     team = models.ForeignKey(Team, null=True, blank=True, on_delete=models.CASCADE, help_text="The team the registration is associated with (if applicable).")
 
+    waiver_text = models.TextField()  # Store the waiver text at the time of registration
     def clean(self):
         if not self.price:
             raise ValidationError("Race price must be set.")

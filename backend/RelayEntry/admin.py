@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Event, Race, Registration, TeamMember, PhotoPackage, CouponCode, Leg, Waiver
+from .models import UserProfile, Event, Race, Registration, TeamMember, PhotoPackage, CouponCode, Leg
 from django.contrib.auth.models import User, Group
 
 from django.contrib.admin import AdminSite
@@ -90,10 +90,6 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
                 kwargs["queryset"] = Event.objects.all()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-@admin.register(Waiver)
-class WaiverAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'text', 'updated_at')
-    search_fields = ('name',)
 @admin.register(Event)
 class EventAdmin(BaseOwnerAdmin):
     list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at', 'url_alias', 'event_url',)

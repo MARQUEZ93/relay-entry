@@ -41,7 +41,7 @@
 
     <v-footer app color="primary" dark>
       <v-col class="text-center" cols="12">
-        &copy; 2024 RelayEntry - Version 1.0.0
+        &copy; 2024 RelayEntry - Beta 1.0.0 (Limited Access)
       </v-col>
     </v-footer>
   </v-app>

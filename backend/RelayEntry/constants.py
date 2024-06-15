@@ -79,3 +79,13 @@ UNIT_CHOICES_CONSTANT = [
     (KILOMETERS, 'Kilometers'),
     (METERS, 'Meters'),
 ]
+
+AM = 'AM'
+PM = 'PM'
+TIME_INDICATORS = [
+    (AM, 'AM'),
+    (PM, 'PM'),
+]
+
+HOURS = [(i, str(i)) for i in range(1, 13)]
+MINUTES = [(i, f'{i:02d}') for i in range(0, 60)]

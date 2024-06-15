@@ -109,7 +109,7 @@ class EventAdmin(BaseOwnerAdmin):
 
 @admin.register(Race)
 class RaceAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'start_time',)
+    list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator')
     search_fields = ('name', 'event__name', 'distance')
 
     # the events dropdown

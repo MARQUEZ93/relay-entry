@@ -10,7 +10,7 @@
               <p>{{ race.description }}</p>
             </v-card-subtitle>
             <v-card-subtitle>
-              <p><strong>Date:</strong> {{ formattedRaceDate(race.start_time) }}</p>
+              <p><strong>Time:</strong> {{ race.hour }} : {{ race.minute }} {{ race.time_indicator }}</p>
             </v-card-subtitle>
             <v-card-subtitle>
               <p><strong>Price:</strong> ${{ formatPrice(race.price) }}</p>

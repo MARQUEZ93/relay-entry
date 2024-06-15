@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .constants import STATES, TEAM_GENDER_CHOICES, GENDER_CHOICES, UNIT_CHOICES_CONSTANT
+from .constants import STATES, TEAM_GENDER_CHOICES, GENDER_CHOICES, UNIT_CHOICES_CONSTANT, AM, PM, TIME_INDICATORS, HOURS, MINUTES
 import uuid
 from zoneinfo import ZoneInfo
 
@@ -102,6 +102,7 @@ class Race(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='races', 
                               help_text="The event you created that this race belongs to.")
     name = models.CharField(max_length=200)
+    date = models.DateField(help_text="The day of the race.")
     description = models.TextField(null=True, blank=True)
     distance = models.CharField(max_length=50, choices=DISTANCE_CHOICES)
     custom_distance_value = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
@@ -117,7 +118,19 @@ class Race(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
 
     course_map = models.FileField(upload_to='race_course_maps/', blank=True, null=True)
-    start_time = models.DateTimeField(help_text="The time the race starts")
+    hour = models.IntegerField(
+        choices=HOURS,
+        default=7,
+    )
+    minute = models.IntegerField(
+        choices=MINUTES,
+        default=0,
+    )
+    time_indicator = models.CharField(
+        max_length=2,
+        choices=TIME_INDICATORS,
+        default=AM,
+    )
 
     waiver_text = models.TextField()  # Store the waiver text at the time of registration
     signed_at = models.DateTimeField(auto_now_add=True)

@@ -14,6 +14,7 @@ export default {
     return {
       race: {},
       racerData: {},
+      racerDataComplete: false, // Add this line
       waiverAccepted: false,
       paymentCompleted: false,
       loading: true,
@@ -26,8 +27,6 @@ export default {
       try {
         const response = await api.getRace(eventSlug, raceId);
         this.race = response.data;
-        console.log(response);
-        console.log("hi");
         this.loading = false;
       } catch (error) {
         console.log(error);
@@ -46,12 +45,12 @@ export default {
       this.$router.push({ name: 'Event', params: { eventUrlAlias: this.race.event.url_alias } });
     },
     selectTab(tabIndex) {
-      if (tabIndex <= this.activeTab) {
+      if (tabIndex <= this.activeTab && (tabIndex === 0 || this.racerDataComplete)) {
         this.activeTab = tabIndex;
       }
     },
     nextTab() {
-      if (this.activeTab < 2) {
+      if (this.activeTab < 2 && (this.activeTab === 0 || this.racerDataComplete)) {
         this.activeTab += 1;
       }
     },
@@ -62,6 +61,7 @@ export default {
     },
     saveRacerData(data) {
       this.racerData = data;
+      this.racerDataComplete = true; // Add this line
       this.nextTab();
     },
     acceptWaiver() {
@@ -83,8 +83,6 @@ export default {
   async created() {
     const eventSlug = this.$route.params.url_alias;
     const raceId = this.$route.params.id;
-    console.log(eventSlug);
-    console.log(raceId);
     await this.fetchRace(eventSlug, raceId);
   },
 };
@@ -100,13 +98,13 @@ export default {
         </v-btn>
       </v-col>
     </v-row>
-    <v-row justify="center">
+    <v-row justify="center" v-if="race">
       <v-col cols="12" md="8">
         <v-card class="mx-auto my-5 pa-5" max-width="800">
-          <v-card-title>
-            <h1 class="text-h4 text-center">{{ race.name }}</h1>
+          <v-card-title v-if="race.event">
+            <h1 class="text-h4 text-center">{{ race.name }} for {{ race.event.name }}</h1>
           </v-card-title>
-          <v-card-subtitle v-if="race.description">
+          <v-card-subtitle>
             <p class="text-center">{{ race.description }}</p>
           </v-card-subtitle>
           <v-card-subtitle>
@@ -123,20 +121,20 @@ export default {
         <v-tabs v-model="activeTab">
           <v-tab :key="0" @click="selectTab(0)">
             <v-icon left>mdi-account</v-icon>
-            Registrant Data
+            Registrant
           </v-tab>
-          <v-tab :key="1" @click="selectTab(1)">
+          <v-tab :key="1" :disabled="!racerDataComplete" @click="selectTab(1)">
             <v-icon left>mdi-file-document</v-icon>
             Waiver
           </v-tab>
-          <v-tab :key="2" @click="selectTab(2)">
+          <v-tab :key="2" :disabled="!racerDataComplete || !waiverAccepted" @click="selectTab(2)">
             <v-icon left>mdi-credit-card</v-icon>
             Checkout
           </v-tab>
         </v-tabs>
 
         <div v-if="activeTab === 0">
-          <RacerDataComponent :race="race" @complete="saveRacerData" />
+          <RacerDataComponent :racerData="racerData" :race="race" @complete="saveRacerData" />
         </div>
         <div v-if="activeTab === 1">
           <WaiverComponent :race="race" @complete="acceptWaiver" />
@@ -144,7 +142,7 @@ export default {
           <v-btn @click="nextTab" color="primary" class="mt-3">Next</v-btn>
         </div>
         <div v-if="activeTab === 2">
-          <CheckoutComponent :race="race" :racerData="racerData" @complete="submitData" />
+          <CheckoutComponent :waiverAccepted="waiverAccepted" :race="race" :racerData="racerData" @complete="submitData" />
           <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
           <v-btn @click="submitData" color="primary" class="mt-3">Submit</v-btn>
         </div>

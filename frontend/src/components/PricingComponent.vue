@@ -3,11 +3,11 @@
         <v-row>
         <v-col cols="12">
             <h1>Pricing</h1>
-            <p>Making race day affordable again with simple pricing.</p>
+            <p>Making race day affordable again</p>
             <v-sheet class="mx-auto my-5 pa-5" elevation="2">
             <v-row>
                 <v-col cols="12">
-                <h2>Transparent Pricing</h2>
+                <h2>Simple Pricing</h2>
                 <p class="texas-transaction"><strong>
                     3.6% + $1 per Transaction*
                     <v-tooltip
@@ -15,7 +15,7 @@
                         location="top"
                         color="primary"
                     >
-                        <span>Races in the state of Texas are eligible for lower rates because RelayEntry is a Texas small business. The creator participates in local races. Contact us!</span>
+                        <span>Contact us if your race is in the state of Texas. Texas races are eligible for lower rates because RelayEntry is a Texas small business.</span>
                     </v-tooltip>
                 </strong></p>
                 </v-col>

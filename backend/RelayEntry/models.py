@@ -105,7 +105,7 @@ class Race(models.Model):
     date = models.DateField(help_text="The day of the race.")
     description = models.TextField(null=True, blank=True)
     distance = models.CharField(max_length=50, choices=DISTANCE_CHOICES)
-    custom_distance_value = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    custom_distance_value = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     custom_distance_unit = models.CharField(max_length=2, choices=UNIT_CHOICES, blank=True, null=True)
     is_relay = models.BooleanField(default=False, help_text="Is the race a team relay race?")
     num_runners = models.PositiveIntegerField(blank=True, null=True, help_text="The amount of runners per team in a relay race.")
@@ -232,7 +232,7 @@ class Leg(models.Model):
     leg_number = models.PositiveIntegerField()
     leg_map = models.FileField(upload_to='leg_maps/', blank=True, null=True)
 
-    custom_distance_value = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    custom_distance_value = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     custom_distance_unit = models.CharField(max_length=2, choices=UNIT_CHOICES, blank=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 

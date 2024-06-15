@@ -4,7 +4,7 @@ import HomeComponent from '../components/HomeComponent.vue';
 import PricingComponent from '../components/PricingComponent.vue';
 import EventComponent from '../components/EventComponent.vue';
 import NotFound from '../components/NotFound.vue';
-import RaceRegistrationComponent from '../components/RaceRegistrationComponent.vue';
+import RaceRegistration from '../components/registration/RaceRegistration.vue';
 
 const routes = [
   {
@@ -24,8 +24,8 @@ const routes = [
   },
   {
     path: '/events/:url_alias/:id',
-    name: 'RaceRegistrationComponent',
-    component: RaceRegistrationComponent,
+    name: 'RaceRegistration',
+    component: RaceRegistration,
     props: true
   },
   {

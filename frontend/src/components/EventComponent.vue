@@ -45,7 +45,10 @@
                 <p>{{ race.description }}</p>
               </v-card-subtitle>
               <v-card-subtitle>
-                <p><strong>Date:</strong> {{ race.date }} </p>
+                <p><strong>Date:</strong> {{ formattedRaceDate(race.date) }} </p>
+              </v-card-subtitle>
+              <v-card-subtitle>
+                <p><strong>Time:</strong> {{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }} </p>
               </v-card-subtitle>
               <v-card-subtitle>
                 <p><strong>Price:</strong> ${{ formatPrice(race.price) }}</p>
@@ -110,9 +113,12 @@ export default {
     },
   },
   methods: {
+    formatMinute(minute) {
+      return minute < 10 ? '0' + minute : minute;
+    },
     formattedRaceDate(date) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-      return new Date(date).toLocaleString(undefined, options);
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(date).toLocaleDateString(undefined, options);
     },
     formatPrice(price) {
       return Number(price).toFixed(2);

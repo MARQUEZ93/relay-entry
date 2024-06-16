@@ -99,27 +99,60 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def create_payment_intent(request):
+    stripe.api_key = settings.STRIPE_SECRET_KEY  # Use secret key on the server side
     if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            amount = data['amount']  # Ensure the amount is sent in the request body
+        data = json.loads(request.body)
+        payment_method_id = data['payment_method_id']
+        race_id = data['race_id']
+        racer_data = data['racer_data']
+        billing_info = data['billing_info']
 
-            # Create a PaymentIntent with the specified amount in test mode
+        # Calculate the amount based on the race price
+        race = Race.objects.get(id=race_id)
+        amount = int(race.price * 100)  # Convert to cents
+
+        try:
+            # Create a PaymentIntent with the amount and currency
             intent = stripe.PaymentIntent.create(
                 amount=amount,
                 currency='usd',
-                payment_method_types=['card'],
+                payment_method=payment_method_id,
+                confirmation_method='manual',
+                confirm=True,
+                metadata={
+                    'race_id': race_id,
+                    'racer_name': f"{racer_data['firstName']} {racer_data['lastName']}",
+                    'billing_name': billing_info['name'],
+                    'billing_email': billing_info['email'],
+                },
             )
 
-            return JsonResponse({
-                'status': intent['status'],
-                'clientSecret': intent['client_secret'],
-                'id': intent['id']  # Make sure to include the ID here
-            })
-        except Exception as e:
+            # Save the registration data (example)
+            Registration.objects.create(
+                race=race,
+                first_name=racer_data['firstName'],
+                last_name=racer_data['lastName'],
+                email=racer_data['email'],
+                phone=racer_data.get('phone', ''),
+                gender=racer_data['gender'],
+                date_of_birth=racer_data['dateOfBirth'],
+                minor=racer_data['minor'],
+                parent_guardian_name=racer_data.get('parentGuardianName', ''),
+                parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
+                waiver_accepted=True,
+                billing_name=billing_info['name'],
+                billing_email=billing_info['email'],
+                billing_address=billing_info['address'],
+                billing_city=billing_info['city'],
+                billing_state=billing_info['state'],
+                billing_zip=billing_info['zip'],
+            )
+
+            return JsonResponse({'client_secret': intent.client_secret})
+        except stripe.error.StripeError as e:
             return JsonResponse({'error': str(e)}, status=400)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @csrf_exempt
 def confirm_payment_intent(request):

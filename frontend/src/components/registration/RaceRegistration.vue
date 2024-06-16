@@ -3,6 +3,7 @@ import api from '@/services/api';
 import WaiverComponent from '@/components/registration/WaiverComponent.vue';
 import RacerDataComponent from '@/components/registration/RacerData.vue';
 import CheckoutComponent from '@/components/registration/CheckoutComponent.vue';
+import { loadStripe } from '@stripe/stripe-js';
 
 export default {
   components: {
@@ -10,9 +11,15 @@ export default {
     RacerDataComponent,
     CheckoutComponent,
   },
+  provide() {
+    return {
+      stripe: this.stripePromise,
+    };
+  },
   data() {
     return {
       race: {},
+      stripePromise: null,
       racerData: {},
       racerDataComplete: false, // Add this line
       waiverAccepted: false,
@@ -88,6 +95,22 @@ export default {
     const eventSlug = this.$route.params.url_alias;
     const raceId = this.$route.params.id;
     await this.fetchRace(eventSlug, raceId);
+
+    try{
+      console.log(process.env.STRIPE_PUBLISHABLE_KEY);
+      console.log(process.env.VUE_APP_WEBSOCKET_URL);
+      this.stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
+      this.stripePromise.then(stripe => {
+      if (stripe) {
+        console.log('Stripe instance loaded successfully');
+      } else {
+        console.error('Failed to load Stripe instance');
+      }
+      });
+    } catch (error) {
+      // TODO: not allowed on prod
+      console.error('Error loading Stripe:', error);
+    }
   },
 };
 </script>
@@ -147,7 +170,7 @@ export default {
           <v-btn @click="nextTab" color="primary" class="mt-3">Next</v-btn>
         </div>
         <div v-if="activeTab === 2">
-          <CheckoutComponent :waiverAccepted="waiverAccepted" :race="race" :racerData="racerData" @complete="submitData" />
+          <CheckoutComponent :waiverAccepted="waiverAccepted" :race="race" :racerData="racerData" @complete="submitData" :stripePromise="stripePromise"/>
           <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
           <v-btn @click="submitData" color="primary" class="mt-3">Submit</v-btn>
         </div>

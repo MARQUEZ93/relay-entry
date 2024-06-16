@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: process.env.API_URL, // Adjust this baseURL if necessary
+  baseURL: "http://localhost:8000/api",
   withCredentials: false,
   headers: {
     Accept: 'application/json',
@@ -16,7 +16,8 @@ export default {
   getRace(eventSlug, raceId) {
     return apiClient.get(`/events/${eventSlug}/races/${raceId}/`);
   },
-  createPaymentIntent(paymentData) {
-    return apiClient.post('/api/create-payment-intent/', paymentData);
+  // Combined method for creating payment intent and registration
+  createPaymentAndRegistration(data) {
+    return apiClient.post('/create-payment-and-registration/', data);
   },
 };

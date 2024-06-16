@@ -5,6 +5,7 @@ import PricingComponent from '../components/PricingComponent.vue';
 import EventComponent from '../components/EventComponent.vue';
 import NotFound from '../components/NotFound.vue';
 import RaceRegistration from '../components/registration/RaceRegistration.vue';
+import ConfirmationComponent from '../components/registration/ConfirmationComponent.vue';
 
 const routes = [
   {
@@ -27,6 +28,12 @@ const routes = [
     name: 'RaceRegistration',
     component: RaceRegistration,
     props: true
+  },
+  {
+    path: '/confirmation',
+    name: 'Confirmation',
+    component: ConfirmationComponent,
+    props: true,
   },
   {
     path: '/:pathMatch(.*)*',

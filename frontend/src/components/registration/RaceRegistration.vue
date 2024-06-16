@@ -97,9 +97,8 @@ export default {
     await this.fetchRace(eventSlug, raceId);
 
     try{
-      console.log(process.env.STRIPE_PUBLISHABLE_KEY);
-      console.log(process.env.VUE_APP_WEBSOCKET_URL);
-      this.stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
+      // this.stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
+      this.stripePromise = loadStripe("pk_test_51PNivYBsh8Ne4MdUVijN6hN4Ueoo8vLEFj5o5BqkAinexlV7S2f7P2EufuWHpqIR9SAAdZF5lpvk2kgHDFzTeuOQ009WWgftkv");
       this.stripePromise.then(stripe => {
       if (stripe) {
         console.log('Stripe instance loaded successfully');

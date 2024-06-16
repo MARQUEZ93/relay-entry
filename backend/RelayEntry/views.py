@@ -8,8 +8,9 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 import stripe
 import os
+import logging
 import json
-from .models import UserProfile, Event, Race
+from .models import UserProfile, Event, Race, Registration
 from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer
 from rest_framework import generics
 from django.utils.decorators import method_decorator
@@ -67,112 +68,108 @@ def signup(request):
 # Initialize the Stripe API key
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
-@login_required
-def connect_stripe_account(request):
-    if request.method == 'POST':
-        account = stripe.Account.create(
-            type='standard',
-            country='US',
-            email=request.user.email,
-        )
-        UserProfile.objects.update_or_create(
-            user=request.user,
-            defaults={'stripe_account_id': account.id}
-        )
-        return redirect(account.links.url)
-    return render(request, 'connect_stripe.html')
-
-@login_required
-def stripe_callback(request):
-    code = request.GET.get('code')
-    if code:
-        account_response = stripe.OAuth.token(grant_type='authorization_code', code=code)
-        account_id = account_response['stripe_user_id']
-        UserProfile.objects.update_or_create(
-            user=request.user,
-            defaults={'stripe_account_id': account_id, 'stripe_account_verified': True}
-        )
-        return redirect('profile')
-    return redirect('connect_stripe')
-
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
-def create_payment_intent(request):
-    stripe.api_key = settings.STRIPE_SECRET_KEY  # Use secret key on the server side
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        payment_method_id = data['payment_method_id']
-        race_id = data['race_id']
-        racer_data = data['racer_data']
-        billing_info = data['billing_info']
+stripe.api_key = settings.STRIPE_SECRET_KEY  # Use secret key on the server side
 
-        # Calculate the amount based on the race price
-        race = Race.objects.get(id=race_id)
-        amount = int(race.price * 100)  # Convert to cents
-
-        try:
-            # Create a PaymentIntent with the amount and currency
-            intent = stripe.PaymentIntent.create(
-                amount=amount,
-                currency='usd',
-                payment_method=payment_method_id,
-                confirmation_method='manual',
-                confirm=True,
-                metadata={
-                    'race_id': race_id,
-                    'racer_name': f"{racer_data['firstName']} {racer_data['lastName']}",
-                    'billing_name': billing_info['name'],
-                    'billing_email': billing_info['email'],
-                },
-            )
-
-            # Save the registration data (example)
-            Registration.objects.create(
-                race=race,
-                first_name=racer_data['firstName'],
-                last_name=racer_data['lastName'],
-                email=racer_data['email'],
-                phone=racer_data.get('phone', ''),
-                gender=racer_data['gender'],
-                date_of_birth=racer_data['dateOfBirth'],
-                minor=racer_data['minor'],
-                parent_guardian_name=racer_data.get('parentGuardianName', ''),
-                parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
-                waiver_accepted=True,
-                billing_name=billing_info['name'],
-                billing_email=billing_info['email'],
-                billing_address=billing_info['address'],
-                billing_city=billing_info['city'],
-                billing_state=billing_info['state'],
-                billing_zip=billing_info['zip'],
-            )
-
-            return JsonResponse({'client_secret': intent.client_secret})
-        except stripe.error.StripeError as e:
-            return JsonResponse({'error': str(e)}, status=400)
-
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+# Set up logging
+logger = logging.getLogger(__name__)
 
 @csrf_exempt
-def confirm_payment_intent(request):
+def create_payment_and_registration(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            payment_intent_id = data['payment_intent_id']
+            payment_method_id = data['payment_method_id']
+            race_id = data['race_id']
+            racer_data = data['racer_data']
+            billing_info = data['billing_info']
+            
+            # Calculate the amount based on the race price
+            try:
+                race = Race.objects.get(id=race_id)
+            except Race.DoesNotExist:
+                logger.error("Race not found.")
+                return JsonResponse({'error': "Race not found."}, status=404)
+            
+            amount = int(race.price * 100)  # Convert to cents
 
-            # Confirm the PaymentIntent using a test payment method
-            intent = stripe.PaymentIntent.confirm(
-                payment_intent_id,
-                payment_method='pm_card_visa',  # Use a test payment method ID
-            )
+            try:
+                # Create a PaymentIntent with the amount and currency
+                intent = stripe.PaymentIntent.create(
+                    amount=amount,
+                    currency='usd',
+                    return_url="http://localhost:8080/confirmation",  # Update with your actual return URL
+                    payment_method=payment_method_id,
+                    confirmation_method='manual',
+                    confirm=True,
+                    metadata={
+                        'race_id': race_id,
+                        'racer_name': f"{racer_data['firstName']} {racer_data['lastName']}",
+                        'billing_name': billing_info['name'],
+                        'billing_email': billing_info['email'],
+                    },
+                )
 
-            return JsonResponse({
-                'status': intent['status'],
-                'clientSecret': intent['client_secret'],
-                'id': intent['id']  # Make sure to include the ID here
-            })
+                # Create the registration instance
+                registration = Registration.objects.create(
+                    race=race,
+                    amount_paid=amount,
+                    first_name=racer_data['firstName'],
+                    last_name=racer_data['lastName'],
+                    email=racer_data['email'],
+                    phone=racer_data.get('phone', ''),
+                    gender=racer_data['gender'],
+                    dob=racer_data['dateOfBirth'],
+                    minor=racer_data['minor'],
+                    waiver_text=race.event.waiver_text,
+                    parent_guardian_name=racer_data.get('parentGuardianName', ''),
+                    parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
+                )
+
+                print (racer_data)
+                print(race)
+
+                # Return client secret, confirmation code, race   r data, and race data
+                return JsonResponse({
+                    'client_secret': intent.client_secret,
+                    'confirmation_code': registration.confirmation_code,
+                    'racer_data': racer_data,
+                    'race_data': {
+                        'name': race.name,
+                        'date': race.date,
+                        'description': race.description,
+                        'event': race.event.name
+                    }
+                })
+
+            except stripe.error.CardError as e:
+                logger.error(f"Card error: {e.user_message}")
+                return JsonResponse({'error': e.user_message}, status=400)
+            except stripe.error.RateLimitError as e:
+                logger.error(f"Rate limit error: {e.user_message}")
+                return JsonResponse({'error': "Too many requests made to the API too quickly."}, status=400)
+            except stripe.error.InvalidRequestError as e:
+                logger.error(f"Invalid parameters were supplied to Stripe's API: {e.user_message}")
+                return JsonResponse({'error': "Invalid parameters."}, status=400)
+            except stripe.error.AuthenticationError as e:
+                logger.error(f"Authentication with Stripe's API failed: {e.user_message}")
+                return JsonResponse({'error': "Authentication failed."}, status=401)
+            except stripe.error.APIConnectionError as e:
+                logger.error(f"Network communication with Stripe failed: {e.user_message}")
+                return JsonResponse({'error': "Network error."}, status=400)
+            except stripe.error.StripeError as e:
+                logger.error(f"Stripe error: {e.user_message}")
+                return JsonResponse({'error': "Something went wrong. You were not charged. Please try again."}, status=400)
+            except Exception as e:
+                logger.error(f"General error: {str(e)}")
+                return JsonResponse({'error': "An error occurred. Please try again."}, status=400)
+        
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error: {str(e)}")
+            return JsonResponse({'error': "Invalid JSON data."}, status=400)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+            logger.error(f"Unexpected error: {str(e)}")
+            return JsonResponse({'error': "An unexpected error occurred."}, status=400)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)

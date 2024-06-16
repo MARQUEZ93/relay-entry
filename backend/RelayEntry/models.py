@@ -54,6 +54,7 @@ class Event(models.Model):
     url_alias = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
     def get_event_url(self):
+        # TODO ENV VAR HERE
         return f"http://localhost:8000/events/{self.url_alias}"
 
     def __str__(self):
@@ -173,20 +174,20 @@ class Registration(models.Model):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     confirmation_code = models.CharField(max_length=16, unique=True, editable=False)  # Increased length to 16
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations')
-    registered_at = models.DateTimeField(auto_now_add=True)
     amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
-
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
     email = models.EmailField()
     dob = models.DateField()
-
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
     photo_package = models.ForeignKey(PhotoPackage, null=True, blank=True, on_delete=models.SET_NULL)
     coupon_code = models.ForeignKey(CouponCode, null=True, blank=True, on_delete=models.SET_NULL)
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     team = models.ForeignKey(Team, null=True, blank=True, on_delete=models.CASCADE, help_text="The team the registration is associated with (if applicable).")
 
-    name = models.CharField(max_length=255, help_text="Name of the participant")
+    first_name = models.CharField(max_length=255, help_text="First name of the participant")
+    last_name = models.CharField(max_length=255, help_text="Last name of the participant")
     waiver_text = models.TextField()  # Store the waiver text at the time of registration
 
     parent_guardian_name = models.CharField(max_length=255, blank=True, null=True)
@@ -194,13 +195,11 @@ class Registration(models.Model):
     minor = models.BooleanField(default=False, help_text="Parent/Guardian for Minors (Under 18 years old)")
 
     def clean(self):
-        if not self.price:
-            raise ValidationError("Race price must be set.")
         if self.coupon_code and self._state.adding:
             if self.coupon_code.usage_count >= self.coupon_code.max_uses:
                 raise ValidationError("Coupon code has reached its maximum number of uses.")
-        if self.race.is_relay and not self.team:
-            raise ValidationError('Relay race registration must be associated with a team.')
+        # TODO FIX THIS SHIT# if self.race.is_relay and not self.team:
+        #     raise ValidationError('Relay race registration must be associated with a team.')
         super().clean()
 
     def save(self, *args, **kwargs):
@@ -228,9 +227,6 @@ class Registration(models.Model):
 
     def __str__(self):
         return f'{self.email} - {self.race.name}'
-
-    class Meta:
-        ordering = ['-registered_at']
 
 class Leg(models.Model):
     race = models.ForeignKey(Race, related_name='legs', on_delete=models.CASCADE)

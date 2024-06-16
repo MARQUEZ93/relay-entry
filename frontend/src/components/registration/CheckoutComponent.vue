@@ -1,5 +1,6 @@
 <script>
 import api from '@/services/api';  // Adjust the path according to your project structure
+
 export default {
   props: {
     race: {
@@ -28,6 +29,8 @@ export default {
         state: '',
         zip: '',
       },
+      paymentSuccess: false,
+      confirmationCode: '',
     };
   },
   async mounted() {
@@ -48,7 +51,7 @@ export default {
       if (!this.$refs.form.validate()) {
         return;
       }
-      
+
       const { paymentMethod, error } = await this.stripe.createPaymentMethod({
         type: 'card',
         card: this.cardElement,
@@ -63,31 +66,38 @@ export default {
           },
         },
       });
-      
+
       if (error) {
         document.getElementById('card-errors').textContent = error.message;
       } else {
         try {
-          const response = await api.createPaymentIntent({
+          const response = await api.createPaymentAndRegistration({
             payment_method_id: paymentMethod.id,
             race_id: this.race.id,
             racer_data: this.racerData,
             billing_info: this.billingInfo,
+            items: [{ price: this.race.price }]  // Ensure this matches what your backend expects
           });
+
+          console.log(response);
+          console.log(response.data);
 
           if (response.data.error) {
             document.getElementById('card-errors').textContent = response.data.error;
           } else {
-            // Confirm the payment on the client side
-            const { clientSecret } = response.data;
-            const { error: confirmError } = await this.stripe.confirmCardPayment(clientSecret);
 
-            if (confirmError) {
-              document.getElementById('card-errors').textContent = confirmError.message;
-            } else {
-              // Handle successful payment here
-              console.log('Payment successful');
-            }
+            const { confirmation_code, racer_data, race_data } = response.data;
+            console.log('Payment and registration successful');
+
+            // Redirect to the confirmation page
+            this.$router.push({
+              name: 'Confirmation',
+              params: {
+                confirmationCode: confirmation_code,
+                racerData: racer_data,
+                raceData: race_data
+              }
+            });
           }
         } catch (err) {
           console.error('Error submitting payment:', err);
@@ -100,7 +110,7 @@ export default {
 </script>
 
 <template>
-  <v-card>
+  <v-card v-if="!paymentSuccess">
     <v-card-title>
       <h2>Checkout</h2>
     </v-card-title>
@@ -141,10 +151,21 @@ export default {
         <p class="mt-4"><strong>Order Total: ${{ race.price }}</strong></p>
       </v-form>
     </v-card-text>
+    <v-card-actions>
+      <v-btn color="primary" @click="handlePayment">Pay Now</v-btn>
+    </v-card-actions>
+  </v-card>
+
+  <v-card v-else>
+    <v-card-title>
+      <h2>Registration Successful!</h2>
+    </v-card-title>
+    <v-card-text>
+      <p>Thank you for your registration. Your confirmation code is: <strong>{{ confirmationCode }}</strong>.</p>
+      <p>You will receive an email confirmation shortly.</p>
+    </v-card-text>
   </v-card>
 </template>
-
-
 
 <style scoped>
 #card-element {

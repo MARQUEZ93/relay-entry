@@ -13,7 +13,13 @@ export default {
   data() {
     return {
       valid: false,
-      localRacerData: { ...this.racerData }, // Initialize local state with prop data
+      localRacerData: {
+        ...this.racerData,
+        dateOfBirth: this.racerData.dateOfBirth || '',
+        parentGuardianName: this.racerData.parentGuardianName || '',
+        parentGuardianSignature: this.racerData.parentGuardianSignature || '',
+        minor: this.racerData.minor || false,
+      },
       nameRules: [
         v => !!v || 'Name is required',
         v => (v && v.length > 1) || 'Name must be more than 1 character',
@@ -35,7 +41,13 @@ export default {
   watch: {
     racerData: {
       handler(newVal) {
-        this.localRacerData = { ...newVal };
+        this.localRacerData = {
+          ...newVal,
+          dateOfBirth: newVal.dateOfBirth || '',
+          parentGuardianName: newVal.parentGuardianName || '',
+          parentGuardianSignature: newVal.parentGuardianSignature || '',
+          minor: newVal.minor || false,
+        };
       },
       deep: true,
     },
@@ -90,6 +102,22 @@ export default {
       :rules="dobRules"
       required
     ></v-text-field>
+    <v-checkbox
+      v-model="localRacerData.minor"
+      label="The registrant is a minor (under 18 years old)"
+    ></v-checkbox>
+    <v-text-field
+      v-if="localRacerData.minor"
+      :rules="nameRules"
+      v-model="localRacerData.parentGuardianName"
+      label="Parent/Guardian Name"
+    ></v-text-field>
+    <v-textarea
+      v-if="localRacerData.minor"
+      :rules="nameRules"
+      v-model="localRacerData.parentGuardianSignature"
+      label="Parent/Guardian Signature"
+    ></v-textarea>
     <v-btn type="submit" color="primary" :disabled="!valid">Next</v-btn>
   </v-form>
 </template>

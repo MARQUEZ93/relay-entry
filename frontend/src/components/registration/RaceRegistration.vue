@@ -23,6 +23,9 @@ export default {
     };
   },
   methods: {
+    updateWaiverAccepted(accepted) {
+      this.waiverAccepted = accepted;
+    },
     async fetchRace(eventSlug, raceId) {
       try {
         const response = await api.getRace(eventSlug, raceId);
@@ -62,6 +65,7 @@ export default {
     saveRacerData(data) {
       this.racerData = data;
       this.racerDataComplete = true; // Add this line
+      this.waiverAccepted = false; // Reset waiverAccepted when racerData is edited
       this.nextTab();
     },
     acceptWaiver() {
@@ -101,8 +105,9 @@ export default {
     <v-row justify="center" v-if="race">
       <v-col cols="12" md="8">
         <v-card class="mx-auto my-5 pa-5" max-width="800">
-          <v-card-title v-if="race.event">
-            <h1 class="text-h4 text-center">{{ race.name }} for {{ race.event.name }}</h1>
+          <v-card-title v-if="race.event" class="text-center">
+            <h1 class="text-h4">{{ race.name }}</h1>
+            <h2 class="text-h5">{{ race.event.name }}</h2>
           </v-card-title>
           <v-card-subtitle>
             <p class="text-center">{{ race.description }}</p>
@@ -137,7 +142,7 @@ export default {
           <RacerDataComponent :racerData="racerData" :race="race" @complete="saveRacerData" />
         </div>
         <div v-if="activeTab === 1">
-          <WaiverComponent :race="race" @complete="acceptWaiver" />
+          <WaiverComponent :initialAccepted="waiverAccepted" :race="race" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted"/>
           <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
           <v-btn @click="nextTab" color="primary" class="mt-3">Next</v-btn>
         </div>

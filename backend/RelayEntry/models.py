@@ -186,7 +186,13 @@ class Registration(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     team = models.ForeignKey(Team, null=True, blank=True, on_delete=models.CASCADE, help_text="The team the registration is associated with (if applicable).")
 
+    name = models.CharField(max_length=255, help_text="Name of the participant")
     waiver_text = models.TextField()  # Store the waiver text at the time of registration
+
+    parent_guardian_name = models.CharField(max_length=255, blank=True, null=True)
+    parent_guardian_signature = models.TextField(blank=True, null=True)  # Assuming signature can be stored as text
+    minor = models.BooleanField(default=False, help_text="Parent/Guardian for Minors (Under 18 years old)")
+
     def clean(self):
         if not self.price:
             raise ValidationError("Race price must be set.")
@@ -198,17 +204,23 @@ class Registration(models.Model):
         super().clean()
 
     def save(self, *args, **kwargs):
+        # Generate confirmation code if not present
         if not self.confirmation_code:
-            self.confirmation_code = str(uuid.uuid4()).replace('-', '')[:16]
+            self.confirmation_code = uuid.uuid4().hex[:16]
 
-        self.full_clean()  # Ensure all validations are checked
+        # Validate minor fields
+        if self.minor and not (self.parent_guardian_name and self.parent_guardian_signature):
+            raise ValueError("Parent/Guardian name and signature are required for minors.")
+
+        # Run full validation
+        self.full_clean()
 
         # Set the price and handle coupon logic
         if self.coupon_code and self._state.adding:
-            self.coupon_code.usage_count += 1
-            self.coupon_code.save()
             discount = (self.coupon_code.percentage / 100) * self.price
             self.amount_paid = self.price - discount
+            self.coupon_code.usage_count += 1
+            self.coupon_code.save()
         else:
             self.amount_paid = self.price
 

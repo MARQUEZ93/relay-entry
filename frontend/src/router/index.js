@@ -6,7 +6,7 @@ import EventComponent from '../components/EventComponent.vue';
 import NotFound from '../components/NotFound.vue';
 import RaceRegistration from '../components/registration/RaceRegistration.vue';
 import ConfirmationComponent from '../components/registration/ConfirmationComponent.vue';
-
+import store from '@/store'; // Import the store
 const routes = [
   {
     path: '/',
@@ -34,6 +34,14 @@ const routes = [
     name: 'Confirmation',
     component: ConfirmationComponent,
     props: true,
+    beforeEnter: (to, from, next) => {
+      // TODO: waiver vs payment forms 
+      if (!store.state.racerData || !store.state.raceData) {
+        next('/');
+      } else {
+        next();
+      }
+    },
   },
   {
     path: '/:pathMatch(.*)*',

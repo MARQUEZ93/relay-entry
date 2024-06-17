@@ -1,28 +1,23 @@
 <script>
+import { mapState } from 'vuex';
 export default {
+  computed: {
+    ...mapState({
+      confirmationCode: state => state.confirmationCode,
+      racerData: state => state.racerData,
+      raceData: state => state.raceData,
+      paymentIntent: state => state.paymentIntent,
+    }),
+  },
   mounted() {
     console.log('Confirmation Code:', this.confirmationCode);
     console.log('Racer Data:', this.racerData);
     console.log('Race Data:', this.raceData);
     console.log('Payment Intent:', this.paymentIntent);
   },
-  props: {
-    confirmationCode: {
-      type: String,
-      required: true,
-    },
-    racerData: {
-      type: Object,
-      required: true,
-    },
-    raceData: {
-      type: Object,
-      required: true,
-    },
-    paymentIntent: {
-      type: Object,
-      required: true,
-    },
+  beforeUnmount() {
+    // Clear the data when the component is destroyed
+    this.$store.commit('clearConfirmationData');
   },
 };
 </script>

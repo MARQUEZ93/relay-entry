@@ -79,6 +79,8 @@ export default {
             items: [{ price: this.race.price }]  // Ensure this matches what your backend expects
           });
 
+          console.log("handlePayment");
+
           console.log(response);
           console.log(response.data);
 
@@ -86,18 +88,23 @@ export default {
             document.getElementById('card-errors').textContent = response.data.error;
           } else {
 
-            const { confirmation_code, racer_data, race_data } = response.data;
-            console.log('Payment and registration successful');
+            const { confirmation_code, racer_data, race_data, payment_intent } = await response.data;
+            console.log('Payment and registration successful123');
+            console.log(racer_data);
+
+            // TODO: add loader
+            // test bad data
 
             // Redirect to the confirmation page
-            this.$router.push({
-              name: 'Confirmation',
-              params: {
-                confirmationCode: confirmation_code,
-                racerData: racer_data,
-                raceData: race_data
-              }
+             // Set the data in Vuex store
+            this.$store.commit('setConfirmationData', {
+              confirmationCode: confirmation_code,
+              racerData: racer_data,
+              raceData: race_data,
+              paymentIntent: payment_intent,
             });
+
+            this.$router.push({ name: 'Confirmation' });
           }
         } catch (err) {
           console.error('Error submitting payment:', err);

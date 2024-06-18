@@ -37,13 +37,9 @@
             class="d-flex align-center justify-center"
           >
             <v-card class="mx-auto my-3 race-card" outlined>
-              <v-card-title>
-                <span v-if="race.is_relay">Team Relay Race</span>
-                <span v-else>{{ race.distance }}</span>
+              <v-card-title v-if="race.name">
+                <span>{{ race.name }}</span>
               </v-card-title>
-              <v-card-subtitle v-if="race.description">
-                <p>{{ race.description }}</p>
-              </v-card-subtitle>
               <v-card-subtitle>
                 <p><strong>Date:</strong> {{ formattedRaceDate(race.date) }} </p>
               </v-card-subtitle>
@@ -55,7 +51,7 @@
               </v-card-subtitle>
               <v-card-actions class="justify-center">
                 <router-link :to="`/events/${event.url_alias}/${race.id}`">
-                  <v-btn color="primary">Register</v-btn>
+                  <v-btn color="primary">{{ getRegisterButtonText(race) }}</v-btn>
                 </router-link>
               </v-card-actions>
             </v-card>
@@ -113,6 +109,9 @@ export default {
     },
   },
   methods: {
+    getRegisterButtonText(race) {
+      return race.is_relay ? 'Register My Team' : 'Register';
+    },
     formatDateToUTC(date) {
       const d = new Date(date);
       const year = d.getUTCFullYear();

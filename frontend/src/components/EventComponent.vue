@@ -84,9 +84,9 @@ export default {
     formattedEventDate() {
       if (this.event.date) {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        const start = new Date(this.event.date).toLocaleDateString(undefined, options);
+        const start = this.formatDateToUTC(this.event.date, options);
         if (this.event.end_date) {
-          const end = new Date(this.event.end_date).toLocaleDateString(undefined, options);
+          const end = this.formatDateToUTC(this.event.end_date, options);
           return `${start} - ${end}`;
         }
         return start;
@@ -107,12 +107,19 @@ export default {
         { name: 'facebook', icon: 'mdi-facebook', iconClass: 'facebook-icon', url: this.event.facebook_url },
         { name: 'instagram', icon: 'mdi-instagram', iconClass: 'instagram-icon', url: this.event.instagram_url },
         { name: 'twitter', icon: 'mdi-twitter', iconClass: 'twitter-icon', url: this.event.twitter_url },
-        { name: 'email', icon: 'mdi-email', iconClass: 'email-icon', url: this.event.email_url },
+        { name: 'email', icon: 'mdi-email', iconClass: 'email-icon', url: this.event.email },
         { name: 'website', icon: 'mdi-web', iconClass: 'website-icon', url: this.event.website_url },
       ].filter(icon => icon.url);
     },
   },
   methods: {
+    formatDateToUTC(date) {
+      const d = new Date(date);
+      const year = d.getUTCFullYear();
+      const month = d.toLocaleString('default', { month: 'long', timeZone: 'UTC' });
+      const day = d.getUTCDate();
+      return `${month} ${day}, ${year}`;
+    },
     formatMinute(minute) {
       return minute < 10 ? '0' + minute : minute;
     },

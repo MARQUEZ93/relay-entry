@@ -43,7 +43,7 @@ class Event(models.Model):
     facebook_url = models.URLField(max_length=200, blank=True, null=True)
     instagram_url = models.URLField(max_length=200, blank=True, null=True)
     twitter_url = models.URLField(max_length=200, blank=True, null=True)
-    email_url = models.URLField(max_length=200, blank=True, null=True)
+    email = models.URLField(max_length=200, blank=True, null=True)
     website_url = models.URLField(max_length=200, blank=True, null=True)
 
     waiver_text = models.TextField()
@@ -166,6 +166,7 @@ class Team(models.Model):
     name = models.CharField(max_length=255)
     captain = models.ForeignKey('TeamMember', null=True, blank=True, on_delete=models.SET_NULL, related_name='captained_teams')
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
+    projected_team_time = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return f'{self.name} - {self.race.name}'

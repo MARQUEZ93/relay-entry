@@ -132,7 +132,7 @@ def create_payment_and_registration(request):
 
                 # Return client secret, confirmation code, race   r data, and race data
                 return JsonResponse({
-                    'client_secret': intent.client_secret,
+                    'payment_intent': intent,
                     'confirmation_code': registration.confirmation_code,
                     'racer_data': racer_data,
                     'race_data': {

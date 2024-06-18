@@ -10,6 +10,14 @@ export default {
       required: true,
     },
   },
+  computed: {
+    firstNameLabel() {
+      return this.race.is_relay ? 'Team Captain First Name' : 'First Name';
+    },
+    lastNameLabel() {
+      return this.race.is_relay ? 'Team Captain Last Name' : 'Last Name';
+    },
+  },
   data() {
     return {
       valid: false,
@@ -36,6 +44,9 @@ export default {
       dobRules: [
         v => !!v || 'Date of Birth is required',
       ],
+      teamName: '',  // New data property for team name
+      projectedTeamTime: '',  // New data property for projected team time
+      runnerEmails: Array(this.race.num_runners).fill(''),  // New data property for runner emails
     };
   },
   watch: {
@@ -55,7 +66,13 @@ export default {
   methods: {
     submit() {
       if (this.$refs.form.validate()) {
-        this.$emit('complete', this.localRacerData);
+        const dataToSubmit = {
+          ...this.localRacerData,
+          teamName: this.teamName,  // Include team name
+          projectedTeamTime: this.projectedTeamTime,  // Include projected team time
+          runnerEmails: this.runnerEmails,  // Include runner emails
+        };
+      this.$emit('complete', dataToSubmit);
       }
     },
   },
@@ -65,16 +82,38 @@ export default {
 
 <template>
   <v-form ref="form" v-model="valid" @submit.prevent="submit">
+    <template v-if="race.is_relay">
+      <v-text-field
+        v-model="teamName"
+        label="Team Name"
+        :rules="nameRules"
+        required
+      ></v-text-field>
+      <v-text-field
+        v-model="projectedTeamTime"
+        label="Projected Team Time"
+        placeholder="HH:MM:SS"
+        required
+      ></v-text-field>
+      <div v-for="(email, index) in runnerEmails" :key="index">
+        <v-text-field
+          v-model="runnerEmails[index]"
+          :rules="emailRules"
+          :label="`Leg ${index + 1} Runner Email`"
+          required
+        ></v-text-field>
+      </div>
+    </template>
     <v-text-field
       v-model="localRacerData.firstName"
       :rules="nameRules"
-      label="First Name"
+      :label="firstNameLabel"
       required
     ></v-text-field>
     <v-text-field
       v-model="localRacerData.lastName"
       :rules="nameRules"
-      label="Last Name"
+      :label="lastNameLabel"
       required
     ></v-text-field>
     <v-text-field

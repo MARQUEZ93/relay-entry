@@ -43,7 +43,7 @@ class Event(models.Model):
     facebook_url = models.URLField(max_length=200, blank=True, null=True)
     instagram_url = models.URLField(max_length=200, blank=True, null=True)
     twitter_url = models.URLField(max_length=200, blank=True, null=True)
-    email = models.URLField(max_length=200, blank=True, null=True)
+    email = models.EmailField()
     website_url = models.URLField(max_length=200, blank=True, null=True)
 
     waiver_text = models.TextField()

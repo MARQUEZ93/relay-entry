@@ -29,6 +29,11 @@ export default {
       activeTab: 0,
     };
   },
+  computed: {
+    tabLabel() {
+      return this.race.is_relay ? 'Team Captain' : 'Registrant';
+    },
+  },
   methods: {
     updateWaiverAccepted(accepted) {
       this.waiverAccepted = accepted;
@@ -149,7 +154,7 @@ export default {
         <v-tabs v-model="activeTab">
           <v-tab :key="0" @click="selectTab(0)">
             <v-icon left>mdi-account</v-icon>
-            Registrant
+            {{ tabLabel }}
           </v-tab>
           <v-tab :key="1" :disabled="!racerDataComplete" @click="selectTab(1)">
             <v-icon left>mdi-file-document</v-icon>

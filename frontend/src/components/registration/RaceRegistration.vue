@@ -4,7 +4,7 @@ import WaiverComponent from '@/components/registration/WaiverComponent.vue';
 import RacerDataComponent from '@/components/registration/RacerData.vue';
 import CheckoutComponent from '@/components/registration/CheckoutComponent.vue';
 import { loadStripe } from '@stripe/stripe-js';
-import { formattedRaceDate, customSameDistance } from '@/utils/methods';
+import { formattedRaceDate, customSameDistance, formatMinute } from '@/utils/methods';
 
 export default {
   components: {
@@ -31,13 +31,14 @@ export default {
     };
   },
   computed: {
-    tabLabel() {
+    participantLabel() {
       return this.race.is_relay ? 'Team Captain' : 'Registrant';
     },
   },
   methods: {
     customSameDistance,
     formattedRaceDate,
+    formatMinute,
     updateWaiverAccepted(accepted) {
       this.waiverAccepted = accepted;
     },
@@ -141,8 +142,16 @@ export default {
           <v-card-subtitle v-if="race.description">
             <p class="text-center">{{ race.description }}</p>
           </v-card-subtitle>
+          <v-card-subtitle v-if="race.is_relay && race.same_distance">
+            <p v-if="race.custom_distance_value && race.custom_distance_unit">
+              {{race.num_runners }} x {{customSameDistance(race)}}
+            </p>
+          </v-card-subtitle>
           <v-card-subtitle>
-            <p class="text-center"><strong>Time:</strong> {{ formattedRaceDate(race.date) }}</p>
+              <p>{{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }} </p>
+          </v-card-subtitle>
+          <v-card-subtitle>
+            <p class="text-center">{{ formattedRaceDate(race.date) }}</p>
           </v-card-subtitle>
           <v-card-subtitle>
             <p class="text-center"><strong>Price:</strong> ${{ formatPrice(race.price) }}</p>
@@ -155,7 +164,7 @@ export default {
         <v-tabs v-model="activeTab">
           <v-tab :key="0" @click="selectTab(0)">
             <v-icon left>mdi-account</v-icon>
-            {{ tabLabel }}
+            {{ participantLabel }}
           </v-tab>
           <v-tab :key="1" :disabled="!racerDataComplete" @click="selectTab(1)">
             <v-icon left>mdi-file-document</v-icon>

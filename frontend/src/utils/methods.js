@@ -46,4 +46,8 @@ export function customSameDistance(race) {
   return `${value}${race.custom_distance_unit}`;
 }
 
+export function formatMinute(minute) {
+  return minute < 10 ? '0' + minute : minute;
+}
+
   

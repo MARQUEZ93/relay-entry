@@ -1,6 +1,6 @@
 <script>
 import api from '@/services/api';
-import { formattedRaceDate, customSameDistance, formatDateToUTC } from '@/utils/methods';
+import { formattedRaceDate, customSameDistance, formatDateToUTC, formatMinute } from '@/utils/methods';
 
 export default {
   name: 'EventComponent',
@@ -47,11 +47,9 @@ export default {
     customSameDistance,
     formattedRaceDate,
     formatDateToUTC,
+    formatMinute,
     getRegisterButtonText(race) {
       return race.is_relay ? 'Register My Team' : 'Register';
-    },
-    formatMinute(minute) {
-      return minute < 10 ? '0' + minute : minute;
     },
     formatPrice(price) {
       return Number(price).toFixed(2);
@@ -113,9 +111,6 @@ export default {
               <v-card-title v-if="race.name">
                 <span>{{ race.name }}</span>
               </v-card-title>
-              <v-card-subtitle v-if="race.is_relay">
-                <p>Team Relay Race</p>
-              </v-card-subtitle>
               <v-card-subtitle v-if="race.is_relay && race.same_distance">
                 <p v-if="race.custom_distance_value && race.custom_distance_unit">
                   {{race.num_runners }} x {{customSameDistance(race)}}

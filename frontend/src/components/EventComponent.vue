@@ -1,72 +1,3 @@
-<template>
-  <v-container>
-    <v-row>
-      <v-col>
-        <v-card class="mx-auto my-5 pa-5" max-width="800">
-          <v-img :src="event.logo" v-if="event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
-          <v-card-title>
-            <h1>{{ event.name }}</h1>
-          </v-card-title>
-          <v-card-subtitle v-if="formattedEventDate">
-            <p><strong>Date:</strong> {{ formattedEventDate }}</p>
-          </v-card-subtitle>
-          <v-card-subtitle v-if="formattedEventLocation">
-            <p><strong>Location:</strong> {{ formattedEventLocation }}</p>
-          </v-card-subtitle>
-          <!-- <v-card-subtitle v-if="event.google_maps_link">
-            <p><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>
-          </v-card-subtitle> -->
-          <!-- <v-card-subtitle v-if="event.google_maps_html">
-            <p v-html="event.google_maps_html"></p>
-          </v-card-subtitle> -->
-          <v-card-text v-if="event.description">
-            <p>{{ event.description }}</p>
-          </v-card-text>
-          <v-card-actions class="social-icons">
-            <v-btn v-for="icon in socialIcons" :key="icon.name" :href="icon.url" target="_blank" icon>
-              <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-        <v-row>
-          <v-col
-            v-for="race in event.races"
-            :key="race.id"
-            cols="12"
-            :md="event.races.length === 1 ? 12 : 4"
-            class="d-flex align-center justify-center"
-          >
-            <v-card class="mx-auto my-3 race-card" outlined>
-              <v-card-title v-if="race.name">
-                <span>{{ race.name }}</span>
-              </v-card-title>
-              <v-card-subtitle v-if="race.is_relay">
-                <p>Team Relay Race</p>
-              </v-card-subtitle>
-              <v-card-subtitle>
-                <p>{{ formattedRaceDate(race.date) }} </p>
-              </v-card-subtitle>
-              <v-card-subtitle>
-                <p>{{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }} </p>
-              </v-card-subtitle>
-              <v-card-subtitle>
-                <p>${{ formatPrice(race.price) }}</p>
-              </v-card-subtitle>
-              <v-card-actions class="justify-center">
-                <router-link :to="`/events/${event.url_alias}/${race.id}`">
-                  <v-btn color="primary">{{ getRegisterButtonText(race) }}</v-btn>
-                </router-link>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-alert v-if="error" type="error">{{ error }}</v-alert>
-        <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
-      </v-col>
-    </v-row>
-  </v-container>
-</template>
-
 <script>
 import api from '@/services/api';
 
@@ -112,6 +43,23 @@ export default {
     },
   },
   methods: {
+    customSameDistance(race) {
+      if (!race.custom_distance_value || !race.custom_distance_unit) {
+        return '';
+      }
+
+      let value = race.custom_distance_value;
+
+      if (race.custom_distance_unit === 'm') {
+        // Strip .00 decimal
+        value = parseFloat(value).toFixed(2);
+        if (value.endsWith('.00')) {
+          value = value.slice(0, -3);
+        }
+      }
+
+      return `${value}${race.custom_distance_unit}`;
+    },
     getRegisterButtonText(race) {
       return race.is_relay ? 'Register My Team' : 'Register';
     },
@@ -150,6 +98,80 @@ export default {
   },
 };
 </script>
+
+<template>
+  <v-container>
+    <v-row>
+      <v-col>
+        <v-card class="mx-auto my-5 pa-5" max-width="800">
+          <v-img :src="event.logo" v-if="event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
+          <v-card-title>
+            <h1>{{ event.name }}</h1>
+          </v-card-title>
+          <v-card-subtitle v-if="formattedEventDate">
+            <p><strong>Date:</strong> {{ formattedEventDate }}</p>
+          </v-card-subtitle>
+          <v-card-subtitle v-if="formattedEventLocation">
+            <p><strong>Location:</strong> {{ formattedEventLocation }}</p>
+          </v-card-subtitle>
+          <!-- <v-card-subtitle v-if="event.google_maps_link">
+            <p><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>
+          </v-card-subtitle> -->
+          <!-- <v-card-subtitle v-if="event.google_maps_html">
+            <p v-html="event.google_maps_html"></p>
+          </v-card-subtitle> -->
+          <v-card-text v-if="event.description">
+            <p>{{ event.description }}</p>
+          </v-card-text>
+          <v-card-actions class="social-icons">
+            <v-btn v-for="icon in socialIcons" :key="icon.name" :href="icon.url" target="_blank" icon>
+              <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+        <v-row>
+          <v-col
+            v-for="race in event.races"
+            :key="race.id"
+            cols="12"
+            :md="event.races.length === 1 ? 12 : 4"
+            class="d-flex align-center justify-center"
+          >
+            <v-card class="mx-auto my-3 race-card" outlined>
+              <v-card-title v-if="race.name">
+                <span>{{ race.name }}</span>
+              </v-card-title>
+              <v-card-subtitle v-if="race.is_relay">
+                <p>Team Relay Race</p>
+              </v-card-subtitle>
+              <v-card-subtitle v-if="race.is_relay && race.same_distance">
+                <p v-if="race.custom_distance_value && race.custom_distance_unit">
+                  {{race.num_runners }} x {{customSameDistance(race)}}
+                </p>
+              </v-card-subtitle>
+              <v-card-subtitle>
+                <p>{{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }} </p>
+              </v-card-subtitle>
+              <!-- <v-card-subtitle>
+                <p>{{ formattedRaceDate(race.date) }} </p>
+              </v-card-subtitle> -->
+              <v-card-subtitle>
+                <p>${{ formatPrice(race.price) }}</p>
+              </v-card-subtitle>
+              <v-card-actions class="justify-center">
+                <router-link :to="`/events/${event.url_alias}/${race.id}`">
+                  <v-btn color="primary">{{ getRegisterButtonText(race) }}</v-btn>
+                </router-link>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-alert v-if="error" type="error">{{ error }}</v-alert>
+        <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
 
 <style scoped>
 h1 {

@@ -151,7 +151,7 @@ export default {
         </v-card>
       </v-col>
     </v-row>
-    <v-row justify="center">
+    <v-row justify="center" v-if="race">
       <v-col cols="12" md="8">
         <v-tabs v-model="activeTab">
           <v-tab :key="0" @click="selectTab(0)">

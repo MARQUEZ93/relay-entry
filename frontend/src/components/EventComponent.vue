@@ -103,7 +103,7 @@ export default {
         { name: 'facebook', icon: 'mdi-facebook', iconClass: 'facebook-icon', url: this.event.facebook_url },
         { name: 'instagram', icon: 'mdi-instagram', iconClass: 'instagram-icon', url: this.event.instagram_url },
         { name: 'twitter', icon: 'mdi-twitter', iconClass: 'twitter-icon', url: this.event.twitter_url },
-        { name: 'email', icon: 'mdi-email', iconClass: 'email-icon', url: this.event.email },
+        { name: 'email', icon: 'mdi-email', iconClass: 'email-icon', url: `mailto:${this.event.email}` },
         { name: 'website', icon: 'mdi-web', iconClass: 'website-icon', url: this.event.website_url },
       ].filter(icon => icon.url);
     },

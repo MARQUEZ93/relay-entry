@@ -13,9 +13,9 @@
           <v-card-subtitle v-if="formattedEventLocation">
             <p><strong>Location:</strong> {{ formattedEventLocation }}</p>
           </v-card-subtitle>
-          <v-card-subtitle v-if="event.google_maps_link">
+          <!-- <v-card-subtitle v-if="event.google_maps_link">
             <p><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>
-          </v-card-subtitle>
+          </v-card-subtitle> -->
           <!-- <v-card-subtitle v-if="event.google_maps_html">
             <p v-html="event.google_maps_html"></p>
           </v-card-subtitle> -->
@@ -40,14 +40,17 @@
               <v-card-title v-if="race.name">
                 <span>{{ race.name }}</span>
               </v-card-title>
-              <v-card-subtitle>
-                <p><strong>Date:</strong> {{ formattedRaceDate(race.date) }} </p>
+              <v-card-subtitle v-if="race.is_relay">
+                <p>Team Relay Race</p>
               </v-card-subtitle>
               <v-card-subtitle>
-                <p><strong>Time:</strong> {{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }} </p>
+                <p>{{ formattedRaceDate(race.date) }} </p>
               </v-card-subtitle>
               <v-card-subtitle>
-                <p><strong>Price:</strong> ${{ formatPrice(race.price) }}</p>
+                <p>{{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }} </p>
+              </v-card-subtitle>
+              <v-card-subtitle>
+                <p>${{ formatPrice(race.price) }}</p>
               </v-card-subtitle>
               <v-card-actions class="justify-center">
                 <router-link :to="`/events/${event.url_alias}/${race.id}`">
@@ -123,8 +126,12 @@ export default {
       return minute < 10 ? '0' + minute : minute;
     },
     formattedRaceDate(date) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(date).toLocaleDateString(undefined, options);
+      if (date) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formatted_date = this.formatDateToUTC(date, options);
+        return formatted_date;
+      }
+      return null;
     },
     formatPrice(price) {
       return Number(price).toFixed(2);

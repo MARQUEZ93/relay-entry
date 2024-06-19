@@ -1,5 +1,6 @@
 <script>
 import api from '@/services/api';
+import { formattedRaceDate, customSameDistance, formatDateToUTC } from '@/utils/methods';
 
 export default {
   name: 'EventComponent',
@@ -43,43 +44,14 @@ export default {
     },
   },
   methods: {
-    customSameDistance(race) {
-      if (!race.custom_distance_value || !race.custom_distance_unit) {
-        return '';
-      }
-
-      let value = race.custom_distance_value;
-
-      if (race.custom_distance_unit === 'm') {
-        // Strip .00 decimal
-        value = parseFloat(value).toFixed(2);
-        if (value.endsWith('.00')) {
-          value = value.slice(0, -3);
-        }
-      }
-
-      return `${value}${race.custom_distance_unit}`;
-    },
+    customSameDistance,
+    formattedRaceDate,
+    formatDateToUTC,
     getRegisterButtonText(race) {
       return race.is_relay ? 'Register My Team' : 'Register';
     },
-    formatDateToUTC(date) {
-      const d = new Date(date);
-      const year = d.getUTCFullYear();
-      const month = d.toLocaleString('default', { month: 'long', timeZone: 'UTC' });
-      const day = d.getUTCDate();
-      return `${month} ${day}, ${year}`;
-    },
     formatMinute(minute) {
       return minute < 10 ? '0' + minute : minute;
-    },
-    formattedRaceDate(date) {
-      if (date) {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        const formatted_date = this.formatDateToUTC(date, options);
-        return formatted_date;
-      }
-      return null;
     },
     formatPrice(price) {
       return Number(price).toFixed(2);

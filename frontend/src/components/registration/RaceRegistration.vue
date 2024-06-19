@@ -4,6 +4,7 @@ import WaiverComponent from '@/components/registration/WaiverComponent.vue';
 import RacerDataComponent from '@/components/registration/RacerData.vue';
 import CheckoutComponent from '@/components/registration/CheckoutComponent.vue';
 import { loadStripe } from '@stripe/stripe-js';
+import { formattedRaceDate, customSameDistance } from '@/utils/methods';
 
 export default {
   components: {
@@ -35,6 +36,8 @@ export default {
     },
   },
   methods: {
+    customSameDistance,
+    formattedRaceDate,
     updateWaiverAccepted(accepted) {
       this.waiverAccepted = accepted;
     },
@@ -50,10 +53,6 @@ export default {
         this.error = 'Error fetching race details.';
         this.loading = false;
       }
-    },
-    formattedRaceDate(date) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-      return new Date(date).toLocaleDateString(undefined, options);
     },
     formatPrice(price) {
       return parseFloat(price).toFixed(2);
@@ -139,7 +138,7 @@ export default {
             <h1 class="text-h4">{{ race.name }}</h1>
             <h2 class="text-h5">{{ race.event.name }}</h2>
             </v-card-title>
-          <v-card-subtitle>
+          <v-card-subtitle v-if="race.description">
             <p class="text-center">{{ race.description }}</p>
           </v-card-subtitle>
           <v-card-subtitle>

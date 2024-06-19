@@ -33,7 +33,7 @@
                     &nbsp;Perfect for races across the country.
                     </li>
                     <li>
-                    <v-icon left>mdi-map-marker</v-icon>
+                    <v-icon left>mdi-web</v-icon>
                     &nbsp;Make your event page your race's website.
                     </li>
                     <li>

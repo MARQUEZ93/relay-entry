@@ -255,3 +255,9 @@ class TeamMember(models.Model):
     leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True, help_text="The leg the team member is running (if applicable).")
     def __str__(self):
         return f'{self.name} ({self.email}) - {self.registration.race.name}'
+    
+    def save(self, *args, **kwargs):
+        if self.is_captain:
+            if TeamMember.objects.filter(team=self.team, is_captain=True).exists() and not self.pk:
+                raise ValidationError("There can only be one captain per team.")
+        super().save(*args, **kwargs)

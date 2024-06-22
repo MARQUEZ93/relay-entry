@@ -245,6 +245,7 @@ class Leg(models.Model):
         return f"Leg {self.leg_number} - {self.distance}"
 
 class TeamMember(models.Model):
+    email_confirmed = models.BooleanField(default=False)
     dob = models.DateField()
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE, related_name='team_members')
     name = models.CharField(max_length=100)

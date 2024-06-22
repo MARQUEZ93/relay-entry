@@ -16,8 +16,7 @@ export default {
   getRace(eventSlug, raceId) {
     return apiClient.get(`/events/${eventSlug}/races/${raceId}/`);
   },
-  // Combined method for creating payment intent and registration
-  createPaymentAndRegistration(data) {
-    return apiClient.post('/create-payment-and-registration/', data);
+  payAndRegisterTeam(data) {
+    return apiClient.post('/teams/register-and-pay/', data);
   },
 };

@@ -10,7 +10,7 @@ import stripe
 import os
 import logging
 import json
-from .models import UserProfile, Event, Race, Registration
+from .models import UserProfile, Event, Race, Registration, Team
 from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer
 from rest_framework import generics
 from django.utils.decorators import method_decorator
@@ -76,7 +76,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY  # Use secret key on the server side
 logger = logging.getLogger(__name__)
 
 @csrf_exempt
-def create_payment_and_registration(request):
+def team_register_and_pay(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -84,6 +84,7 @@ def create_payment_and_registration(request):
             race_id = data['race_id']
             racer_data = data['racer_data']
             billing_info = data['billing_info']
+            team_data = data['team_data']
             
             # Calculate the amount based on the race price
             try:
@@ -95,22 +96,6 @@ def create_payment_and_registration(request):
             amount = int(race.price * 100)  # Convert to cents
 
             try:
-                # Create a PaymentIntent with the amount and currency
-                intent = stripe.PaymentIntent.create(
-                    amount=amount,
-                    currency='usd',
-                    return_url="http://localhost:8080/confirmation",  # Update with your actual return URL
-                    payment_method=payment_method_id,
-                    confirmation_method='manual',
-                    confirm=True,
-                    metadata={
-                        'race_id': race_id,
-                        'racer_name': f"{racer_data['firstName']} {racer_data['lastName']}",
-                        'billing_name': billing_info['name'],
-                        'billing_email': billing_info['email'],
-                    },
-                )
-
                 # Create the registration instance
                 registration = Registration.objects.create(
                     race=race,
@@ -127,9 +112,37 @@ def create_payment_and_registration(request):
                     parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
                 )
 
-                print (racer_data)
-                print(race)
+                 # Create the registration instance
+                registration = Team.objects.create(
+                    race=race,
+                    amount_paid=amount,
+                    first_name=racer_data['firstName'],
+                    last_name=racer_data['lastName'],
+                    email=racer_data['email'],
+                    phone=racer_data.get('phone', ''),
+                    gender=racer_data['gender'],
+                    dob=racer_data['dateOfBirth'],
+                    minor=racer_data['minor'],
+                    waiver_text=race.event.waiver_text,
+                    parent_guardian_name=racer_data.get('parentGuardianName', ''),
+                    parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
+                )
 
+                # Create a PaymentIntent with the amount and currency
+                intent = stripe.PaymentIntent.create(
+                    amount=amount,
+                    currency='usd',
+                    return_url="http://localhost:8080/confirmation",  # Update with your actual return URL
+                    payment_method=payment_method_id,
+                    confirmation_method='manual',
+                    confirm=True,
+                    metadata={
+                        'race_id': race_id,
+                        'racer_name': f"{racer_data['firstName']} {racer_data['lastName']}",
+                        'billing_name': billing_info['name'],
+                        'billing_email': billing_info['email'],
+                    },
+                )
                 # Return client secret, confirmation code, race   r data, and race data
                 return JsonResponse({
                     'payment_intent': intent,
@@ -140,6 +153,9 @@ def create_payment_and_registration(request):
                         'date': race.date,
                         'description': race.description,
                         'event': race.event.name
+                    },
+                    'team_data': {
+                        'name': team.name,
                     }
                 })
 

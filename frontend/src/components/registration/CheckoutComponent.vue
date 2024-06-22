@@ -71,10 +71,11 @@ export default {
         document.getElementById('card-errors').textContent = error.message;
       } else {
         try {
-          const response = await api.createPaymentAndRegistration({
+          const response = await api.payAndRegisterTeam({
             payment_method_id: paymentMethod.id,
             race_id: this.race.id,
             racer_data: this.racerData,
+            team_data: this.teamData,
             billing_info: this.billingInfo,
             items: [{ price: this.race.price }]  // Ensure this matches what your backend expects
           });

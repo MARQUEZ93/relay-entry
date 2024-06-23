@@ -5,7 +5,7 @@ export default {
       type: Object,
       required: true,
     },
-    racerData: {
+    registrationData: {
       type: Object,
       required: true,
     },
@@ -17,11 +17,11 @@ export default {
     return {
       valid: false,
       localRacerData: {
-        ...this.racerData,
-        dateOfBirth: this.racerData.dateOfBirth || '',
-        parentGuardianName: this.racerData.parentGuardianName || '',
-        parentGuardianSignature: this.racerData.parentGuardianSignature || '',
-        // minor: this.racerData.minor || false,
+        ...this.registrationData,
+        dateOfBirth: this.registrationData.dateOfBirth || '',
+        parentGuardianName: this.registrationData.parentGuardianName || '',
+        parentGuardianSignature: this.registrationData.parentGuardianSignature || '',
+        // minor: this.registrationData.minor || false,
       },
       nameRules: [
         v => !!v || 'Name is required',
@@ -52,7 +52,7 @@ export default {
       deep: true,
       immediate: true,
     },
-    racerData: {
+    registrationData: {
       handler(newVal) {
         this.localRacerData = {
           ...newVal,

@@ -4,7 +4,7 @@ import HomeComponent from '../components/HomeComponent.vue';
 import PricingComponent from '../components/PricingComponent.vue';
 import EventComponent from '../components/EventComponent.vue';
 import NotFound from '../components/NotFound.vue';
-import RaceRegistration from '../components/registration/RaceRegistration.vue';
+import RegistrationView from '../components/registration/RegistrationView.vue';
 import ConfirmationComponent from '../components/registration/ConfirmationComponent.vue';
 import store from '@/store'; // Import the store
 const routes = [
@@ -25,8 +25,8 @@ const routes = [
   },
   {
     path: '/events/:url_alias/:id',
-    name: 'RaceRegistration',
-    component: RaceRegistration,
+    name: 'RegistrationView',
+    component: RegistrationView,
     props: true
   },
   {
@@ -36,7 +36,7 @@ const routes = [
     props: true,
     beforeEnter: (to, from, next) => {
       // TODO: waiver vs payment forms 
-      if (!store.state.racerData || !store.state.raceData) {
+      if (!store.state.registrationData || !store.state.raceData) {
         next('/');
       } else {
         next();

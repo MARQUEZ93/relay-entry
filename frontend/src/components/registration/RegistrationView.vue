@@ -21,7 +21,7 @@ export default {
     return {
       race: {},
       stripePromise: null,
-      racerData: {},
+      registrationData: {},
       teamData: {},
       racerDataComplete: false,
       waiverAccepted: false,
@@ -47,11 +47,8 @@ export default {
       try {
         const response = await api.getRace(eventSlug, raceId);
         this.race = response.data;
-        console.log("fetchRace");
-        console.log(response.data);
         this.loading = false;
       } catch (error) {
-        console.log(error);
         this.error = 'Error fetching race details.';
         this.loading = false;
       }
@@ -78,9 +75,9 @@ export default {
       }
     },
     saveRacerData(data) {
-      this.racerData = data;
+      this.registrationData = data;
       this.racerDataComplete = true; // Add this line
-      this.waiverAccepted = false; // Reset waiverAccepted when racerData is edited
+      this.waiverAccepted = false; // Reset waiverAccepted when registrationData is edited
       this.nextTab();
     },
     acceptWaiver() {
@@ -89,13 +86,7 @@ export default {
     },
     async submitData() {
       try {
-        const response = await api.submitRegistration({
-          waiverAccepted: this.waiverAccepted,
-          racerData: this.racerData,
-        });
-        console.log('Registration successful:', response.data);
       } catch (error) {
-        console.error('Error submitting registration:', error);
       }
     },
   },
@@ -108,15 +99,9 @@ export default {
       // this.stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
       this.stripePromise = loadStripe("pk_test_51PNivYBsh8Ne4MdUVijN6hN4Ueoo8vLEFj5o5BqkAinexlV7S2f7P2EufuWHpqIR9SAAdZF5lpvk2kgHDFzTeuOQ009WWgftkv");
       this.stripePromise.then(stripe => {
-      if (stripe) {
-        console.log('Stripe instance loaded successfully');
-      } else {
-        console.error('Failed to load Stripe instance');
-      }
       });
     } catch (error) {
-      // TODO: not allowed on prod
-      console.error('Error loading Stripe:', error);
+      // TODO: render errors / re route
     }
   },
 };
@@ -178,7 +163,7 @@ export default {
         </v-tabs>
 
         <div v-if="activeTab === 0">
-          <RacerDataComponent :racerData="racerData" :race="race" @complete="saveRacerData" />
+          <RacerDataComponent :registrationData="registrationData" :race="race" @complete="saveRacerData" />
         </div>
         <div v-if="activeTab === 1">
           <WaiverComponent :initialAccepted="waiverAccepted" :race="race" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted"/>
@@ -186,9 +171,9 @@ export default {
           <v-btn @click="nextTab" color="primary" class="mt-3">Next</v-btn>
         </div>
         <div v-if="activeTab === 2">
-          <CheckoutComponent :waiverAccepted="waiverAccepted" :race="race" :racerData="racerData" @complete="submitData" :stripePromise="stripePromise"/>
+          <CheckoutComponent :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData" :stripePromise="stripePromise"/>
           <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
-          <v-btn @click="submitData" color="primary" class="mt-3">Submit</v-btn>
+          <v-btn @click="" color="primary" class="mt-3">Submit</v-btn>
         </div>
       </v-col>
     </v-row>

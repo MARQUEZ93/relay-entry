@@ -7,7 +7,7 @@ export default {
       type: Object,
       required: true,
     },
-    racerData: {
+    registrationData: {
       type: Object,
       required: true,
     },
@@ -47,7 +47,7 @@ export default {
     }
   },
   methods: {
-    async handlePayment() {
+    async registerTeamAndPay() {
       if (!this.$refs.form.validate()) {
         return;
       }
@@ -72,15 +72,14 @@ export default {
       } else {
         try {
           const response = await api.payAndRegisterTeam({
-            payment_method_id: paymentMethod.id,
             race_id: this.race.id,
-            racer_data: this.racerData,
+            price: this.race.price,
+            registration_data: this.registrationData,
             team_data: this.teamData,
-            billing_info: this.billingInfo,
-            items: [{ price: this.race.price }]  // Ensure this matches what your backend expects
+            payment_method: paymentMethod,
           });
 
-          console.log("handlePayment");
+          console.log("registerTeamAndPay");
 
           console.log(response);
           console.log(response.data);
@@ -89,9 +88,10 @@ export default {
             document.getElementById('card-errors').textContent = response.data.error;
           } else {
 
-            const { confirmation_code, racer_data, race_data, payment_intent } = await response.data;
+            const { confirmation_code, racer_data, race_data, payment_intent, team_data } = await response.data;
             console.log('Payment and registration successful123');
             console.log(racer_data);
+            console.log(team_data);
 
             // TODO: add loader
             // test bad data
@@ -100,9 +100,10 @@ export default {
              // Set the data in Vuex store
             this.$store.commit('setConfirmationData', {
               confirmationCode: confirmation_code,
-              racerData: racer_data,
+              registrationData: racer_data,
               raceData: race_data,
               paymentIntent: payment_intent,
+              teamData: team_data
             });
 
             this.$router.push({ name: 'Confirmation' });
@@ -160,7 +161,7 @@ export default {
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" @click="handlePayment">Pay Now</v-btn>
+      <v-btn color="primary" @click="registerTeamAndPay">Pay Now</v-btn>
     </v-card-actions>
   </v-card>
 

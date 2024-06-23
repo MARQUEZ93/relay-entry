@@ -4,7 +4,7 @@ export default {
   computed: {
     ...mapState({
       confirmationCode: state => state.confirmationCode,
-      racerData: state => state.racerData,
+      registrationData: state => state.registrationData,
       raceData: state => state.raceData,
       paymentIntent: state => state.paymentIntent,
     }),
@@ -12,7 +12,7 @@ export default {
   mounted() {
     // Log the props to inspect them
     console.log('Confirmation Code:', this.confirmationCode);
-    console.log('Racer Data:', this.racerData);
+    console.log('Racer Data:', this.registrationData);
     console.log('Race Data:', this.raceData);
     console.log('Payment Intent:', this.paymentIntent);
   },
@@ -49,42 +49,42 @@ export default {
                 <v-list dense>
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title><strong>Name:</strong> {{ racerData.firstName }} {{ racerData.lastName }}</v-list-item-title>
+                      <v-list-item-title><strong>Name:</strong> {{ registrationData.firstName }} {{ registrationData.lastName }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title><strong>Email:</strong> {{ racerData.email }}</v-list-item-title>
+                      <v-list-item-title><strong>Email:</strong> {{ registrationData.email }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title><strong>Phone:</strong> {{ racerData.phone }}</v-list-item-title>
+                      <v-list-item-title><strong>Phone:</strong> {{ registrationData.phone }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title><strong>Gender:</strong> {{ racerData.gender }}</v-list-item-title>
+                      <v-list-item-title><strong>Gender:</strong> {{ registrationData.gender }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title><strong>Date of Birth:</strong> {{ racerData.dateOfBirth }}</v-list-item-title>
+                      <v-list-item-title><strong>Date of Birth:</strong> {{ registrationData.dateOfBirth }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-list-item v-if="racerData.minor">
+                  <v-list-item v-if="registrationData.minor">
                     <v-list-item-content>
-                      <v-list-item-title><strong>Minor:</strong> {{ racerData.minor }}</v-list-item-title>
+                      <v-list-item-title><strong>Minor:</strong> {{ registrationData.minor }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-list-item v-if="racerData.minor">
+                  <v-list-item v-if="registrationData.minor">
                     <v-list-item-content>
-                      <v-list-item-title><strong>Parent/Guardian Name:</strong> {{ racerData.parentGuardianName }}</v-list-item-title>
+                      <v-list-item-title><strong>Parent/Guardian Name:</strong> {{ registrationData.parentGuardianName }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-list-item v-if="racerData.minor">
+                  <v-list-item v-if="registrationData.minor">
                     <v-list-item-content>
-                      <v-list-item-title><strong>Parent/Guardian Signature:</strong> {{ racerData.parentGuardianSignature }}</v-list-item-title>
+                      <v-list-item-title><strong>Parent/Guardian Signature:</strong> {{ registrationData.parentGuardianSignature }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list>

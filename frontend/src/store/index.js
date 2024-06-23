@@ -4,7 +4,7 @@ const store = createStore({
   state() {
     return {
       confirmationCode: null,
-      racerData: null,
+      registrationData: null,
       raceData: null,
       paymentIntent: null,
     };
@@ -12,13 +12,13 @@ const store = createStore({
   mutations: {
     setConfirmationData(state, data) {
       state.confirmationCode = data.confirmationCode;
-      state.racerData = data.racerData;
+      state.registrationData = data.registrationData;
       state.raceData = data.raceData;
       state.paymentIntent = data.paymentIntent;
     },
     clearConfirmationData(state) {
       state.confirmationCode = null;
-      state.racerData = null;
+      state.registrationData = null;
       state.raceData = null;
       state.paymentIntent = null;
     },

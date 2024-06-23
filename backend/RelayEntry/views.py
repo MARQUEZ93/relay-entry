@@ -79,12 +79,13 @@ def team_register_and_pay(request):
         data = json.loads(request.body)
 
         race_id = data['race_id']
-        racer_data = data['racer_data']
+        amount_from_ui = data['price']  # Extract and convert the amount to cents
+        
+        registration_data = data['registration_data']
         team_data = data['team_data']
-        billing_info = data['billing_info']
-        payment_method_id = billing_info['payment_method_id']
-        amount_from_ui = int(billing_info['amount'])  # Extract and convert the amount to cents
+        payment_method = data['payment_method']
 
+        payment_method_id = payment_method.id
         # Calculate the amount based on the race price
         try:
             race = Race.objects.get(id=race_id)
@@ -149,7 +150,7 @@ def team_register_and_pay(request):
                     last_name: registration.last_name,
                     email: registration.email,
                 },
-                'race_data': {
+                'registration_data': {
                     'name': race.name,
                     'date': race.date,
                     'description': race.description,

@@ -77,6 +77,7 @@ export default {
             registration_data: this.registrationData,
             team_data: this.teamData,
             payment_method: paymentMethod,
+            billing_info: this.billingInfo
           });
 
           console.log("registerTeamAndPay");

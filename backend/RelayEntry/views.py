@@ -83,6 +83,7 @@ def team_register_and_pay(request):
         
         registration_data = data['registration_data']
         team_data = data['team_data']
+        billing_info = data['billing_info']
         payment_method = data['payment_method']
 
         payment_method_id = payment_method.id
@@ -126,13 +127,14 @@ def team_register_and_pay(request):
                 # parent_guardian_name=racer_data.get('parentGuardianName', ''),
                 # parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
             )
+            # TODO PARSE leg order / emails
             team = Team.objects.create(
                 name=team_data['name'],
                 race=race,
-                expected_pace=team_data['expected_pace'],
+                projectedTeamTime=team_data['projectedTeamTime'],
                 captain=member,
                 emails=team_data['emails'],
-                leg_order=team_data['leg_order'],
+                leg_order=team_data['legOrder'],
             )
 
              # Process the payment

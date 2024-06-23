@@ -7,12 +7,14 @@ const store = createStore({
       registrationData: null,
       raceData: null,
       paymentIntent: null,
+      teamData: null,
     };
   },
   mutations: {
     setConfirmationData(state, data) {
       state.confirmationCode = data.confirmationCode;
       state.registrationData = data.registrationData;
+      state.teamData = data.teamData;
       state.raceData = data.raceData;
       state.paymentIntent = data.paymentIntent;
     },
@@ -20,6 +22,7 @@ const store = createStore({
       state.confirmationCode = null;
       state.registrationData = null;
       state.raceData = null;
+      state.teamData = null;
       state.paymentIntent = null;
     },
   },

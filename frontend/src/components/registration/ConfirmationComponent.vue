@@ -7,6 +7,7 @@ export default {
       registrationData: state => state.registrationData,
       raceData: state => state.raceData,
       paymentIntent: state => state.paymentIntent,
+      teamData: state => state.teamData,
     }),
   },
   mounted() {
@@ -15,6 +16,7 @@ export default {
     console.log('Racer Data:', this.registrationData);
     console.log('Race Data:', this.raceData);
     console.log('Payment Intent:', this.paymentIntent);
+    console.log('Team Data:', this.teamData);
   },
   beforeUnmount() {
     // Clear the data when the component is destroyed
@@ -45,7 +47,7 @@ export default {
 
               <v-col cols="12">
                 <v-divider></v-divider>
-                <h3 class="text-h6">Racer Information:</h3>
+                <h3 class="text-h6">Registration Information:</h3>
                 <v-list dense>
                   <v-list-item>
                     <v-list-item-content>
@@ -72,12 +74,12 @@ export default {
                       <v-list-item-title><strong>Date of Birth:</strong> {{ registrationData.dateOfBirth }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-list-item v-if="registrationData.minor">
+                  <!-- <v-list-item v-if="registrationData.minor">
                     <v-list-item-content>
                       <v-list-item-title><strong>Minor:</strong> {{ registrationData.minor }}</v-list-item-title>
                     </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item v-if="registrationData.minor">
+                  </v-list-item> -->
+                  <!-- <v-list-item v-if="registrationData.minor">
                     <v-list-item-content>
                       <v-list-item-title><strong>Parent/Guardian Name:</strong> {{ registrationData.parentGuardianName }}</v-list-item-title>
                     </v-list-item-content>
@@ -86,7 +88,7 @@ export default {
                     <v-list-item-content>
                       <v-list-item-title><strong>Parent/Guardian Signature:</strong> {{ registrationData.parentGuardianSignature }}</v-list-item-title>
                     </v-list-item-content>
-                  </v-list-item>
+                  </v-list-item> -->
                 </v-list>
               </v-col>
 
@@ -112,6 +114,18 @@ export default {
                   <v-list-item>
                     <v-list-item-content>
                       <v-list-item-title><strong>Description:</strong> {{ raceData.description }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-col>
+
+              <v-col cols="12">
+                <v-divider></v-divider>
+                <h3 class="text-h6">Team Information:</h3>
+                <v-list dense>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title><strong>Team Name:</strong> {{ teamData.name }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list>

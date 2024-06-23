@@ -16,11 +16,16 @@ export default {
   data() {
     return {
       valid: false,
-      localRacerData: {
+      localRegistrationData: {
         ...this.registrationData,
+        teamData: {
+          name: this.teamData.name,
+          projectedTeamTime: this.teamData.projectTeamTime,
+          emails: this.teamData.emails,
+        },
         dateOfBirth: this.registrationData.dateOfBirth || '',
-        parentGuardianName: this.registrationData.parentGuardianName || '',
-        parentGuardianSignature: this.registrationData.parentGuardianSignature || '',
+        // parentGuardianName: this.registrationData.parentGuardianName || '',
+        // parentGuardianSignature: this.registrationData.parentGuardianSignature || '',
         // minor: this.registrationData.minor || false,
       },
       nameRules: [
@@ -54,7 +59,7 @@ export default {
     },
     registrationData: {
       handler(newVal) {
-        this.localRacerData = {
+        this.localRegistrationData = {
           ...newVal,
           dateOfBirth: newVal.dateOfBirth || '',
           parentGuardianName: newVal.parentGuardianName || '',
@@ -74,10 +79,12 @@ export default {
     submit() {
       if (this.$refs.form.validate()) {
         const dataToSubmit = {
-          ...this.localRacerData,
-          teamName: this.teamName,  // Include team name
-          projectedTeamTime: this.projectedTeamTime,  // Include projected team time
-          runnerEmails: this.runnerEmails,  // Include runner emails
+          ...this.localRegistrationData,
+          teamData: {
+            name: this.teamName,  // Include team name
+            projectedTeamTime: this.projectedTeamTime,  // Include projected team time
+            runnerEmails: this.runnerEmails,  // Include runner emails
+          }
         };
       this.$emit('complete', dataToSubmit);
       }
@@ -122,7 +129,7 @@ export default {
     <v-row>
       <v-col cols="12" md="6">
         <v-text-field
-          v-model="localRacerData.firstName"
+          v-model="localRegistrationData.firstName"
           :rules="nameRules"
           label="First Name"
           required
@@ -130,7 +137,7 @@ export default {
       </v-col>
       <v-col cols="12" md="6">
         <v-text-field
-          v-model="localRacerData.lastName"
+          v-model="localRegistrationData.lastName"
           :rules="nameRules"
           label="Last Name"
           required
@@ -140,7 +147,7 @@ export default {
     <v-row>
       <v-col cols="12" md="6">
         <v-text-field
-          v-model="localRacerData.email"
+          v-model="localRegistrationData.email"
           :rules="emailRules"
           label="Email"
           required
@@ -148,7 +155,7 @@ export default {
       </v-col>
       <v-col cols="12" md="6">
         <v-text-field
-          v-model="localRacerData.phone"
+          v-model="localRegistrationData.phone"
           :rules="phoneRules"
           label="Phone"
           required
@@ -158,7 +165,7 @@ export default {
     <v-row>
       <v-col cols="12" md="6">
         <v-select
-          v-model="localRacerData.gender"
+          v-model="localRegistrationData.gender"
           :items="genders"
           label="Gender"
           required
@@ -166,7 +173,7 @@ export default {
       </v-col>
       <v-col cols="12" md="6">
         <v-text-field
-          v-model="localRacerData.dateOfBirth"
+          v-model="localRegistrationData.dateOfBirth"
           label="Date of Birth"
           type="date"
           :rules="dobRules"
@@ -175,19 +182,19 @@ export default {
       </v-col>
     </v-row>
     <!-- <v-checkbox
-      v-model="localRacerData.minor"
+      v-model="localRegistrationData.minor"
       label="The registrant is a minor (under 18 years old)"
     ></v-checkbox> -->
     <!-- <v-text-field
-      v-if="localRacerData.minor"
+      v-if="localRegistrationData.minor"
       :rules="nameRules"
-      v-model="localRacerData.parentGuardianName"
+      v-model="localRegistrationData.parentGuardianName"
       label="Parent/Guardian Name"
     ></v-text-field>
     <v-textarea
-      v-if="localRacerData.minor"
+      v-if="localRegistrationData.minor"
       :rules="nameRules"
-      v-model="localRacerData.parentGuardianSignature"
+      v-model="localRegistrationData.parentGuardianSignature"
       label="Parent/Guardian Signature"
     ></v-textarea> -->
     <v-btn type="submit" color="primary" :disabled="!valid">Next</v-btn>

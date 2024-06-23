@@ -1,7 +1,7 @@
 <script>
 import api from '@/services/api';
 import WaiverComponent from '@/components/registration/WaiverComponent.vue';
-import RacerDataComponent from '@/components/registration/RacerData.vue';
+import RegistrationData from '@/components/registration/RegistrationData.vue';
 import CheckoutComponent from '@/components/registration/CheckoutComponent.vue';
 import { loadStripe } from '@stripe/stripe-js';
 import { formattedRaceDate, customSameDistance, formatMinute } from '@/utils/methods';
@@ -9,7 +9,7 @@ import { formattedRaceDate, customSameDistance, formatMinute } from '@/utils/met
 export default {
   components: {
     WaiverComponent,
-    RacerDataComponent,
+    RegistrationData,
     CheckoutComponent,
   },
   provide() {
@@ -74,9 +74,10 @@ export default {
         this.activeTab -= 1;
       }
     },
-    saveRacerData(data) {
-      this.registrationData = data;
-      this.racerDataComplete = true; // Add this line
+    saveRegistrationData(registrationData, teamData={}) {
+      this.registrationData = registrationData;
+      this.teamData = teamData;
+      this.racerDataComplete = true;
       this.waiverAccepted = false; // Reset waiverAccepted when registrationData is edited
       this.nextTab();
     },
@@ -163,7 +164,7 @@ export default {
         </v-tabs>
 
         <div v-if="activeTab === 0">
-          <RacerDataComponent :registrationData="registrationData" :race="race" @complete="saveRacerData" />
+          <RegistrationData :registrationData="registrationData" :race="race" @complete="saveRegistrationData" />
         </div>
         <div v-if="activeTab === 1">
           <WaiverComponent :initialAccepted="waiverAccepted" :race="race" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted"/>

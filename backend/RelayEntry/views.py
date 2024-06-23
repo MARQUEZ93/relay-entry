@@ -6,15 +6,17 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-import stripe
 import os
 import logging
 import json
-from .models import UserProfile, Event, Race, Registration, Team
+from .models import UserProfile, Event, Race, Registration, Team, TeamMember
 from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer
 from rest_framework import generics
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.db import transaction
+from .payments import process_payment 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RaceDetailView(generics.RetrieveAPIView):
@@ -65,127 +67,106 @@ def signup(request):
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
 
-# Initialize the Stripe API key
-stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-
 from django.views.decorators.csrf import csrf_exempt
-
-stripe.api_key = settings.STRIPE_SECRET_KEY  # Use secret key on the server side
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
+@require_POST
 @csrf_exempt
 def team_register_and_pay(request):
-    if request.method == 'POST':
+    try:
+        data = json.loads(request.body)
+
+        race_id = data['race_id']
+        racer_data = data['racer_data']
+        team_data = data['team_data']
+        billing_info = data['billing_info']
+        payment_method_id = billing_info['payment_method_id']
+        amount_from_ui = int(billing_info['amount'])  # Extract and convert the amount to cents
+
+        # Calculate the amount based on the race price
         try:
-            data = json.loads(request.body)
-            payment_method_id = data['payment_method_id']
-            race_id = data['race_id']
-            racer_data = data['racer_data']
-            billing_info = data['billing_info']
-            team_data = data['team_data']
-            
-            # Calculate the amount based on the race price
-            try:
-                race = Race.objects.get(id=race_id)
-            except Race.DoesNotExist:
-                logger.error("Race not found.")
-                return JsonResponse({'error': "Race not found."}, status=404)
-            
-            amount = int(race.price * 100)  # Convert to cents
-
-            try:
-                # Create the registration instance
-                registration = Registration.objects.create(
-                    race=race,
-                    amount_paid=amount,
-                    first_name=racer_data['firstName'],
-                    last_name=racer_data['lastName'],
-                    email=racer_data['email'],
-                    phone=racer_data.get('phone', ''),
-                    gender=racer_data['gender'],
-                    dob=racer_data['dateOfBirth'],
-                    minor=racer_data['minor'],
-                    waiver_text=race.event.waiver_text,
-                    parent_guardian_name=racer_data.get('parentGuardianName', ''),
-                    parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
-                )
-
-                 # Create the registration instance
-                registration = Team.objects.create(
-                    race=race,
-                    amount_paid=amount,
-                    first_name=racer_data['firstName'],
-                    last_name=racer_data['lastName'],
-                    email=racer_data['email'],
-                    phone=racer_data.get('phone', ''),
-                    gender=racer_data['gender'],
-                    dob=racer_data['dateOfBirth'],
-                    minor=racer_data['minor'],
-                    waiver_text=race.event.waiver_text,
-                    parent_guardian_name=racer_data.get('parentGuardianName', ''),
-                    parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
-                )
-
-                # Create a PaymentIntent with the amount and currency
-                intent = stripe.PaymentIntent.create(
-                    amount=amount,
-                    currency='usd',
-                    return_url="http://localhost:8080/confirmation",  # Update with your actual return URL
-                    payment_method=payment_method_id,
-                    confirmation_method='manual',
-                    confirm=True,
-                    metadata={
-                        'race_id': race_id,
-                        'racer_name': f"{racer_data['firstName']} {racer_data['lastName']}",
-                        'billing_name': billing_info['name'],
-                        'billing_email': billing_info['email'],
-                    },
-                )
-                # Return client secret, confirmation code, race   r data, and race data
-                return JsonResponse({
-                    'payment_intent': intent,
-                    'confirmation_code': registration.confirmation_code,
-                    'racer_data': racer_data,
-                    'race_data': {
-                        'name': race.name,
-                        'date': race.date,
-                        'description': race.description,
-                        'event': race.event.name
-                    },
-                    'team_data': {
-                        'name': team.name,
-                    }
-                })
-
-            except stripe.error.CardError as e:
-                logger.error(f"Card error: {e.user_message}")
-                return JsonResponse({'error': e.user_message}, status=400)
-            except stripe.error.RateLimitError as e:
-                logger.error(f"Rate limit error: {e.user_message}")
-                return JsonResponse({'error': "Too many requests made to the API too quickly."}, status=400)
-            except stripe.error.InvalidRequestError as e:
-                logger.error(f"Invalid parameters were supplied to Stripe's API: {e.user_message}")
-                return JsonResponse({'error': "Invalid parameters."}, status=400)
-            except stripe.error.AuthenticationError as e:
-                logger.error(f"Authentication with Stripe's API failed: {e.user_message}")
-                return JsonResponse({'error': "Authentication failed."}, status=401)
-            except stripe.error.APIConnectionError as e:
-                logger.error(f"Network communication with Stripe failed: {e.user_message}")
-                return JsonResponse({'error': "Network error."}, status=400)
-            except stripe.error.StripeError as e:
-                logger.error(f"Stripe error: {e.user_message}")
-                return JsonResponse({'error': "Something went wrong. You were not charged. Please try again."}, status=400)
-            except Exception as e:
-                logger.error(f"General error: {str(e)}")
-                return JsonResponse({'error': "An error occurred. Please try again."}, status=400)
+            race = Race.objects.get(id=race_id)
+        except Race.DoesNotExist:
+            logger.error("Race not found.")
+            return JsonResponse({'error': "Race not found."}, status=404)
         
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON decode error: {str(e)}")
-            return JsonResponse({'error': "Invalid JSON data."}, status=400)
-        except Exception as e:
-            logger.error(f"Unexpected error: {str(e)}")
-            return JsonResponse({'error': "An unexpected error occurred."}, status=400)
+        amount_from_db = int(race.price * 100)  # Convert to cents
+        
+        # Validate price match
+        if amount_from_ui != amount_from_db:
+            logger.error("Price mismatch error.")
+            return JsonResponse({'error': "Price mismatch. Please try again."}, status=400)
+
+        with transaction.atomic():
+            registration = Registration.objects.create(
+                race=race,
+                amount_paid=amount_from_db,
+                first_name=racer_data['firstName'],
+                last_name=racer_data['lastName'],
+                email=racer_data['email'],
+                phone=racer_data.get('phone', ''),
+                gender=racer_data['gender'],
+                dob=racer_data['dateOfBirth'],
+                waiver_text=race.event.waiver_text,
+                # ip_address=racer_data['ipAddress'],
+                # minor=racer_data['minor'],
+                # parent_guardian_name=racer_data.get('parentGuardianName', ''),
+                # parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
+            )
+            member = TeamMember.objects.create(
+                race=race,
+                amount_paid=amount_from_db,
+                registration=registration,
+                email=racer_data['email'],
+                waiver_text=race.event.waiver_text,
+                # minor=racer_data['minor'],
+                # parent_guardian_name=racer_data.get('parentGuardianName', ''),
+                # parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
+            )
+            team = Team.objects.create(
+                name=team_data['name'],
+                race=race,
+                expected_pace=team_data['expected_pace'],
+                captain=member,
+                emails=team_data['emails'],
+                leg_order=team_data['leg_order'],
+            )
+
+             # Process the payment
+            payment_result = process_payment(amount_from_db, payment_method_id, billing_info, race_name, racer_data, team.name)
+
+            if 'status' in payment_result and payment_result['status'] != 'succeeded':
+                raise Exception(payment_result['message'])  # This will trigger a rollback
+
+            # Return client secret, confirmation code, race   r data, and race data
+            return JsonResponse({
+                'payment_intent': intent,
+                'confirmation_code': registration.confirmation_code,
+                'racer_data': {
+                    first_name: registration.first_name,
+                    last_name: registration.last_name,
+                    email: registration.email,
+                },
+                'race_data': {
+                    'name': race.name,
+                    'date': race.date,
+                    'description': race.description,
+                    'event': race.event.name,
+                    'contact': race.event.email,
+                },
+                'team': {
+                    'team_name': team.name,
+                    'emails': team.emails,
+                    'leg_order': team.leg_order,
+                }
+            })
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {str(e)}")
+        return JsonResponse({'error': "Invalid JSON data."}, status=400)
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        return JsonResponse({'error': "An unexpected error occurred."}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)

@@ -22,7 +22,8 @@ export default {
       race: {},
       stripePromise: null,
       racerData: {},
-      racerDataComplete: false, // Add this line
+      teamData: {},
+      racerDataComplete: false,
       waiverAccepted: false,
       paymentCompleted: false,
       loading: true,

@@ -168,8 +168,21 @@ class Team(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
     projected_team_time = models.CharField(max_length=50, null=True, blank=True)
 
+    leg_order = models.JSONField(default=list)
+    emails = models.JSONField(default=list)
     def __str__(self):
         return f'{self.name} - {self.race.name}'
+    
+    def clean(self):
+        # Ensure the length of emails, email_confirmations, and leg_order matches the num_runners
+        if len(self.emails) != self.race.num_runners:
+            raise ValidationError(f'The number of emails must be equal to {self.race.num_runners}.')
+        if len(self.leg_order) != self.race.num_runners:
+            raise ValidationError(f'The number of leg orders must be equal to {self.race.num_runners}.')
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Call clean method before saving
+        super().save(*args, **kwargs)
     
 class Registration(models.Model):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
@@ -196,11 +209,12 @@ class Registration(models.Model):
     minor = models.BooleanField(default=False, help_text="Parent/Guardian for Minors (Under 18 years old)")
 
     def clean(self):
-        if self.coupon_code and self._state.adding:
-            if self.coupon_code.usage_count >= self.coupon_code.max_uses:
-                raise ValidationError("Coupon code has reached its maximum number of uses.")
-        # TODO FIX THIS SHIT# if self.race.is_relay and not self.team:
-        #     raise ValidationError('Relay race registration must be associated with a team.')
+        # Check if a registration with the same email and race already exists
+        if Registration.objects.filter(race=self.race, email=self.email).exists():
+            raise ValidationError('A registration with this email for the same race already exists.')
+        # if self.coupon_code and self._state.adding:
+        #     if self.coupon_code.usage_count >= self.coupon_code.max_uses:
+        #         raise ValidationError("Coupon code has reached its maximum number of uses.")
         super().clean()
 
     def save(self, *args, **kwargs):
@@ -209,20 +223,20 @@ class Registration(models.Model):
             self.confirmation_code = uuid.uuid4().hex[:16]
 
         # Validate minor fields
-        if self.minor and not (self.parent_guardian_name and self.parent_guardian_signature):
-            raise ValueError("Parent/Guardian name and signature are required for minors.")
+        # if self.minor and not (self.parent_guardian_name and self.parent_guardian_signature):
+            # raise ValueError("Parent/Guardian name and signature are required for minors.")
 
         # Run full validation
         self.full_clean()
 
         # Set the price and handle coupon logic
-        if self.coupon_code and self._state.adding:
-            discount = (self.coupon_code.percentage / 100) * self.price
-            self.amount_paid = self.price - discount
-            self.coupon_code.usage_count += 1
-            self.coupon_code.save()
-        else:
-            self.amount_paid = self.price
+        # if self.coupon_code and self._state.adding:
+        #     discount = (self.coupon_code.percentage / 100) * self.price
+        #     self.amount_paid = self.price - discount
+        #     self.coupon_code.usage_count += 1
+        #     self.coupon_code.save()
+        # else:
+        #     self.amount_paid = self.price
 
         super().save(*args, **kwargs)
 
@@ -246,14 +260,9 @@ class Leg(models.Model):
 
 class TeamMember(models.Model):
     email_confirmed = models.BooleanField(default=False)
-    dob = models.DateField()
-    registration = models.ForeignKey(Registration, on_delete=models.CASCADE, related_name='team_members')
-    name = models.CharField(max_length=100)
+    registration = models.OneToOneField(Registration, on_delete=models.CASCADE)
     email = models.EmailField()
-    phone = models.CharField(max_length=15, blank=True, null=True)
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
-
-    leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True, help_text="The leg the team member is running (if applicable).")
+    # leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True, help_text="The leg the team member is running (if applicable).")
     def __str__(self):
         return f'{self.name} ({self.email}) - {self.registration.race.name}'
     

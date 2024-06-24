@@ -165,7 +165,7 @@ class CouponCode(models.Model):
     
 class Team(models.Model):
     name = models.CharField(max_length=255)
-    captain = models.ForeignKey('TeamMember', null=True, blank=True, on_delete=models.SET_NULL, related_name='captained_teams')
+    captain = models.ForeignKey('Registration', null=True, blank=True, on_delete=models.SET_NULL, related_name='captained_teams')
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
     projected_team_time = models.CharField(max_length=50, null=True, blank=True)
     
@@ -177,14 +177,13 @@ class Team(models.Model):
         # Ensure the length of emails, email_confirmations, and leg_order matches the num_runners
         if len(self.emails) != self.race.num_runners:
             raise ValidationError(f'The number of emails must be equal to {self.race.num_runners}.')
-        if len(self.leg_order) != self.race.num_runners:
-            raise ValidationError(f'The number of leg orders must be equal to {self.race.num_runners}.')
     
     def save(self, *args, **kwargs):
         self.full_clean()  # Call clean method before saving
         super().save(*args, **kwargs)
     
 class Registration(models.Model):
+    email_confirmed = models.BooleanField(default=False)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     confirmation_code = models.CharField(max_length=16, unique=True, editable=False)  # Increased length to 16
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations')
@@ -260,9 +259,9 @@ class Leg(models.Model):
         return f"Leg {self.leg_number} - {self.distance}"
 
 class TeamMember(models.Model):
-    email_confirmed = models.BooleanField(default=False)
     registration = models.OneToOneField(Registration, on_delete=models.CASCADE)
     email = models.EmailField()
+    leg = models.PositiveIntegerField()
     # leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True, help_text="The leg the team member is running (if applicable).")
     def __str__(self):
         return f'{self.name} ({self.email}) - {self.registration.race.name}'

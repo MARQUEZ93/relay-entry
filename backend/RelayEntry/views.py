@@ -77,27 +77,28 @@ logger = logging.getLogger(__name__)
 def team_register_and_pay(request):
     try:
         data = json.loads(request.body)
-
         race_id = data['race_id']
         amount_from_ui = data['price']  # Extract and convert the amount to cents
         
         registration_data = data['registration_data']
-        team_data = data['team_data']
+        team_data = registration_data.get('teamData', {})
+        print(team_data)
         billing_info = data['billing_info']
         payment_method = data['payment_method']
 
-        payment_method_id = payment_method.id
+        payment_method_id = payment_method.get('id', {})
         # Calculate the amount based on the race price
         try:
             race = Race.objects.get(id=race_id)
         except Race.DoesNotExist:
             logger.error("Race not found.")
             return JsonResponse({'error': "Race not found."}, status=404)
-        
+        amount_from_ui = int(float(amount_from_ui) * 100)
         amount_from_db = int(race.price * 100)  # Convert to cents
-        
         # Validate price match
         if amount_from_ui != amount_from_db:
+            print(amount_from_ui)
+            print(amount_from_db)
             logger.error("Price mismatch error.")
             return JsonResponse({'error': "Price mismatch. Please try again."}, status=400)
 
@@ -105,41 +106,35 @@ def team_register_and_pay(request):
             registration = Registration.objects.create(
                 race=race,
                 amount_paid=amount_from_db,
-                first_name=racer_data['firstName'],
-                last_name=racer_data['lastName'],
-                email=racer_data['email'],
-                phone=racer_data.get('phone', ''),
-                gender=racer_data['gender'],
-                dob=racer_data['dateOfBirth'],
+                first_name=registration_data['firstName'],
+                last_name=registration_data['lastName'],
+                email=registration_data['email'],
+                phone=registration_data.get('phone', ''),
+                gender=registration_data['gender'],
+                dob=registration_data['dateOfBirth'],
                 waiver_text=race.event.waiver_text,
-                # ip_address=racer_data['ipAddress'],
-                # minor=racer_data['minor'],
-                # parent_guardian_name=racer_data.get('parentGuardianName', ''),
-                # parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
-            )
-            member = TeamMember.objects.create(
-                race=race,
-                amount_paid=amount_from_db,
-                registration=registration,
-                email=racer_data['email'],
-                waiver_text=race.event.waiver_text,
-                # minor=racer_data['minor'],
-                # parent_guardian_name=racer_data.get('parentGuardianName', ''),
-                # parent_guardian_signature=racer_data.get('parentGuardianSignature', ''),
+                # ip_address=registration_data['ipAddress'],
+                # minor=registration_data['minor'],
+                # parent_guardian_name=registration_data.get('parentGuardianName', ''),
+                # parent_guardian_signature=registration_data.get('parentGuardianSignature', ''),
             )
             emails = team_data.get('emails', {})  # includes leg order
             # TODO PARSE leg order / emails
             team = Team.objects.create(
                 name=team_data['name'],
                 race=race,
-                projectedTeamTime=team_data['projectedTeamTime'],
-                captain=member,
+                projected_team_time=team_data['projectedTeamTime'],
+                captain=registration,
                 emails=emails,
-                leg_order=leg_order,
+            )
+            member = TeamMember.objects.create(
+                team=team,
+                registration=registration,
+                email=registration_data['email'],
             )
 
              # Process the payment
-            payment_result = process_payment(amount_from_db, payment_method_id, billing_info, race_name, racer_data, team.name)
+            payment_result = process_payment(amount_from_db, payment_method_id, billing_info, race_name, registration_data, team.name)
 
             if 'status' in payment_result and payment_result['status'] != 'succeeded':
                 raise Exception(payment_result['message'])  # This will trigger a rollback
@@ -148,7 +143,7 @@ def team_register_and_pay(request):
             return JsonResponse({
                 'payment_intent': intent,
                 'confirmation_code': registration.confirmation_code,
-                'racer_data': {
+                'registration_data': {
                     first_name: registration.first_name,
                     last_name: registration.last_name,
                     email: registration.email,
@@ -163,7 +158,6 @@ def team_register_and_pay(request):
                 'team': {
                     'team_name': team.name,
                     'emails': team.emails,
-                    'leg_order': team.leg_order,
                 }
             })
     except json.JSONDecodeError as e:

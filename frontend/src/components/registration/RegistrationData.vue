@@ -12,6 +12,7 @@ export default {
   },
   created() {
     this.initializeRunnerEmails();
+    this.initializeProjectTeamTimeChoices();
   },
   data() {
     return {
@@ -19,16 +20,16 @@ export default {
       localRegistrationData: {
         ...this.registrationData,
         teamData: {
-          name: this.teamData.name,
-          projectedTeamTime: this.teamData.projectTeamTime,
-          emails: this.teamData.emails,
+          name: '',
+          projectedTeamTime: '',
+          emails: {},
         },
-        projectedTeamTimeChoices: this.race.projected_team_time_choices || [],
         dateOfBirth: this.registrationData.dateOfBirth || '',
         // parentGuardianName: this.registrationData.parentGuardianName || '',
         // parentGuardianSignature: this.registrationData.parentGuardianSignature || '',
         // minor: this.registrationData.minor || false,
       },
+      projectedTeamTimeChoices: this.race.projected_team_time_choices || [],
       nameRules: [
         v => !!v || 'Name is required',
         v => (v && v.length > 1) || 'Name must be more than 1 character',
@@ -50,7 +51,9 @@ export default {
   watch: {
     race: {
       handler() {
+        console.log('Race changed:', this.race);
         this.initializeRunnerEmails();
+        this.initializeProjectTeamTimeChoices();
       },
       deep: true,
       immediate: true,
@@ -60,8 +63,8 @@ export default {
         this.localRegistrationData = {
           ...newVal,
           dateOfBirth: newVal.dateOfBirth || '',
-          parentGuardianName: newVal.parentGuardianName || '',
-          parentGuardianSignature: newVal.parentGuardianSignature || '',
+          // parentGuardianName: newVal.parentGuardianName || '',
+          // parentGuardianSignature: newVal.parentGuardianSignature || '',
           // minor: newVal.minor || false,
         };
       },
@@ -71,23 +74,20 @@ export default {
   methods: {
     initializeRunnerEmails() {
       if (this.race && this.race.num_runners) {
-        this.runnerEmails = {};
+        this.localRegistrationData.teamData.emails = {};
         for (let i = 1; i <= this.race.num_runners; i++) {
-          this.$set(this.runnerEmails, `participant_${i}_email`, '');
+          this.localRegistrationData.teamData.emails[`participant_${i}_email`] = '';
         }
+      }
+    },
+    initializeProjectTeamTimeChoices() {
+      if (this.race && this.race.projected_team_time_choices) {
+        this.projectedTeamTimeChoices = this.race.projected_team_time_choices;
       }
     },
     submit() {
       if (this.$refs.form.validate()) {
-        const dataToSubmit = {
-          ...this.localRegistrationData,
-          teamData: {
-            name: this.teamName,  // Include team name
-            projectedTeamTime: this.projectedTeamTime,  // Include projected team time
-            runnerEmails: this.runnerEmails,  // Include runner emails
-          }
-        };
-      this.$emit('complete', dataToSubmit);
+        this.$emit('complete', this.localRegistrationData);
       }
     },
   },
@@ -117,7 +117,7 @@ export default {
         </v-col>
       </v-row>
       <v-row>
-        <v-col v-for="(email, index) in runnerEmails" :key="index" cols="12" md="6">
+        <v-col v-for="(email, index) in Object.keys(localRegistrationData.teamData.emails)" :key="index" cols="12" md="6">
           <v-text-field
             v-model="localRegistrationData.teamData.emails[email]"
             :rules="emailRules"

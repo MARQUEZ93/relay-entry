@@ -23,6 +23,7 @@ export default {
           projectedTeamTime: this.teamData.projectTeamTime,
           emails: this.teamData.emails,
         },
+        projectedTeamTimeChoices: this.race.projected_team_time_choices || [],
         dateOfBirth: this.registrationData.dateOfBirth || '',
         // parentGuardianName: this.registrationData.parentGuardianName || '',
         // parentGuardianSignature: this.registrationData.parentGuardianSignature || '',
@@ -44,9 +45,6 @@ export default {
       dobRules: [
         v => !!v || 'Date of Birth is required',
       ],
-      teamName: '',  // New data property for team name
-      projectedTeamTime: '',  // New data property for projected team time
-      runnerEmails: [],  // New data property for runner emails
     };
   },
   watch: {
@@ -73,7 +71,10 @@ export default {
   methods: {
     initializeRunnerEmails() {
       if (this.race && this.race.num_runners) {
-        this.runnerEmails = Array(this.race.num_runners).fill('');
+        this.runnerEmails = {};
+        for (let i = 1; i <= this.race.num_runners; i++) {
+          this.$set(this.runnerEmails, `participant_${i}_email`, '');
+        }
       }
     },
     submit() {
@@ -100,25 +101,25 @@ export default {
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field
-            v-model="teamName"
+            v-model="localRegistrationData.teamData.name"
             label="Team Name"
             :rules="nameRules"
             required
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field
-            v-model="projectedTeamTime"
+          <v-select
+            v-model="localRegistrationData.teamData.projectedTeamTime"
+            :items="projectedTeamTimeChoices"
             label="Projected Team Time"
-            placeholder="HH:MM:SS"
             required
-          ></v-text-field>
+          ></v-select>
         </v-col>
       </v-row>
       <v-row>
         <v-col v-for="(email, index) in runnerEmails" :key="index" cols="12" md="6">
           <v-text-field
-            v-model="runnerEmails[index]"
+            v-model="localRegistrationData.teamData.emails[email]"
             :rules="emailRules"
             :label="`Leg ${index + 1} Runner Email`"
             required

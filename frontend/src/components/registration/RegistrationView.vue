@@ -87,7 +87,9 @@ export default {
     },
     async submitData() {
       try {
+        console.log("submitData");
       } catch (error) {
+        console.log("error");
       }
     },
   },
@@ -99,8 +101,6 @@ export default {
     try{
       // this.stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
       this.stripePromise = loadStripe("pk_test_51PNivYBsh8Ne4MdUVijN6hN4Ueoo8vLEFj5o5BqkAinexlV7S2f7P2EufuWHpqIR9SAAdZF5lpvk2kgHDFzTeuOQ009WWgftkv");
-      this.stripePromise.then(stripe => {
-      });
     } catch (error) {
       // TODO: render errors / re route
     }
@@ -174,7 +174,7 @@ export default {
         <div v-if="activeTab === 2">
           <CheckoutComponent :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData" :stripePromise="stripePromise"/>
           <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
-          <v-btn @click="" color="primary" class="mt-3">Submit</v-btn>
+          <v-btn color="primary" class="mt-3">Submit</v-btn>
         </div>
       </v-col>
     </v-row>

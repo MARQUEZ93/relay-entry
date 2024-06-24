@@ -169,8 +169,7 @@ class Team(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
     projected_team_time = models.CharField(max_length=50, null=True, blank=True)
     
-    leg_order = models.JSONField(default=list)
-    emails = models.JSONField(default=list)
+    emails = models.JSONField(default=list, help_text='Includes leg order')
     def __str__(self):
         return f'{self.name} - {self.race.name}'
     

@@ -6,6 +6,7 @@ from django.contrib.admin import AdminSite
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.urls import reverse
 from django.utils.html import format_html
+from .forms import RaceAdminForm
 
 # Customize the admin site header
 admin.site.site_header = "RelayEntry Administration"
@@ -105,14 +106,9 @@ class EventAdmin(BaseOwnerAdmin):
 
 @admin.register(Race)
 class RaceAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator', 'projected_team_time_choices',)
+    form = RaceAdminForm
+    list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator','projected_team_time_choices',)
     search_fields = ('name', 'event__name', 'distance',)
-
-    def get_fields(self, request, obj=None):
-        fields = super().get_fields(request, obj)
-        if request.user.is_staff:
-            fields.append('projected_team_time_choices')
-        return fields
 
     # the events dropdown
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

@@ -7,6 +7,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .constants import STATES, TEAM_GENDER_CHOICES, GENDER_CHOICES, UNIT_CHOICES_CONSTANT, AM, PM, TIME_INDICATORS, HOURS, MINUTES
 import uuid
 from zoneinfo import ZoneInfo
+from django.contrib.postgres.fields import ArrayField
 
 from django.utils.text import slugify
 
@@ -167,7 +168,8 @@ class Team(models.Model):
     captain = models.ForeignKey('TeamMember', null=True, blank=True, on_delete=models.SET_NULL, related_name='captained_teams')
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
     projected_team_time = models.CharField(max_length=50, null=True, blank=True)
-
+    projected_team_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
+    
     leg_order = models.JSONField(default=list)
     emails = models.JSONField(default=list)
     def __str__(self):

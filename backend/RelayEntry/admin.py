@@ -92,13 +92,19 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
 
 @admin.register(Event)
 class EventAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at', 'url_alias', 'event_url',)
-    search_fields = ('name', 'created_by__email',)
+    list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at', 'url_alias', 'event_url', 'projected_team_time', 'projected_team_time_choices',)
+    search_fields = ('name', 'created_by__email', 'projected_team_time',)
     prepopulated_fields = {"url_alias": ("name",)}
 
     def event_url(self, obj):
         return format_html('<a href="{}" target="_blank">{}</a>', obj.get_event_url(), obj.get_event_url())
     event_url.short_description = 'Event URL'
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        if request.user.is_staff:
+            fields.append('projected_team_time_choices')
+        return fields
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         return super().formfield_for_manytomany(db_field, request, **kwargs)

@@ -127,7 +127,7 @@ class Race(models.Model):
         default=AM,
     )
 
-    signed_at = models.DateTimeField(auto_now_add=True)
+    projected_team_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
 
     def __str__(self):
         if self.distance in [self.CUSTOM, self.ULTRA_MARATHON]:
@@ -168,7 +168,6 @@ class Team(models.Model):
     captain = models.ForeignKey('TeamMember', null=True, blank=True, on_delete=models.SET_NULL, related_name='captained_teams')
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
     projected_team_time = models.CharField(max_length=50, null=True, blank=True)
-    projected_team_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
     
     leg_order = models.JSONField(default=list)
     emails = models.JSONField(default=list)
@@ -205,6 +204,7 @@ class Registration(models.Model):
     first_name = models.CharField(max_length=255, help_text="First name of the participant")
     last_name = models.CharField(max_length=255, help_text="Last name of the participant")
     waiver_text = models.TextField()  # Store the waiver text at the time of registration
+    signed_at = models.DateTimeField(auto_now_add=True)
 
     parent_guardian_name = models.CharField(max_length=255, blank=True, null=True)
     parent_guardian_signature = models.TextField(blank=True, null=True)  # Assuming signature can be stored as text

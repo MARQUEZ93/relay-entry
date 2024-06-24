@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Event, Race, Registration, TeamMember, PhotoPackage, CouponCode, Leg
+from .models import UserProfile, Team, Event, Race, Registration, TeamMember, PhotoPackage, CouponCode, Leg
 from django.contrib.auth.models import User, Group
 
 from django.contrib.admin import AdminSite
@@ -92,27 +92,27 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
 
 @admin.register(Event)
 class EventAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at', 'url_alias', 'event_url', 'projected_team_time', 'projected_team_time_choices',)
-    search_fields = ('name', 'created_by__email', 'projected_team_time',)
+    list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at', 'url_alias', 'event_url', )
+    search_fields = ('name', 'created_by__email',)
     prepopulated_fields = {"url_alias": ("name",)}
 
     def event_url(self, obj):
         return format_html('<a href="{}" target="_blank">{}</a>', obj.get_event_url(), obj.get_event_url())
     event_url.short_description = 'Event URL'
 
-    def get_fields(self, request, obj=None):
-        fields = super().get_fields(request, obj)
-        if request.user.is_staff:
-            fields.append('projected_team_time_choices')
-        return fields
-
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 @admin.register(Race)
 class RaceAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator')
-    search_fields = ('name', 'event__name', 'distance')
+    list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator', 'projected_team_time_choices',)
+    search_fields = ('name', 'event__name', 'distance',)
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        if request.user.is_staff:
+            fields.append('projected_team_time_choices')
+        return fields
 
     # the events dropdown
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -179,3 +179,8 @@ class LegAdmin(BaseOwnerAdmin):
         if db_field.name == "race":
             kwargs["queryset"] = Race.objects.filter(created_by=request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+@admin.register(Team)
+class TeamAdmin(BaseOwnerAdmin):
+    list_display = ('name', 'projected_team_time', 'emails',)
+    search_fields = ('name', 'race__name',)

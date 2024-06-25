@@ -77,12 +77,12 @@ logger = logging.getLogger(__name__)
 def team_register_and_pay(request):
     try:
         data = json.loads(request.body)
+        print(data)
         race_id = data['race_id']
         amount_from_ui = data['price']  # Extract and convert the amount to cents
         
         registration_data = data['registration_data']
         team_data = registration_data.get('teamData', {})
-        print(team_data)
         billing_info = data['billing_info']
         payment_method = data['payment_method']
 
@@ -90,6 +90,7 @@ def team_register_and_pay(request):
         # Calculate the amount based on the race price
         try:
             race = Race.objects.get(id=race_id)
+            race_name = race.name
         except Race.DoesNotExist:
             logger.error("Race not found.")
             return JsonResponse({'error': "Race not found."}, status=404)
@@ -97,8 +98,6 @@ def team_register_and_pay(request):
         amount_from_db = int(race.price * 100)  # Convert to cents
         # Validate price match
         if amount_from_ui != amount_from_db:
-            print(amount_from_ui)
-            print(amount_from_db)
             logger.error("Price mismatch error.")
             return JsonResponse({'error': "Price mismatch. Please try again."}, status=400)
 
@@ -119,34 +118,39 @@ def team_register_and_pay(request):
                 # parent_guardian_signature=registration_data.get('parentGuardianSignature', ''),
             )
             emails = team_data.get('emails', {})  # includes leg order
-            # TODO PARSE leg order / emails
+            if len(emails) != race.num_runners:
+                return JsonResponse({'error': f'The number of emails must be equal to {race.num_runners}.'}, status=400)
             team = Team.objects.create(
                 name=team_data['name'],
                 race=race,
                 projected_team_time=team_data['projectedTeamTime'],
                 captain=registration,
-                emails=emails,
             )
-            member = TeamMember.objects.create(
-                team=team,
-                registration=registration,
-                email=registration_data['email'],
-            )
+            team_name = team.name
+             # Create TeamMember instances
+            for member in emails:
+                TeamMember.objects.create(
+                    team=team,
+                    email=member['email'],
+                    leg_order=member['leg_order'],
+                )
 
-             # Process the payment
-            payment_result = process_payment(amount_from_db, payment_method_id, billing_info, race_name, registration_data, team.name)
-
+            registrant_name = f"{registration_data['firstName']} {registration_data['lastName']}"
+            # Process the payment
+            payment_result = process_payment(amount_from_db, payment_method_id, billing_info, race_name, registrant_name, team_name)
+            print(payment_result)
             if 'status' in payment_result and payment_result['status'] != 'succeeded':
                 raise Exception(payment_result['message'])  # This will trigger a rollback
-
+            print(registration.first_name)
             # Return client secret, confirmation code, race   r data, and race data
             return JsonResponse({
-                'payment_intent': intent,
+                'paymentStatus': payment_result.status,
+                'paymentAmount': payment_result.amount,
                 'confirmation_code': registration.confirmation_code,
                 'registration_data': {
-                    first_name: registration.first_name,
-                    last_name: registration.last_name,
-                    email: registration.email,
+                    'first_name': registration.first_name,
+                    'last_name': registration.last_name,
+                    'email': registration.email,
                 },
                 'registration_data': {
                     'name': race.name,
@@ -157,7 +161,7 @@ def team_register_and_pay(request):
                 },
                 'team': {
                     'team_name': team.name,
-                    'emails': team.emails,
+                    'emails': [{'email': member.email, 'leg_order': member.leg_order} for member in team.members.all()],
                 }
             })
     except json.JSONDecodeError as e:

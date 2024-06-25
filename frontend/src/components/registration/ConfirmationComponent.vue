@@ -6,7 +6,8 @@ export default {
       confirmationCode: state => state.confirmationCode,
       registrationData: state => state.registrationData,
       raceData: state => state.raceData,
-      paymentIntent: state => state.paymentIntent,
+      paymentStatus: state => state.paymentStatus,
+      paymentAmount: state => state.paymentAmount,
       teamData: state => state.teamData,
     }),
   },
@@ -15,7 +16,7 @@ export default {
     console.log('Confirmation Code:', this.confirmationCode);
     console.log('Racer Data:', this.registrationData);
     console.log('Race Data:', this.raceData);
-    console.log('Payment Intent:', this.paymentIntent);
+    console.log('Payment Status:', this.paymentStatus);
     console.log('Team Data:', this.teamData);
   },
   beforeUnmount() {
@@ -137,12 +138,12 @@ export default {
                 <v-list dense>
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title><strong>Amount Paid:</strong> {{ paymentIntent.amount / 100 }} USD</v-list-item-title>
+                      <v-list-item-title><strong>Amount Paid:</strong> {{ paymentAmount / 100 }} USD</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title><strong>Status:</strong> {{ paymentIntent.status }}</v-list-item-title>
+                      <v-list-item-title><strong>Status:</strong> {{ paymentStatus }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list>

@@ -22,7 +22,7 @@ export default {
         teamData: {
           name: '',
           projectedTeamTime: '',
-          emails: {},
+          emails: [],
         },
         dateOfBirth: this.registrationData.dateOfBirth || '',
         // parentGuardianName: this.registrationData.parentGuardianName || '',
@@ -74,10 +74,10 @@ export default {
   methods: {
     initializeRunnerEmails() {
       if (this.race && this.race.num_runners) {
-        this.localRegistrationData.teamData.emails = {};
-        for (let i = 1; i <= this.race.num_runners; i++) {
-          this.localRegistrationData.teamData.emails[`participant_${i}_email`] = '';
-        }
+        this.localRegistrationData.teamData.emails = Array.from({ length: this.race.num_runners }, (v, i) => ({
+          email: '',
+          leg_order: i + 1
+        }));
       }
     },
     initializeProjectTeamTimeChoices() {
@@ -117,11 +117,11 @@ export default {
         </v-col>
       </v-row>
       <v-row>
-        <v-col v-for="(email, index) in Object.keys(localRegistrationData.teamData.emails)" :key="index" cols="12" md="6">
+        <v-col v-for="(member, index) in localRegistrationData.teamData.emails" :key="index" cols="12" md="6">
           <v-text-field
-            v-model="localRegistrationData.teamData.emails[email]"
+            v-model="member.email"
             :rules="emailRules"
-            :label="`Leg ${index + 1} Runner Email`"
+            :label="`Leg ${member.leg_order} Email`"
             required
           ></v-text-field>
         </v-col>

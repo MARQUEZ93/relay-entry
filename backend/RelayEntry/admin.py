@@ -178,5 +178,5 @@ class LegAdmin(BaseOwnerAdmin):
 
 @admin.register(Team)
 class TeamAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'projected_team_time', 'emails',)
+    list_display = ('name', 'projected_team_time',)
     search_fields = ('name', 'race__name',)

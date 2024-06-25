@@ -169,18 +169,8 @@ class Team(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
     projected_team_time = models.CharField(max_length=50, null=True, blank=True)
     
-    emails = models.JSONField(default=list, help_text='Includes leg order')
     def __str__(self):
         return f'{self.name} - {self.race.name}'
-    
-    def clean(self):
-        # Ensure the length of emails, email_confirmations, and leg_order matches the num_runners
-        if len(self.emails) != self.race.num_runners:
-            raise ValidationError(f'The number of emails must be equal to {self.race.num_runners}.')
-    
-    def save(self, *args, **kwargs):
-        self.full_clean()  # Call clean method before saving
-        super().save(*args, **kwargs)
     
 class Registration(models.Model):
     email_confirmed = models.BooleanField(default=False)
@@ -259,15 +249,12 @@ class Leg(models.Model):
         return f"Leg {self.leg_number} - {self.distance}"
 
 class TeamMember(models.Model):
-    registration = models.OneToOneField(Registration, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members')
     email = models.EmailField()
-    leg = models.PositiveIntegerField()
+    leg_order = models.PositiveIntegerField()
     # leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True, help_text="The leg the team member is running (if applicable).")
     def __str__(self):
-        return f'{self.name} ({self.email}) - {self.registration.race.name}'
+        return f'{self.email} - {self.registration.race.name}'
     
     def save(self, *args, **kwargs):
-        if self.is_captain:
-            if TeamMember.objects.filter(team=self.team, is_captain=True).exists() and not self.pk:
-                raise ValidationError("There can only be one captain per team.")
         super().save(*args, **kwargs)

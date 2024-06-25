@@ -2,7 +2,7 @@ import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-def process_payment(amount, payment_method_id, billing_info, race_name, racer_data, team_name=None):
+def process_payment(amount, payment_method_id, billing_info, race_name='', full_name='', team_name=''):
     try:
         intent = stripe.PaymentIntent.create(
             amount=amount,
@@ -13,8 +13,7 @@ def process_payment(amount, payment_method_id, billing_info, race_name, racer_da
             confirm=True,
             metadata={
                 'race_name': race_name,
-                'racer_name': f"{racer_data['firstName']} {racer_data['lastName']}",
-                'billing_name': billing_info['name'],
+                'registrant_name': full_name,
                 'billing_email': billing_info['email'],
                 'team_name': team_name,
             },

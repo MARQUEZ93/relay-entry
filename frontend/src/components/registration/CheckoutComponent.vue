@@ -88,8 +88,9 @@ export default {
           if (response.data.error) {
             document.getElementById('card-errors').textContent = response.data.error;
           } else {
-
-            const { confirmation_code, racer_data, race_data, payment_intent, team_data } = await response.data;
+            
+            // null check here
+            const { confirmation_code, racer_data, race_data, paymentAmount, paymentStatus, team_data } = await response.data;
             console.log('Payment and registration successful123');
             console.log(racer_data);
             console.log(team_data);
@@ -103,7 +104,8 @@ export default {
               confirmationCode: confirmation_code,
               registrationData: racer_data,
               raceData: race_data,
-              paymentIntent: payment_intent,
+              paymentStatus: paymentStatus,
+              paymentAmount: paymentAmount,
               teamData: team_data
             });
 

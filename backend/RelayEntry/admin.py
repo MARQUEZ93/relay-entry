@@ -48,8 +48,8 @@ class StaffUserPermissionsMixin:
     def has_change_permission(self, request, obj=None):
         return request.user.is_staff
 
-    def has_delete_permission(self, request, obj=None):
-        return request.user.is_staff
+    # def has_delete_permission(self, request, obj=None):
+    #     return request.user.is_staff
 
 class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
     exclude = ('created_by',)  # Hide created_by field in the form
@@ -70,10 +70,10 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
             return False
         return super().has_change_permission(request, obj)
 
-    def has_delete_permission(self, request, obj=None):
-        if obj and obj.created_by != request.user and not request.user.is_superuser:
-            return False
-        return super().has_delete_permission(request, obj)
+    # def has_delete_permission(self, request, obj=None):
+    #     if obj and obj.created_by != request.user and not request.user.is_superuser:
+    #         return False
+    #     return super().has_delete_permission(request, obj)
     
     def get_readonly_fields(self, request, obj=None):
         if obj:  # When editing an existing object
@@ -133,48 +133,48 @@ class RegistrationAdmin(admin.ModelAdmin):
             return False
         return super().has_change_permission(request, obj)
 
-    def has_delete_permission(self, request, obj=None):
-        if obj and obj.race.created_by != request.user and not request.user.is_superuser:
-            return False
-        return super().has_delete_permission(request, obj)
+    # def has_delete_permission(self, request, obj=None):
+    #     if obj and obj.race.created_by != request.user and not request.user.is_superuser:
+    #         return False
+    #     return super().has_delete_permission(request, obj)
 
 
-@admin.register(PhotoPackage)
-class PhotoPackageAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'price', 'description')
-    search_fields = ('name', 'description')
+# @admin.register(PhotoPackage)
+# class PhotoPackageAdmin(BaseOwnerAdmin):
+#     list_display = ('name', 'price', 'description')
+#     search_fields = ('name', 'description')
 
-    #  the event dropdown
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "event":
-            kwargs["queryset"] = Event.objects.filter(created_by=request.user)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+#     #  the event dropdown
+#     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+#         if db_field.name == "event":
+#             kwargs["queryset"] = Event.objects.filter(created_by=request.user)
+#         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-@admin.register(CouponCode)
-class CouponCodeAdmin(BaseOwnerAdmin):
-    list_display = ('code', 'percentage', 'valid_until', 'is_active', 'max_uses', 'usage_count')
-    search_fields = ('code',)
+# @admin.register(CouponCode)
+# class CouponCodeAdmin(BaseOwnerAdmin):
+#     list_display = ('code', 'percentage', 'valid_until', 'is_active', 'max_uses', 'usage_count')
+#     search_fields = ('code',)
 
-    #  the event dropdown
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "event":
-            kwargs["queryset"] = Event.objects.filter(created_by=request.user)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+#     #  the event dropdown
+#     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+#         if db_field.name == "event":
+#             kwargs["queryset"] = Event.objects.filter(created_by=request.user)
+#         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    # Usage count read-only
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = super().get_readonly_fields(request, obj)
-        return readonly_fields + ('usage_count',)
+#     # Usage count read-only
+#     def get_readonly_fields(self, request, obj=None):
+#         readonly_fields = super().get_readonly_fields(request, obj)
+#         return readonly_fields + ('usage_count',)
 
-@admin.register(Leg)
-class LegAdmin(BaseOwnerAdmin):
-    list_display = ('race', 'leg_number', 'custom_distance_value', 'custom_distance_unit', 'leg_map')
-    search_fields = ('race__name',)
+# @admin.register(Leg)
+# class LegAdmin(BaseOwnerAdmin):
+#     list_display = ('race', 'leg_number', 'custom_distance_value', 'custom_distance_unit', 'leg_map')
+#     search_fields = ('race__name',)
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "race":
-            kwargs["queryset"] = Race.objects.filter(created_by=request.user)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+#     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+#         if db_field.name == "race":
+#             kwargs["queryset"] = Race.objects.filter(created_by=request.user)
+#         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Team)
 class TeamAdmin(BaseOwnerAdmin):

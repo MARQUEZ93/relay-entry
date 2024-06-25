@@ -72,12 +72,12 @@ export default {
       } else {
         try {
           const response = await api.payAndRegisterTeam({
-            race_id: this.race.id,
+            raceId: this.race.id,
             price: this.race.price,
-            registration_data: this.registrationData,
-            team_data: this.teamData,
-            payment_method: paymentMethod,
-            billing_info: this.billingInfo
+            registrationData: this.registrationData,
+            teamData: this.teamData,
+            paymentMethod: paymentMethod,
+            billingInfo: this.billingInfo
           });
 
           console.log("registerTeamAndPay");
@@ -89,24 +89,31 @@ export default {
             document.getElementById('card-errors').textContent = response.data.error;
           } else {
             
-            // null check here
-            const { confirmation_code, racer_data, race_data, paymentAmount, paymentStatus, team_data } = await response.data;
-            console.log('Payment and registration successful123');
-            console.log(racer_data);
-            console.log(team_data);
+            // TODO: null check here
+            // package this tighter
+            const { confirmationCode, registrationData, raceData, paymentAmount, paymentStatus, teamData } = await response.data;
+            console.log(response); 
+            console.log('Payment and registration successful');
+            console.log(registrationData);
+            console.log(teamData);
+            console.log(raceData);
+            console.log(paymentAmount);
+            console.log(confirmationCode);
+            console.log(paymentStatus);
 
             // TODO: add loader
             // test bad data
 
             // Redirect to the confirmation page
              // Set the data in Vuex store
+            //  TODO: null check
             this.$store.commit('setConfirmationData', {
-              confirmationCode: confirmation_code,
-              registrationData: racer_data,
-              raceData: race_data,
+              confirmationCode: confirmationCode,
+              registrationData: registrationData,
+              raceData: raceData,
               paymentStatus: paymentStatus,
               paymentAmount: paymentAmount,
-              teamData: team_data
+              teamData: teamData
             });
 
             this.$router.push({ name: 'Confirmation' });
@@ -128,39 +135,61 @@ export default {
     </v-card-title>
     <v-card-text>
       <v-form ref="form" v-model="valid">
-        <v-text-field
-          v-model="billingInfo.name"
-          label="Name"
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="billingInfo.email"
-          label="Email"
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="billingInfo.address"
-          label="Address"
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="billingInfo.city"
-          label="City"
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="billingInfo.state"
-          label="State"
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="billingInfo.zip"
-          label="ZIP Code"
-          required
-        ></v-text-field>
-        <div ref="cardElement" id="card-element"></div>
-        <div id="card-errors" role="alert" class="mt-2"></div>
-        <p class="mt-4"><strong>Order Total: ${{ race.price }}</strong></p>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="billingInfo.name"
+              label="Name"
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="billingInfo.email"
+              label="Email"
+              required
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="billingInfo.address"
+              label="Address"
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="billingInfo.city"
+              label="City"
+              required
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="billingInfo.state"
+              label="State"
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="billingInfo.zip"
+              label="ZIP Code"
+              required
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            <div ref="cardElement" id="card-element"></div>
+            <div id="card-errors" role="alert" class="mt-2"></div>
+            <p class="mt-4"><strong>Order Total: ${{ race.price }}</strong></p>
+          </v-col>
+        </v-row>
       </v-form>
     </v-card-text>
     <v-card-actions>

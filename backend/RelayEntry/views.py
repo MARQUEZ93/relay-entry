@@ -17,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.db import transaction
 from .payments import process_payment 
+from .conversion import convert_keys_to_snake_case, convert_keys_to_camel_case
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RaceDetailView(generics.RetrieveAPIView):
@@ -77,15 +78,15 @@ logger = logging.getLogger(__name__)
 def team_register_and_pay(request):
     try:
         data = json.loads(request.body)
+        data = convert_keys_to_snake_case(data)
         print(data)
         race_id = data['race_id']
         amount_from_ui = data['price']  # Extract and convert the amount to cents
         
         registration_data = data['registration_data']
-        team_data = registration_data.get('teamData', {})
+        team_data = registration_data.get('team_data', {})
         billing_info = data['billing_info']
         payment_method = data['payment_method']
-
         payment_method_id = payment_method.get('id', {})
         # Calculate the amount based on the race price
         try:
@@ -102,72 +103,86 @@ def team_register_and_pay(request):
             return JsonResponse({'error': "Price mismatch. Please try again."}, status=400)
 
         with transaction.atomic():
-            registration = Registration.objects.create(
-                race=race,
-                amount_paid=amount_from_db,
-                first_name=registration_data['firstName'],
-                last_name=registration_data['lastName'],
-                email=registration_data['email'],
-                phone=registration_data.get('phone', ''),
-                gender=registration_data['gender'],
-                dob=registration_data['dateOfBirth'],
-                waiver_text=race.event.waiver_text,
-                # ip_address=registration_data['ipAddress'],
-                # minor=registration_data['minor'],
-                # parent_guardian_name=registration_data.get('parentGuardianName', ''),
-                # parent_guardian_signature=registration_data.get('parentGuardianSignature', ''),
-            )
-            emails = team_data.get('emails', {})  # includes leg order
-            if len(emails) != race.num_runners:
-                return JsonResponse({'error': f'The number of emails must be equal to {race.num_runners}.'}, status=400)
-            team = Team.objects.create(
-                name=team_data['name'],
-                race=race,
-                projected_team_time=team_data['projectedTeamTime'],
-                captain=registration,
-            )
-            team_name = team.name
-             # Create TeamMember instances
-            for member in emails:
-                TeamMember.objects.create(
-                    team=team,
-                    email=member['email'],
-                    leg_order=member['leg_order'],
+            try: 
+                registration = Registration.objects.create(
+                    race=race,
+                    amount_paid=amount_from_db,
+                    first_name=registration_data['first_name'],
+                    last_name=registration_data['last_name'],
+                    email=registration_data['email'],
+                    phone=registration_data.get('phone', ''),
+                    gender=registration_data['gender'],
+                    dob=registration_data['date_of_birth'],
+                    waiver_text=race.event.waiver_text,
+                    # ip_address=registration_data['ipAddress'],
+                    # minor=registration_data['minor'],
+                    # parent_guardian_name=registration_data.get('parentGuardianName', ''),
+                    # parent_guardian_signature=registration_data.get('parentGuardianSignature', ''),
                 )
+                emails = team_data.get('emails', {})  # includes leg order
+                print(emails)
+                if len(emails) != race.num_runners:
+                    return JsonResponse({'error': f'The number of emails must be equal to {race.num_runners}.'}, status=400)
+                team = Team.objects.create(
+                    name=team_data['name'],
+                    race=race,
+                    projected_team_time=team_data['projected_team_time'],
+                    captain=registration,
+                )
+                print(team.name)
+                team_name = team.name
+                # Create TeamMember instances
+                for member in emails:
+                    TeamMember.objects.create(
+                        team=team,
+                        email=member['email'],
+                        leg_order=member['leg_order'],
+                    )
 
-            registrant_name = f"{registration_data['firstName']} {registration_data['lastName']}"
-            # Process the payment
-            payment_result = process_payment(amount_from_db, payment_method_id, billing_info, race_name, registrant_name, team_name)
-            print(payment_result)
-            if 'status' in payment_result and payment_result['status'] != 'succeeded':
-                raise Exception(payment_result['message'])  # This will trigger a rollback
-            print(registration.first_name)
-            # Return client secret, confirmation code, race   r data, and race data
-            return JsonResponse({
-                'paymentStatus': payment_result.status,
-                'paymentAmount': payment_result.amount,
-                'confirmation_code': registration.confirmation_code,
-                'registration_data': {
-                    'first_name': registration.first_name,
-                    'last_name': registration.last_name,
-                    'email': registration.email,
-                },
-                'registration_data': {
-                    'name': race.name,
-                    'date': race.date,
-                    'description': race.description,
-                    'event': race.event.name,
-                    'contact': race.event.email,
-                },
-                'team': {
-                    'team_name': team.name,
-                    'emails': [{'email': member.email, 'leg_order': member.leg_order} for member in team.members.all()],
+                registrant_name = f"{registration_data['first_name']} {registration_data['last_name']}"
+                # Process the payment
+                print(registrant_name)
+                payment_result = process_payment(amount_from_db, payment_method_id, billing_info, race_name, registrant_name, team_name)
+                print(payment_result)
+                if 'status' in payment_result and payment_result['status'] != 'succeeded':
+                    raise Exception(payment_result['message'])  # This will trigger a rollback
+                print(registration.first_name)
+                # Return client secret, confirmation code, race   r data, and race data
+                response_data = {
+                    'payment_status': payment_result.status,
+                    'payment_amount': payment_result.amount,
+                    'confirmation_code': registration.confirmation_code,
+                    'registration_data': {
+                        'first_name': registration.first_name,
+                        'last_name': registration.last_name,
+                        'email': registration.email,
+                    },
+                    'race_data': {
+                        'name': race.name,
+                        'date': race.date,
+                        'description': race.description,
+                        'event': race.event.name,
+                        'contact': race.event.email,
+                    },
+                    # is team name fixed!
+                    'team_data': {
+                        'team_name': team.name,
+                        'emails': [{'email': member.email, 'leg_order': member.leg_order} for member in team.members.all()],
+                    }
                 }
-            })
+                # Convert response data keys to camelCase
+                response_data = convert_keys_to_camel_case(response_data)
+                print(response_data)
+                return JsonResponse(response_data)
+            except Exception as e:
+                logger.error(f"Error during transaction: {str(e)}")
+                raise
     except json.JSONDecodeError as e:
+        print(e)
         logger.error(f"JSON decode error: {str(e)}")
         return JsonResponse({'error': "Invalid JSON data."}, status=400)
     except Exception as e:
+        print(e)
         logger.error(f"Unexpected error: {str(e)}")
         return JsonResponse({'error': "An unexpected error occurred."}, status=400)
 

@@ -12,9 +12,10 @@ export default {
     }),
   },
   mounted() {
+    console.log("mounted333");
     // Log the props to inspect them
     console.log('Confirmation Code:', this.confirmationCode);
-    console.log('Racer Data:', this.registrationData);
+    console.log('Registration Data:', this.registrationData);
     console.log('Race Data:', this.raceData);
     console.log('Payment Status:', this.paymentStatus);
     console.log('Team Data:', this.teamData);

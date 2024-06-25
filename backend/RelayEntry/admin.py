@@ -180,3 +180,9 @@ class LegAdmin(BaseOwnerAdmin):
 class TeamAdmin(BaseOwnerAdmin):
     list_display = ('name', 'projected_team_time',)
     search_fields = ('name', 'race__name',)
+
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(BaseOwnerAdmin):
+    list_display = ('email', 'team', 'leg_order',)
+    search_fields = ('email', 'team__name',)

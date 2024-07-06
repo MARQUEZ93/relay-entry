@@ -30,7 +30,7 @@
                     </li>
                     <li>
                     <v-icon left>mdi-map-marker</v-icon>
-                    &nbsp;Perfect for races across the country.
+                    &nbsp;Perfect for races across the USA.
                     </li>
                     <li>
                     <v-icon left>mdi-web</v-icon>

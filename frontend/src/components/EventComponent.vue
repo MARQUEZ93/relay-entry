@@ -130,6 +130,11 @@ export default {
                   <v-btn color="primary">{{ getRegisterButtonText(race) }}</v-btn>
                 </router-link>
               </v-card-actions>
+              <v-card-actions class="justify-center">
+                <router-link :to="`/events/${event.url_alias}/${race.id}`">
+                  <v-btn color="primary">Member Waiver</v-btn>
+                </router-link>
+              </v-card-actions>
             </v-card>
           </v-col>
         </v-row>

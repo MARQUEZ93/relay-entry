@@ -56,18 +56,18 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.is_staff and not request.user.is_superuser:
-            return qs.filter(created_by=request.user)
+        # if request.user.is_staff and not request.user.is_superuser:
+        #     return qs.filter(created_by=request.user)
         return qs
 
     def save_model(self, request, obj, form, change):
-        if not change or not obj.created_by_id:
-            obj.created_by = request.user
+        # if not change or not obj.created_by_id:
+        #     obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
     def has_change_permission(self, request, obj=None):
-        if obj and obj.created_by != request.user and not request.user.is_superuser:
-            return False
+        # if obj and obj.created_by != request.user and not request.user.is_superuser:
+        #     return False
         return super().has_change_permission(request, obj)
 
     # def has_delete_permission(self, request, obj=None):
@@ -76,8 +76,8 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
     #     return super().has_delete_permission(request, obj)
     
     def get_readonly_fields(self, request, obj=None):
-        if obj:  # When editing an existing object
-            return self.readonly_fields + ('created_by',)
+        # if obj:  # When editing an existing object
+        #     return self.readonly_fields + ('created_by',)
         return self.readonly_fields
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):

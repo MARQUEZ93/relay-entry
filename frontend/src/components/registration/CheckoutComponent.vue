@@ -18,6 +18,31 @@ export default {
   },
   data() {
     return {
+      nameRules: [
+        v => !!v || 'Name is required',
+        v => (v && v.length > 1) || 'Name must be more than 1 character',
+      ],
+      emailRules: [
+        v => !!v || 'Email is required',
+        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+      ],
+      addressRules: [
+        v => !!v || 'Address is required',
+      ],
+      cityRules: [
+        v => !!v || 'City is required',
+      ],
+      stateRules: [
+        v => !!v || 'State is required',
+      ],
+      zipRules: [
+        v => !!v || 'ZIP code is required',
+      ],
+      snackbar: {
+        show: false,
+        message: '',
+        timeout: 3000
+      },
       stripe: null,
       cardElement: null,
       valid: false,
@@ -47,8 +72,27 @@ export default {
     }
   },
   methods: {
+    showError(message) {
+      this.snackbar.message = message;
+      this.snackbar.show = true;
+    },
+    validateBillingInfo() {
+      return (
+        this.billingInfo.address &&
+        this.billingInfo.city &&
+        this.billingInfo.state &&
+        this.billingInfo.zip &&
+        this.billingInfo.name &&
+        this.billingInfo.email
+      );
+    },
     async registerTeamAndPay() {
       if (!this.$refs.form.validate()) {
+        return;
+      }
+      if (!this.validateBillingInfo()) {
+        // Show an error message if validation fails
+        this.showError('Please fill out all required billing information.');
         return;
       }
 
@@ -68,7 +112,7 @@ export default {
       });
 
       if (error) {
-        document.getElementById('card-errors').textContent = error.message;
+        this.showError("Payment method creation failed: " + error.message);
       } else {
         try {
           const response = await api.payAndRegisterTeam({
@@ -140,6 +184,7 @@ export default {
             <v-text-field
               v-model="billingInfo.name"
               label="Name"
+              :rules="nameRules"
               required
             ></v-text-field>
           </v-col>
@@ -147,6 +192,7 @@ export default {
             <v-text-field
               v-model="billingInfo.email"
               label="Email"
+              :rules="emailRules"
               required
             ></v-text-field>
           </v-col>
@@ -156,6 +202,7 @@ export default {
             <v-text-field
               v-model="billingInfo.address"
               label="Address"
+              :rules="addressRules"
               required
             ></v-text-field>
           </v-col>
@@ -163,6 +210,7 @@ export default {
             <v-text-field
               v-model="billingInfo.city"
               label="City"
+              :rules="cityRules"
               required
             ></v-text-field>
           </v-col>
@@ -173,6 +221,7 @@ export default {
               v-model="billingInfo.state"
               label="State"
               required
+              :rules="stateRules"
             ></v-text-field>
           </v-col>
           <v-col cols="12" md="6">
@@ -180,6 +229,7 @@ export default {
               v-model="billingInfo.zip"
               label="ZIP Code"
               required
+              :rules="zipRules"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -187,13 +237,18 @@ export default {
           <v-col cols="12">
             <div ref="cardElement" id="card-element"></div>
             <div id="card-errors" role="alert" class="mt-2"></div>
-            <p class="mt-4"><strong>Order Total: ${{ race.price }}</strong></p>
+            <p class="mt-3 order-total"><strong>Grand Total: ${{ race.price }}</strong></p>
           </v-col>
         </v-row>
+         <!-- Snackbar for error messages -->
+        <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout" color="error">
+          {{ snackbar.message }}
+          <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
+        </v-snackbar>
       </v-form>
     </v-card-text>
-    <v-card-actions>
-      <v-btn color="primary" @click="registerTeamAndPay">Pay Now</v-btn>
+    <v-card-actions class="justify-center">
+      <v-btn color="primary" @click="registerTeamAndPay" class="pay-now">Pay Now</v-btn>
     </v-card-actions>
   </v-card>
 
@@ -216,5 +271,16 @@ export default {
 }
 #card-errors {
   color: red;
+}
+.v-btn {
+  margin: 0 5px;
+}
+.pay-now{
+  background: rgb(24, 103, 192);
+  color: white !important;
+}
+.order-total {
+  font-size: 18px;
+  font-weight: bold;
 }
 </style>

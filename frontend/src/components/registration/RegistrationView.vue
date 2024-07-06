@@ -173,8 +173,7 @@ export default {
         </div>
         <div v-if="activeTab === 2">
           <CheckoutComponent :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData" :stripePromise="stripePromise"/>
-          <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
-          <v-btn color="primary" class="mt-3">Submit</v-btn>
+          <v-btn style="float:left;" @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
         </div>
       </v-col>
     </v-row>

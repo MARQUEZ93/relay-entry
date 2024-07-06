@@ -20,9 +20,9 @@ export default {
       localRegistrationData: {
         ...this.registrationData,
         teamData: {
-          name: '',
-          projectedTeamTime: '',
-          emails: [],
+          name: this.registrationData.teamData?.name || '',
+          projectedTeamTime: this.registrationData.teamData?.projectedTeamTime || '',
+          emails: this.registrationData.teamData?.emails || [],
         },
         dateOfBirth: this.registrationData.dateOfBirth || '',
         // parentGuardianName: this.registrationData.parentGuardianName || '',
@@ -73,11 +73,25 @@ export default {
   },
   methods: {
     initializeRunnerEmails() {
+      // Check if race and num_runners are defined
       if (this.race && this.race.num_runners) {
-        this.localRegistrationData.teamData.emails = Array.from({ length: this.race.num_runners }, (v, i) => ({
-          email: '',
-          leg_order: i + 1
-        }));
+        // Ensure teamData.emails is an array
+        if (!Array.isArray(this.localRegistrationData.teamData.emails)) {
+          this.localRegistrationData.teamData.emails = [];
+        }
+
+        // Fill in missing emails, preserving existing ones
+        for (let i = 0; i < this.race.num_runners; i++) {
+          if (!this.localRegistrationData.teamData.emails[i]) {
+            this.localRegistrationData.teamData.emails[i] = {
+              email: '',
+              leg_order: i + 1
+            };
+          } else {
+            // Ensure the leg_order is correct even for existing entries
+            this.localRegistrationData.teamData.emails[i].leg_order = i + 1;
+          }
+        }
       }
     },
     initializeProjectTeamTimeChoices() {

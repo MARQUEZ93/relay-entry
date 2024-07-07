@@ -100,6 +100,39 @@ export default {
       }
     },
     submit() {
+      // TODO: remove this shit
+      this.localRegistrationData = {
+        teamData: {
+          name: 'fuck',
+          projectedTeamTime: '5:30 / mile',
+          emails: [
+            {
+              email: '1@1.com',
+              leg_order: 1
+            },
+            {
+              email: '1@1.com',
+              leg_order: 2
+            },
+            {
+              email: '3@1.com',
+              leg_order: 3
+            },
+            {
+              email: '4@1.com',
+              leg_order: 4
+            },
+          ]
+        },
+        firstName: 'hey',
+        lastName: 'fuck',
+        email: 'hey@hey.com',
+        gender: 'Male',
+        phone: '3017675693',
+        dateOfBirth: '1932-06-02'
+      }
+      // TODO: remove this shit
+      this.$emit('complete', this.localRegistrationData);
       if (this.$refs.form.validate()) {
         this.$emit('complete', this.localRegistrationData);
       }
@@ -213,6 +246,8 @@ export default {
       label="Parent/Guardian Signature"
     ></v-textarea> -->
     <v-btn type="submit" color="primary" :disabled="!valid">Next</v-btn>
+    <!-- TODO: REMOVE THIS SHIT -->
+    <v-btn type="submit" color="primary" >Demo</v-btn>
   </v-form>
 </template>
 

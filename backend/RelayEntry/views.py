@@ -79,7 +79,6 @@ def team_register_and_pay(request):
     try:
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
-        print(data)
         race_id = data['race_id']
         amount_from_ui = data['price']  # Extract and convert the amount to cents
         
@@ -120,7 +119,6 @@ def team_register_and_pay(request):
                     # parent_guardian_signature=registration_data.get('parentGuardianSignature', ''),
                 )
                 emails = team_data.get('emails', {})  # includes leg order
-                print(emails)
                 if len(emails) != race.num_runners:
                     return JsonResponse({'error': f'The number of emails must be equal to {race.num_runners}.'}, status=400)
                 team = Team.objects.create(
@@ -129,7 +127,6 @@ def team_register_and_pay(request):
                     projected_team_time=team_data['projected_team_time'],
                     captain=registration,
                 )
-                print(team.name)
                 team_name = team.name
                 # Create TeamMember instances
                 for member in emails:
@@ -141,21 +138,24 @@ def team_register_and_pay(request):
 
                 registrant_name = f"{registration_data['first_name']} {registration_data['last_name']}"
                 # Process the payment
-                print(registrant_name)
                 payment_result = process_payment(amount_from_db, payment_method_id, billing_info, race_name, registrant_name, team_name)
                 print(payment_result)
                 if 'status' in payment_result and payment_result['status'] != 'succeeded':
                     raise Exception(payment_result['message'])  # This will trigger a rollback
-                print(registration.first_name)
-                # Return client secret, confirmation code, race   r data, and race data
                 response_data = {
-                    'payment_status': payment_result.status,
-                    'payment_amount': payment_result.amount,
-                    'confirmation_code': registration.confirmation_code,
+                    'payment_data': {
+                        'status': payment_result.status,
+                        'amount': payment_result.amount,
+                        'billing_info': billing_info
+                    },
                     'registration_data': {
                         'first_name': registration.first_name,
                         'last_name': registration.last_name,
+                        'gender': registration.gender,
                         'email': registration.email,
+                        'confirmation_code': registration.confirmation_code,
+                        'phone': registration.phone,
+                        'dob': registration.dob,
                     },
                     'race_data': {
                         'name': race.name,
@@ -163,16 +163,21 @@ def team_register_and_pay(request):
                         'description': race.description,
                         'event': race.event.name,
                         'contact': race.event.email,
+                        'address': race.event.address,
+                        'city': race.event.city,
+                        'state': race.event.state,
+                        'postal_code': race.event.postal_code,
+                        'website_url': race.event.website_url,
                     },
-                    # is team name fixed!
+                    # TODO: is team name fixed?
                     'team_data': {
-                        'team_name': team.name,
+                        'projected_team_pace': team.projected_team_time,
+                        'name': team.name,
                         'emails': [{'email': member.email, 'leg_order': member.leg_order} for member in team.members.all()],
                     }
                 }
                 # Convert response data keys to camelCase
                 response_data = convert_keys_to_camel_case(response_data)
-                print(response_data)
                 return JsonResponse(response_data)
             except Exception as e:
                 logger.error(f"Error during transaction: {str(e)}")

@@ -176,10 +176,15 @@ class RegistrationAdmin(admin.ModelAdmin):
 #             kwargs["queryset"] = Race.objects.filter(created_by=request.user)
 #         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+class TeamMemberInline(admin.TabularInline):
+    model = TeamMember
+    extra = 1  # Number of extra forms to display
+    
 @admin.register(Team)
 class TeamAdmin(BaseOwnerAdmin):
     list_display = ('name', 'projected_team_time',)
     search_fields = ('name', 'race__name',)
+    inlines = [TeamMemberInline]
 
 
 @admin.register(TeamMember)

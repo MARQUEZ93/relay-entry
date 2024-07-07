@@ -41,7 +41,7 @@ export default {
       snackbar: {
         show: false,
         message: '',
-        timeout: 3000
+        timeout: 8000
       },
       stripe: null,
       cardElement: null,
@@ -62,7 +62,7 @@ export default {
     try {
       this.stripe = await this.stripePromise; // Await the resolution of the promise to get the Stripe instance
       if (!this.stripe) {
-        throw new Error('Stripe instance is undefined');
+        throw new Error('Stripe connection problems');
       }
       const elements = this.stripe.elements();
       this.cardElement = elements.create('card');
@@ -112,7 +112,7 @@ export default {
       });
 
       if (error) {
-        this.showError("Payment method creation failed: " + error.message);
+        this.showError('There was an issue with your card details. Please check and try again.');
       } else {
         try {
           const response = await api.payAndRegisterTeam({
@@ -130,14 +130,13 @@ export default {
           console.log(response.data);
 
           if (response.data.error) {
-            document.getElementById('card-errors').textContent = response.data.error;
+            this.showError('An error occurred while processing your registration. Please try again later.');
           } else {
             
             // TODO: null check here
             // package this tighter
             const { confirmationCode, registrationData, raceData, paymentAmount, paymentStatus, teamData } = await response.data;
             console.log(response); 
-            console.log('Payment and registration successful');
             console.log(registrationData);
             console.log(teamData);
             console.log(raceData);
@@ -163,8 +162,7 @@ export default {
             this.$router.push({ name: 'Confirmation' });
           }
         } catch (err) {
-          console.error('Error submitting payment:', err);
-          document.getElementById('card-errors').textContent = 'An error occurred while processing your payment.';
+          this.showError('An error occurred while processing your transaction. Please try again later.');
         }
       }
     },
@@ -236,7 +234,6 @@ export default {
         <v-row>
           <v-col cols="12">
             <div ref="cardElement" id="card-element"></div>
-            <div id="card-errors" role="alert" class="mt-2"></div>
             <p class="mt-3 order-total"><strong>Grand Total: ${{ race.price }}</strong></p>
           </v-col>
         </v-row>
@@ -268,9 +265,6 @@ export default {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-}
-#card-errors {
-  color: red;
 }
 .v-btn {
   margin: 0 5px;

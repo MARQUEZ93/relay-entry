@@ -124,38 +124,21 @@ export default {
             billingInfo: this.billingInfo
           });
 
-          console.log("registerTeamAndPay");
-
-          console.log(response);
-          console.log(response.data);
-
           if (response.data.error) {
             this.showError('An error occurred while processing your registration. Please try again later.');
           } else {
             
             // TODO: null check here
             // package this tighter
-            const { confirmationCode, registrationData, raceData, paymentAmount, paymentStatus, teamData } = await response.data;
-            console.log(response); 
-            console.log(registrationData);
-            console.log(teamData);
-            console.log(raceData);
-            console.log(paymentAmount);
-            console.log(confirmationCode);
-            console.log(paymentStatus);
-
-            // TODO: add loader
+            const { registrationData, raceData, paymentData, teamData } = await response.data;
             // test bad data
-
             // Redirect to the confirmation page
-             // Set the data in Vuex store
+            // Set the data in Vuex store
             //  TODO: null check
             this.$store.commit('setConfirmationData', {
-              confirmationCode: confirmationCode,
               registrationData: registrationData,
               raceData: raceData,
-              paymentStatus: paymentStatus,
-              paymentAmount: paymentAmount,
+              paymentData: paymentData,
               teamData: teamData
             });
 

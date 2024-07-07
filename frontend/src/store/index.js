@@ -3,30 +3,24 @@ import { createStore } from 'vuex';
 const store = createStore({
   state() {
     return {
-      confirmationCode: null,
       registrationData: null,
       raceData: null,
       teamData: null,
-      paymentAmount: null,
-      paymentStatus: null,
+      paymentData: null,
     };
   },
   mutations: {
     setConfirmationData(state, data) {
-      state.confirmationCode = data.confirmationCode;
       state.registrationData = data.registrationData;
       state.teamData = data.teamData;
       state.raceData = data.raceData;
-      state.paymentStatus = data.paymentStatus;
-      state.paymentAmount = data.paymentAmount;
+      state.paymentData = data.paymentData;
     },
     clearConfirmationData(state) {
-      state.confirmationCode = null;
       state.registrationData = null;
       state.raceData = null;
       state.teamData = null;
-      state.paymentStatus = null;
-      state.paymentAmount = null;
+      state.paymentData = null;
     },
   },
 });

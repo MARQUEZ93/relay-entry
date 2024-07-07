@@ -144,7 +144,6 @@ def team_register_and_pay(request):
                     raise Exception(payment_result['message'])  # This will trigger a rollback
                 response_data = {
                     'payment_data': {
-                        'status': payment_result.status,
                         'amount': payment_result.amount,
                         'billing_info': billing_info
                     },
@@ -155,6 +154,8 @@ def team_register_and_pay(request):
                     },
                     'race_data': {
                         'name': race.name,
+                        # how to resolve this in py before sending to the UI
+                        'time': f"{race.hour:02}:{race.minute:02} {race.time_indicator}",
                         'date': race.date,
                         'description': race.description,
                         'event': race.event.name,

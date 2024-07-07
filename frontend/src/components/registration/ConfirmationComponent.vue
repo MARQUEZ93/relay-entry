@@ -41,7 +41,7 @@ export default {
           <v-card class="mx-auto my-5 pa-5" max-width="1000">
             <v-card-title class="d-flex justify-center">
               <v-icon class="mr-3">mdi-email</v-icon>
-              <h3>We'll send you an email with your registration information.</h3>
+              <h3>You'll receive a confirmation email.</h3>
             </v-card-title>
             <v-card-text>
               <v-row>
@@ -71,8 +71,8 @@ export default {
                   <p>{{ registrationData.email }}</p>
                   <p><strong>Confirmation Code:</strong> #{{ registrationData.confirmationCode }}</p>
                   <p><strong>Date: <span class="confirmation-registration-date"> {{ raceData.time }} {{ formatDate(raceData.date) }}</span></strong> </p>
-                  <p><strong>Contact:</strong> {{ raceData.contact }}</p>
                   <p><strong>Location:</strong> {{ raceData.address }}, {{ raceData.city }}, {{ raceData.state }}</p>
+                  <p><strong>Contact:</strong> {{ raceData.contact }}</p>
                   <p><a :href="raceData.websiteUrl" target="_blank">{{ raceData.websiteUrl }}</a></p>
                 </v-col>
               </v-row>

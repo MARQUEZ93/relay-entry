@@ -140,8 +140,11 @@ export default {
           <v-card-subtitle>
             <p class="text-center">{{ formattedRaceDate(race.date) }}</p>
           </v-card-subtitle>
-          <v-card-subtitle>
-            <p class="text-center"><strong>Price:</strong> ${{ formatPrice(race.price) }}</p>
+          <v-card-subtitle v-if="race.is_relay">
+            <p class="text-center"><strong>${{ formatPrice(race.price) }} per Team</strong></p>
+          </v-card-subtitle>
+          <v-card-subtitle v-if="!race.is_relay">
+            <p class="text-center"><strong>${{ formatPrice(race.price) }}</strong></p>
           </v-card-subtitle>
         </v-card>
       </v-col>

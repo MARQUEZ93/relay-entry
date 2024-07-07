@@ -1,4 +1,5 @@
 <script>
+  import axios from 'axios';
   export default {
     watch: {
       accepted(newVal) {
@@ -14,10 +15,28 @@
         type: Boolean,
         required: true,
       },
+      initialIpAddress: {
+        type: String, 
+        default: '',
+      }
+    },
+    methods: {
+      async getUserIp() {
+        try {
+          const response = await axios.get('https://api.ipify.org?format=json');
+          this.userIp = response.data.ip;
+        } catch (error) {
+          console.error('Error fetching IP address:', error);
+        }
+      },
+    },
+    mounted() {
+      this.getUserIp();
     },
     data() {
       return {
         accepted: this.initialAccepted,
+        userIp: '',
       };
     },
   };

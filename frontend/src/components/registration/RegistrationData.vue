@@ -38,10 +38,10 @@ export default {
         v => !!v || 'Email is required',
         v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
       ],
-      phoneRules: [
-        v => !!v || 'Phone is required',
-        v => /^\d{10}$/.test(v) || 'Phone must be valid',
-      ],
+      // phoneRules: [
+      //   v => !!v || 'Phone is required',
+      //   v => /^\d{10}$/.test(v) || 'Phone must be valid',
+      // ],
       genders: ['Male', 'Female', 'Other'],
       dobRules: [
         v => !!v || 'Date of Birth is required',
@@ -99,11 +99,21 @@ export default {
         this.projectedTeamTimeChoices = this.race.projected_team_time_choices;
       }
     },
+    // TODO REMOVE THIS HSIT
+    generateRandomString(length) {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      const charactersLength = characters.length;
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      return result;
+    },
     submit() {
       // TODO: remove this shit
       this.localRegistrationData = {
         teamData: {
-          name: 'fuck',
+          name: this.generateRandomString(4),
           projectedTeamTime: '5:30 / mile',
           emails: [
             {
@@ -126,9 +136,9 @@ export default {
         },
         firstName: 'hey',
         lastName: 'fuck',
-        email: 'hey@hey.com',
+        email: this.generateRandomString(4) + '@hey.com',
         gender: 'Male',
-        phone: '3017675693',
+        // phone: '3017675693',
         dateOfBirth: '1932-06-02'
       }
       // TODO: remove this shit
@@ -202,16 +212,6 @@ export default {
         ></v-text-field>
       </v-col>
       <v-col cols="12" md="6">
-        <v-text-field
-          v-model="localRegistrationData.phone"
-          :rules="phoneRules"
-          label="Phone"
-          required
-        ></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" md="6">
         <v-select
           v-model="localRegistrationData.gender"
           :items="genders"
@@ -219,6 +219,16 @@ export default {
           required
         ></v-select>
       </v-col>
+      <!-- <v-col cols="12" md="6">
+        <v-text-field
+          v-model="localRegistrationData.phone"
+          :rules="phoneRules"
+          label="Phone"
+          required
+        ></v-text-field>
+      </v-col> -->
+    </v-row>
+    <v-row>
       <v-col cols="12" md="6">
         <v-text-field
           v-model="localRegistrationData.dateOfBirth"

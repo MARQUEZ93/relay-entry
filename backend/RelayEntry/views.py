@@ -109,7 +109,7 @@ def team_register_and_pay(request):
                     first_name=registration_data['first_name'],
                     last_name=registration_data['last_name'],
                     email=registration_data['email'],
-                    phone=registration_data.get('phone', ''),
+                    # phone=registration_data.get('phone', ''),
                     gender=registration_data['gender'],
                     dob=registration_data['date_of_birth'],
                     waiver_text=race.event.waiver_text,
@@ -149,13 +149,9 @@ def team_register_and_pay(request):
                         'billing_info': billing_info
                     },
                     'registration_data': {
-                        'first_name': registration.first_name,
-                        'last_name': registration.last_name,
-                        'gender': registration.gender,
+                        'name': registration.first_name + " " + registration.last_name,
                         'email': registration.email,
                         'confirmation_code': registration.confirmation_code,
-                        'phone': registration.phone,
-                        'dob': registration.dob,
                     },
                     'race_data': {
                         'name': race.name,
@@ -171,7 +167,9 @@ def team_register_and_pay(request):
                     },
                     # TODO: is team name fixed?
                     'team_data': {
-                        'projected_team_pace': team.projected_team_time,
+                        'race': race.name,
+                        'date': race.date,
+                        'projected_team_time': team.projected_team_time,
                         'name': team.name,
                         'emails': [{'email': member.email, 'leg_order': member.leg_order} for member in team.members.all()],
                     }

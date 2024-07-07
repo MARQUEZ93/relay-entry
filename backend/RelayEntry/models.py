@@ -254,7 +254,7 @@ class TeamMember(models.Model):
     leg_order = models.PositiveIntegerField()
     # leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True, help_text="The leg the team member is running (if applicable).")
     def __str__(self):
-        return f'{self.email} - {self.team.name}'
+        return f'{self.email} - {self.team.name} - {self.registration.race.name}'
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

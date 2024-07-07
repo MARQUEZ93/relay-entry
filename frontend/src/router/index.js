@@ -54,6 +54,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior() {
+    console.log("scrolled");
     return { x: 0, y: 0 };
   },
 });

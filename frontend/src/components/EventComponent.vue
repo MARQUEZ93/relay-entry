@@ -98,6 +98,12 @@ export default {
               <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
             </v-btn>
           </v-card-actions>
+          <v-card-actions class="d-flex flex-column align-center">
+            <router-link :to="`/events/${event.url_alias}/`">
+              <v-btn color="primary">Sign the Waiver</v-btn>
+            </router-link>
+            <div class="help-text mt-2 text-center">Team Members: Fill out your info and sign the waiver. Only for team members, not team captains.</div>
+          </v-card-actions>
         </v-card>
         <v-row>
           <v-col
@@ -130,11 +136,6 @@ export default {
                   <v-btn color="primary">{{ getRegisterButtonText(race) }}</v-btn>
                 </router-link>
               </v-card-actions>
-              <v-card-actions class="justify-center">
-                <router-link :to="`/events/${event.url_alias}/${race.id}`">
-                  <v-btn color="primary">Member Waiver</v-btn>
-                </router-link>
-              </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
@@ -154,6 +155,10 @@ h1 {
 p {
   font-size: 1.2em;
   color: #2c3e50;
+}
+.help-text {
+  font-size: 0.9rem;
+  color: #6c757d; /* A subtle gray color */
 }
 
 .v-btn {

@@ -39,7 +39,7 @@ export default {
 
 <template>
   <div>
-    <p class="confirmation-header"><strong>{{confirmationHeader}}</strong>#{{ registrationData.confirmationCode }}</p>
+    <p class="confirmation-header"><strong>{{ confirmationHeader }}</strong>&nbsp;#{{ registrationData.confirmationCode }}</p>
     <v-container>
       <v-row justify="center">
         <v-col cols="12" md="10">

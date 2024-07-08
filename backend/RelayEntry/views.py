@@ -131,11 +131,16 @@ def team_register_and_pay(request):
                 team_name = team.name
                 # Create TeamMember instances
                 for member in emails:
-                    TeamMember.objects.create(
+                    team_member = TeamMember.objects.create(
                         team=team,
                         email=member['email'],
                         leg_order=member['leg_order'],
                     )
+                    # for team captain, connect their registration to the team member (if the registration email is part of the team)
+                    if member['email'] and member['email'].lower() == registration.email:
+                        registration.member = team_member
+                        registration.save()
+                        print(f"Connected registration {registration.id} to team member {team_member.email}")
 
                 registrant_name = f"{registration_data['first_name']} {registration_data['last_name']}"
                 # Process the payment

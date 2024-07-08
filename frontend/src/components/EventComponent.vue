@@ -100,9 +100,9 @@ export default {
           </v-card-actions>
           <v-card-actions class="d-flex flex-column align-center">
             <router-link :to="`/events/${event.url_alias}/register`">
-              <v-btn color="primary">Register</v-btn>
+              <v-btn color="primary">Register & Sign Waiver</v-btn>
             </router-link>
-            <div class="help-text mt-2 text-center"><strong>Team Members:</strong> Register above. <strong>Team Captains:</strong> Register yourself & your team for your race below.</div>
+            <div class="help-text mt-2 text-center"><strong>Team Members: </strong>Register & sign the waiver above. <strong>Team Captains:</strong> Register yourself & your team for your race below.</div>
           </v-card-actions>
         </v-card>
         <v-row>

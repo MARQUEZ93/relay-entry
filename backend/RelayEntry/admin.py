@@ -134,8 +134,8 @@ class RegistrationAdmin(admin.ModelAdmin):
         return qs
 
     def has_change_permission(self, request, obj=None):
-        if obj and obj.race.created_by != request.user and not request.user.is_superuser:
-            return False
+        # if obj and obj.race.created_by != request.user and not request.user.is_superuser:
+        #     return False
         return super().has_change_permission(request, obj)
 
     # def has_delete_permission(self, request, obj=None):
@@ -194,5 +194,19 @@ class TeamAdmin(BaseOwnerAdmin):
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(BaseOwnerAdmin):
-    list_display = ('email', 'team', 'leg_order',)
-    search_fields = ('email', 'team__name',)
+    list_display = ('email', 'team', 'leg_order', 'race_name', 'registration_info')
+    search_fields = ('email', 'team__name', 'team__race__name')
+    list_filter = ('team__race__name',)
+    ordering = ('team', 'leg_order')
+
+    def race_name(self, obj):
+        return obj.team.race.name
+    
+    def registration_info(self, obj):
+        registration = Registration.objects.filter(team_member=obj).first()
+        if registration:
+            return f"Registration ID: {registration.id} - Email: {registration.email}"
+        return "No Registration"
+    
+    registration_info.short_description = 'Registration'
+    race_name.short_description = 'Race'

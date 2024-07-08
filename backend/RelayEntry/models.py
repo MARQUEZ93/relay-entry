@@ -62,6 +62,8 @@ class Event(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        if self.email:
+            self.email = self.email.lower()
         if not self.url_alias:
             self.url_alias = slugify(self.name)
         super().save(*args, **kwargs)
@@ -171,6 +173,18 @@ class Team(models.Model):
     
     def __str__(self):
         return f'{self.name} - {self.race.name}'
+
+class TeamMember(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members')
+    email = models.EmailField()
+    leg_order = models.PositiveIntegerField()
+    # leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True, help_text="The leg the team member is running (if applicable).")
+    def __str__(self):
+        return f'{self.email} - {self.team.name} - {self.team.race.name}'
+    
+    def save(self, *args, **kwargs):
+        self.email = self.email.lower()
+        super().save(*args, **kwargs)
     
 class Registration(models.Model):
     email_confirmed = models.BooleanField(default=False)
@@ -188,7 +202,7 @@ class Registration(models.Model):
     coupon_code = models.ForeignKey(CouponCode, null=True, blank=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    team = models.ForeignKey(Team, null=True, blank=True, on_delete=models.CASCADE, help_text="The team the registration is associated with (if applicable).")
+    member = models.ForeignKey(TeamMember, on_delete=models.SET_NULL, null=True, blank=True)
 
     first_name = models.CharField(max_length=255, help_text="First name of the participant")
     last_name = models.CharField(max_length=255, help_text="Last name of the participant")
@@ -209,6 +223,8 @@ class Registration(models.Model):
         super().clean()
 
     def save(self, *args, **kwargs):
+        if self.email:
+            self.email = self.email.lower()
         # Generate confirmation code if not present
         if not self.confirmation_code:
             self.confirmation_code = uuid.uuid4().hex[:16]
@@ -260,14 +276,3 @@ class Leg(models.Model):
 
     def __str__(self):
         return f"Leg {self.leg_number} - {self.distance}"
-
-class TeamMember(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members')
-    email = models.EmailField()
-    leg_order = models.PositiveIntegerField()
-    # leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True, help_text="The leg the team member is running (if applicable).")
-    def __str__(self):
-        return f'{self.email} - {self.team.name} - {self.registration.race.name}'
-    
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)

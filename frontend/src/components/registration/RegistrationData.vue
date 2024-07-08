@@ -109,38 +109,38 @@ export default {
     },
     submit() {
       // TODO: remove this shit
-      this.localRegistrationData = {
-        teamData: {
-          name: this.generateRandomString(4),
-          projectedTeamTime: '5:30 / mile',
-          emails: [
-            {
-              email: '1@1.com',
-              leg_order: 1
-            },
-            {
-              email: '1@1.com',
-              leg_order: 2
-            },
-            {
-              email: '3@1.com',
-              leg_order: 3
-            },
-            {
-              email: '4@1.com',
-              leg_order: 4
-            },
-          ]
-        },
-        firstName: 'hey',
-        lastName: 'fuck',
-        email: this.generateRandomString(4) + '@hey.com',
-        gender: 'Male',
-        // phone: '3017675693',
-        dateOfBirth: '1932-06-02'
-      }
-      // TODO: remove this shit
-      this.$emit('complete', this.localRegistrationData);
+      // this.localRegistrationData = {
+      //   teamData: {
+      //     name: this.generateRandomString(4),
+      //     projectedTeamTime: '5:30 / mile',
+      //     emails: [
+      //       {
+      //         email: '1@1.com',
+      //         leg_order: 1
+      //       },
+      //       {
+      //         email: '1@1.com',
+      //         leg_order: 2
+      //       },
+      //       {
+      //         email: '3@1.com',
+      //         leg_order: 3
+      //       },
+      //       {
+      //         email: '4@1.com',
+      //         leg_order: 4
+      //       },
+      //     ]
+      //   },
+      //   firstName: 'hey',
+      //   lastName: 'fuck',
+      //   email: this.generateRandomString(4) + '@hey.com',
+      //   gender: 'Male',
+      //   // phone: '3017675693',
+      //   dateOfBirth: '1932-06-02'
+      // }
+      // // TODO: remove this shit
+      // this.$emit('complete', this.localRegistrationData);
       if (this.$refs.form.validate()) {
         this.$emit('complete', this.localRegistrationData);
       }

@@ -118,8 +118,8 @@ class RaceAdmin(BaseOwnerAdmin):
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('race', 'first_name', 'last_name', 'email', 'amount_paid', 'created_at', 'updated_at', 'ip_address', 'parent_guardian_name', 'minor')
-    search_fields = ('email', 'race__name')
+    list_display = ('event', 'race', 'first_name', 'last_name', 'email', 'amount_paid', 'created_at', 'updated_at', 'ip_address', 'parent_guardian_name', 'minor')
+    search_fields = ('email', 'event__name', 'race__name')
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

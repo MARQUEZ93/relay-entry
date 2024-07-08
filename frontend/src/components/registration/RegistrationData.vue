@@ -3,9 +3,8 @@ export default {
   props: {
     race: {
       type: Object,
-      required: true,
     },
-    registrationData: {
+    registrationData: { 
       type: Object,
       required: true,
     },
@@ -29,7 +28,7 @@ export default {
         // parentGuardianSignature: this.registrationData.parentGuardianSignature || '',
         // minor: this.registrationData.minor || false,
       },
-      projectedTeamTimeChoices: this.race.projected_team_time_choices || [],
+      projectedTeamTimeChoices: this.race?.projected_team_time_choices || [],
       nameRules: [
         v => !!v || 'Name is required',
         v => (v && v.length > 1) || 'Name must be more than 1 character',
@@ -51,7 +50,6 @@ export default {
   watch: {
     race: {
       handler() {
-        console.log('Race changed:', this.race);
         this.initializeRunnerEmails();
         this.initializeProjectTeamTimeChoices();
       },
@@ -154,7 +152,7 @@ export default {
 
 <template>
   <v-form ref="form" v-model="valid" @submit.prevent="submit">
-    <template v-if="race.is_relay">
+    <template v-if="race && race.is_relay">
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field

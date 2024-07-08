@@ -176,7 +176,8 @@ class Registration(models.Model):
     email_confirmed = models.BooleanField(default=False)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     confirmation_code = models.CharField(max_length=16, unique=True, editable=False)  # Increased length to 16
-    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations')
+    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations', null=True, blank=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='registrations', null=True, blank=True)
     amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
     email = models.EmailField()
@@ -200,8 +201,8 @@ class Registration(models.Model):
 
     def clean(self):
         # Check if a registration with the same email and race already exists
-        if Registration.objects.filter(race=self.race, email=self.email).exists():
-            raise ValidationError('A registration with this email for the same race already exists.')
+        # if Registration.objects.filter(race=self.race, email=self.email).exists():
+        #     raise ValidationError('A registration with this email for the same race already exists.')
         # if self.coupon_code and self._state.adding:
         #     if self.coupon_code.usage_count >= self.coupon_code.max_uses:
         #         raise ValidationError("Coupon code has reached its maximum number of uses.")
@@ -211,6 +212,13 @@ class Registration(models.Model):
         # Generate confirmation code if not present
         if not self.confirmation_code:
             self.confirmation_code = uuid.uuid4().hex[:16]
+        
+        # ensure waiver text cannot be altered after the fact
+        if self.pk is not None:
+            original = Registration.objects.get(pk=self.pk)
+            if original.waiver_text != self.waiver_text:
+                raise ValidationError("You cannot change the value of this field.")
+
 
         # Validate minor fields
         # if self.minor and not (self.parent_guardian_name and self.parent_guardian_signature):

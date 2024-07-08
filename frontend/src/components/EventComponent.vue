@@ -99,10 +99,10 @@ export default {
             </v-btn>
           </v-card-actions>
           <v-card-actions class="d-flex flex-column align-center">
-            <router-link :to="`/events/${event.url_alias}/`">
-              <v-btn color="primary">Sign the Waiver</v-btn>
+            <router-link :to="`/events/${event.url_alias}/register_and_sign_waiver`">
+              <v-btn color="primary">Register & Sign Waiver</v-btn>
             </router-link>
-            <div class="help-text mt-2 text-center">Team Members: Fill out your info and sign the waiver. Only for team members, not team captains.</div>
+            <div class="help-text mt-2 text-center">For Team Members: Register and sign the waiver. Team captains register for their specific race below.</div>
           </v-card-actions>
         </v-card>
         <v-row>

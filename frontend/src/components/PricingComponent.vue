@@ -23,36 +23,36 @@
             <v-divider class="my-5"></v-divider>
             <v-row>
                 <v-col cols="12">
-                <ul class="pricing-list">
-                    <li>
-                    <v-icon left>mdi-currency-usd</v-icon>
-                    &nbsp;The lowest transaction fees.
-                    </li>
-                    <li>
-                    <v-icon left>mdi-map-marker</v-icon>
-                    &nbsp;Perfect for races across the USA.
-                    </li>
-                    <li>
-                    <v-icon left>mdi-web</v-icon>
-                    &nbsp;Make your event page your race's website.
-                    </li>
-                    <li>
-                    <v-icon left>mdi-pencil</v-icon>
-                    &nbsp;Ensure waivers are signed by every racer.
-                    </li>
-                    <li>
-                    <v-icon left>mdi-access-point</v-icon>
-                    &nbsp;Accessible software for all participants, including the visually impaired.
-                    </li>
-                    <li>
-                    <v-icon left>mdi-run-fast</v-icon>
-                    &nbsp;Designed for team relay races.
-                    </li>
-                    <li>
-                    <v-icon left>mdi-cellphone</v-icon>
-                    &nbsp;Mobile-first platform for easy access.
-                    </li>
-                </ul>
+                  <ul class="pricing-list">
+                      <li>
+                        <v-icon left>mdi-currency-usd</v-icon>
+                        &nbsp;The lowest transaction fees.
+                      </li>
+                      <li>
+                        <v-icon left>mdi-map-marker</v-icon>
+                        &nbsp;Perfect for races across the USA.
+                      </li>
+                      <li>
+                        <v-icon left>mdi-web</v-icon>
+                        &nbsp;Make your event page your race's website.
+                      </li>
+                      <li>
+                        <v-icon left>mdi-pencil</v-icon>
+                        &nbsp;Ensure waivers are signed by every racer.
+                      </li>
+                      <li>
+                        <v-icon left>mdi-access-point</v-icon>
+                        &nbsp;Accessible software for all participants, including the visually impaired.
+                      </li>
+                      <li>
+                        <v-icon left>mdi-run-fast</v-icon>
+                        &nbsp;Designed for team relay races.
+                      </li>
+                      <li>
+                        <v-icon left>mdi-cellphone</v-icon>
+                        &nbsp;Mobile-first platform for easy access.
+                      </li>
+                  </ul>
                 </v-col>
             </v-row>
             </v-sheet>

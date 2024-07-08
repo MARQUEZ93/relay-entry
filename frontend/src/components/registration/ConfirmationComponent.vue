@@ -41,7 +41,7 @@ export default {
           <v-card class="mx-auto my-5 pa-5" max-width="1000">
             <v-card-title class="d-flex justify-center">
               <v-icon class="mr-3">mdi-email</v-icon>
-              <h3>You'll receive a confirmation email.</h3>
+              <h3>We'll send you a confirmation email.</h3>
             </v-card-title>
             <v-card-text>
               <v-row>

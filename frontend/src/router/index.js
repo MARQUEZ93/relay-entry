@@ -5,6 +5,8 @@ import PricingComponent from '../components/PricingComponent.vue';
 import EventComponent from '../components/EventComponent.vue';
 import NotFound from '../components/NotFound.vue';
 import RegistrationView from '../components/registration/RegistrationView.vue';
+import RegisterAndWaiver from '../components/registration/RegisterAndWaiver.vue';
+
 import ConfirmationComponent from '../components/registration/ConfirmationComponent.vue';
 import store from '@/store'; // Import the store
 const routes = [
@@ -27,6 +29,12 @@ const routes = [
     path: '/events/:url_alias/:id',
     name: 'RegistrationView',
     component: RegistrationView,
+    props: true
+  },
+  {
+    path: '/events/:url_alias/register_and_sign_waiver',
+    name: 'RegisterAndWaiver',
+    component: RegisterAndWaiver,
     props: true
   },
   {

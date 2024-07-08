@@ -12,7 +12,11 @@
     props: {
       race: {
         type: Object,
-        required: true,
+        required: false,
+      },
+      event: {
+        type: Object,
+        required: false,
       },
       initialAccepted: {
         type: Boolean,
@@ -34,6 +38,16 @@
         }
       },
     },
+    computed: {
+      waiverText() {
+        if (this.event) {
+          return this.event.waiver_text;
+        } else if (this.race && this.race.event) {
+          return this.race.event.waiver_text;
+        }
+        return 'No waiver text available';
+      }
+    },
     mounted() {
       this.getUserIp();
     },
@@ -54,7 +68,7 @@
     <v-card-text>
       <p class="mb-4">Please read and accept the waiver to proceed.</p>
       <v-card class="pa-3" outlined>
-        <p>{{ race.event.waiver_text }}</p>
+        <p>{{ getWaiverText }}</p>
       </v-card>
       <v-checkbox
         v-model="accepted"

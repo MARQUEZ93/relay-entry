@@ -8,7 +8,7 @@ Use Case: Use this command when you want to ensure the images are up-to-date and
 
 ### 
  python3 -m venv venv
- source venv/bin/activatede
+ source venv/bin/activate
  deactivate
 
  docker-compose restart

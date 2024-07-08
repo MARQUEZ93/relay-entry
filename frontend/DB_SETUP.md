@@ -10,14 +10,15 @@
 
 6) docker-compose exec backend python manage.py shell
 
-7) from django.contrib.auth.models import User
+7) 
+
+from django.contrib.auth.models import User
 from RelayEntry.models import UserProfile
 
 User.objects.create_superuser('root', 'example@example.com', 'p')
 test1 = User.objects.create_user('test1', 'test1@example.com', 'p')
 test2 = User.objects.create_user('test2', 'test2@example.com', 'p')
 
-make all UserProfiles is_approved
 for user in UserProfile.objects.all():
     user.is_approved = True
     user.save()

@@ -11,6 +11,11 @@ export default {
   },
   data() {
     return {
+      snackbar: {
+        show: false,
+        message: '',
+        timeout: 8000
+      },
       event: {},
       registrationData: {},
       racerDataComplete: false,
@@ -32,6 +37,10 @@ export default {
     formatMinute,
     updateWaiverAccepted(accepted) {
       this.waiverAccepted = accepted;
+    },
+    showError(message) {
+      this.snackbar.message = message;
+      this.snackbar.show = true;
     },
     updateIpAddress(ipAddress) {
       this.ipAddress = ipAddress;
@@ -83,9 +92,27 @@ export default {
     },
     async submit() {
       try {
-        console.log("submitData");
+        this.loading = true;
+        const response = await api.registerForEvent({
+          eventId: this.event.id,
+          registrationData: this.registrationData,
+        });
+        if (response.data.error) {
+          this.loading = false; // Hide loader on error
+          this.showError('An error occurred while processing your registration. Please try again later.');
+        } else {
+          const { registrationData, raceData, teamData } = await response.data;
+          this.$store.commit('setConfirmationData', {
+            registrationData: registrationData,
+            raceData: raceData,
+            teamData: teamData
+          });
+          this.loading = false; // Show loader
+          this.$router.push({ name: 'Confirmation' });
+        }
       } catch (error) {
-        console.log("error");
+        this.loading = false; // Hide loader on error
+        this.showError('An error occurred while processing your registration. Please try again later.');
       }
     },
   },
@@ -139,10 +166,15 @@ export default {
           <RegistrationData :registrationData="registrationData" @complete="saveRegistrationData" />
         </div>
         <div v-if="activeTab === 1">
-          <WaiverComponent :initialAccepted="waiverAccepted" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted" @get-ip="updateIpAddress"/>
+          <WaiverComponent :event="event" :initialAccepted="waiverAccepted" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted" @get-ip="updateIpAddress"/>
           <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
           <v-btn @click="submit" color="primary" :disabled="!waiverAccepted" class="mt-3 mr-3">Submit</v-btn>
         </div>
+        <!-- Snackbar for error messages -->
+        <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout" color="error">
+          {{ snackbar.message }}
+          <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
+        </v-snackbar>
       </v-col>
     </v-row>
   </v-container>

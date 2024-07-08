@@ -19,4 +19,7 @@ export default {
   payAndRegisterTeam(data) {
     return apiClient.post('/teams/register-and-pay/', data);
   },
+  registerForEvent(data) {
+    return apiClient.post('/events/register/', data);
+  },
 };

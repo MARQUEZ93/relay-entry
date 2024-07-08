@@ -49,6 +49,8 @@
       }
     },
     mounted() {
+      console.log("mounted");
+      console.log(this.event);
       this.getUserIp();
     },
     data() {
@@ -68,7 +70,7 @@
     <v-card-text>
       <p class="mb-4">Please read and accept the waiver to proceed.</p>
       <v-card class="pa-3" outlined>
-        <p>{{ getWaiverText }}</p>
+        <p>{{ waiverText }}</p>
       </v-card>
       <v-checkbox
         v-model="accepted"

@@ -97,6 +97,11 @@ class EventAdmin(BaseOwnerAdmin):
     search_fields = ('name', 'created_by__email',)
     prepopulated_fields = {"url_alias": ("name",)}
 
+    def save_model(self, request, obj, form, change):
+        if not change or not obj.created_by_id:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
     def event_url(self, obj):
         return format_html('<a href="{}" target="_blank">{}</a>', obj.get_event_url(), obj.get_event_url())
     event_url.short_description = 'Event URL'
@@ -109,6 +114,11 @@ class RaceAdmin(BaseOwnerAdmin):
     form = RaceAdminForm
     list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator','projected_team_time_choices',)
     search_fields = ('name', 'event__name', 'distance',)
+
+    def save_model(self, request, obj, form, change):
+        if not change or not obj.created_by_id:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
 
     # the events dropdown
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

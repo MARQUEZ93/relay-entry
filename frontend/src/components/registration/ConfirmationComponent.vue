@@ -10,20 +10,25 @@ export default {
     }
   },
   computed: {
+    confirmationHeader(){
+      if (this.teamData){
+        return "Team Registration Successful";
+      } else {
+        return "Registration Successful"
+      }
+    },
     ...mapState({
       registrationData: state => state.registrationData,
       raceData: state => state.raceData,
       paymentData: state => state.paymentData,
       teamData: state => state.teamData,
+      eventData: state => state.eventData,
     }),
   },
   mounted() {
-    console.log("confirmation mounted");
     window.scrollTo(0, 0);
     console.log('Registration Data:', this.registrationData);
-    console.log('Race Data:', this.raceData);
-    console.log('Payment Data:', this.paymentData);
-    console.log('Team Data:', this.teamData);
+    console.log('Event Data:', this.eventData);
   },
   beforeUnmount() {
     // Clear the data when the component is destroyed
@@ -34,7 +39,7 @@ export default {
 
 <template>
   <div>
-    <p class="confirmation-header"><strong>Team Registration Successful </strong>#{{ registrationData.confirmationCode }}</p>
+    <p class="confirmation-header"><strong>{{confirmationHeader}}</strong>#{{ registrationData.confirmationCode }}</p>
     <v-container>
       <v-row justify="center">
         <v-col cols="12" md="10">
@@ -44,7 +49,7 @@ export default {
               <h3>We'll send you a confirmation email.</h3>
             </v-card-title>
             <v-card-text>
-              <v-row>
+              <v-row v-if="teamData">
                 <!-- Column 1: Team Information -->
                 <v-col cols="6">
                   <v-card-subtitle class="mb-2">
@@ -74,12 +79,37 @@ export default {
                   <p><strong>Location:</strong> {{ raceData.address }}, {{ raceData.city }}, {{ raceData.state }}</p>
                   <p><strong>Contact:</strong> {{ raceData.contact }}</p>
                   <p><a :href="raceData.websiteUrl" target="_blank">{{ raceData.websiteUrl }}</a></p>
+                  <p><a :href="raceData.instagramUrl" target="_blank"><v-icon class="instagram-icon pa-2">mdi-instagram</v-icon></a></p>
+                </v-col>
+              </v-row>
+              <v-row v-if="!teamData && eventData && registrationData">
+                <!-- Column 1: Registrant Information -->
+                <v-col cols="6">
+                  <v-card-subtitle class="mb-2">
+                    <p class="text-center"><strong>Registrant Info</strong></p>
+                  </v-card-subtitle>
+                  <p><strong>{{ registrationData.name }}</strong></p>
+                  <p>{{ registrationData.email }}</p>
+                  <p><strong>Confirmation Code:</strong> #{{ registrationData.confirmationCode }}</p>
+
+                </v-col>
+
+                <!-- Column 2: Event Information -->
+                <v-col cols="6">
+                  <v-card-subtitle class="mb-2">
+                    <p class="text-center"><strong>Event Info</strong></p>
+                  </v-card-subtitle>
+                  <p><strong>Date: <span class="confirmation-registration-date"> {{ eventData.time }} {{ formatDate(eventData.date) }}</span></strong> </p>
+                  <p><strong>Location:</strong> {{ eventData.address }}, {{ eventData.city }}, {{ eventData.state }}</p>
+                  <p><strong>Contact:</strong> {{ eventData.contact }}</p>
+                  <p><a :href="eventData.websiteUrl" target="_blank">{{ eventData.websiteUrl }}</a></p>
+                  <p><a :href="eventData.instagramUrl" target="_blank"><v-icon class="instagram-icon pa-2">mdi-instagram</v-icon></a></p>
                 </v-col>
               </v-row>
             </v-card-text>
           </v-card>
            <!-- Second Card: Billing Info -->
-          <v-card class="mx-auto my-5 pa-5" max-width="1000">
+          <v-card class="mx-auto my-5 pa-5" max-width="1000" v-if="paymentData">
             <v-card-title class="d-flex justify-center">
               <v-icon class="mr-3">mdi-credit-card</v-icon>
               <h3>Order Summary</h3>
@@ -117,7 +147,7 @@ export default {
 
 <style scoped>
     .v-card {
-    max-width: 100%;
+      max-width: 100%;
     }
     .confirmation-header{
       font-size: 2rem;
@@ -128,5 +158,10 @@ export default {
     .confirmation-billing-amount{
       color: rgb(24, 103, 192);
       font-size: 1.5rem;
+    }
+    .instagram-icon {
+      color: #e1306c;
+      background-color: #f7f7f7;
+      border-radius: 50%;
     }
 </style>

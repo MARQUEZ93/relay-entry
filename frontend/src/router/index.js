@@ -43,8 +43,7 @@ const routes = [
     component: ConfirmationComponent,
     props: true,
     beforeEnter: (to, from, next) => {
-      // TODO: waiver vs payment forms 
-      if (!store.state.registrationData || !store.state.raceData) {
+      if (!store.state.registrationData) {
         next('/');
       } else {
         next();

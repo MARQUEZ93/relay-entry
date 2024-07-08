@@ -103,6 +103,7 @@ def team_register_and_pay(request):
 
         with transaction.atomic():
             try: 
+                print(registration_data)
                 registration = Registration.objects.create(
                     race=race,
                     amount_paid=amount_from_db,
@@ -163,8 +164,8 @@ def team_register_and_pay(request):
                         'address': race.event.address,
                         'city': race.event.city,
                         'state': race.event.state,
-                        'postal_code': race.event.postal_code,
                         'website_url': race.event.website_url,
+                        'instagram_url': race.event.instagram_url,
                     },
                     # TODO: is team name fixed?
                     'team_data': {
@@ -174,6 +175,70 @@ def team_register_and_pay(request):
                         'name': team.name,
                         'emails': [{'email': member.email, 'leg_order': member.leg_order} for member in team.members.all()],
                     }
+                }
+                # Convert response data keys to camelCase
+                response_data = convert_keys_to_camel_case(response_data)
+                return JsonResponse(response_data)
+            except Exception as e:
+                logger.error(f"Error during transaction: {str(e)}")
+                raise
+    except json.JSONDecodeError as e:
+        print(e)
+        logger.error(f"JSON decode error: {str(e)}")
+        return JsonResponse({'error': "Invalid JSON data."}, status=400)
+    except Exception as e:
+        print(e)
+        logger.error(f"Unexpected error: {str(e)}")
+        return JsonResponse({'error': "An unexpected error occurred."}, status=400)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@require_POST
+@csrf_exempt
+def event_register(request, url_alias):
+    try:
+        data = json.loads(request.body)
+        data = convert_keys_to_snake_case(data)
+        event_id = data['event_id']
+        
+        registration_data = data['registration_data']
+        try:
+            event = Event.objects.get(id=event_id)
+            event_name = event.name
+        except Event.DoesNotExist:
+            logger.error("Event not found.")
+            return JsonResponse({'error': "Event not found."}, status=404)
+        with transaction.atomic():
+            try: 
+                registration = Registration.objects.create(
+                    event=event,
+                    first_name=registration_data['first_name'],
+                    last_name=registration_data['last_name'],
+                    email=registration_data['email'],
+                    gender=registration_data['gender'],
+                    dob=registration_data['date_of_birth'],
+                    waiver_text=event.waiver_text,
+                    ip_address=registration_data['ip_address'],
+                )
+                registrant_name = f"{registration_data['first_name']} {registration_data['last_name']}"
+                response_data = {
+                    'registration_response_data': {
+                        'name': registration.first_name + " " + registration.last_name,
+                        'email': registration.email,
+                        'confirmation_code': registration.confirmation_code,
+                    },
+                    'event_data': {
+                        'name': event.name,
+                        'date': event.date,
+                        'description': event.description,
+                        'event': event.name,
+                        'contact': event.email,
+                        'address': event.address,
+                        'city': event.city,
+                        'state': event.state,
+                        'website_url': event.website_url,
+                        'instagram_url': event.instagram_url,
+                    },
                 }
                 # Convert response data keys to camelCase
                 response_data = convert_keys_to_camel_case(response_data)

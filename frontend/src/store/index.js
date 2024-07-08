@@ -1,5 +1,4 @@
 import { createStore } from 'vuex';
-// TODO: null check this entire shit
 const store = createStore({
   state() {
     return {
@@ -7,20 +6,23 @@ const store = createStore({
       raceData: null,
       teamData: null,
       paymentData: null,
+      eventData: null
     };
   },
   mutations: {
     setConfirmationData(state, data) {
+      state.paymentData = data.paymentData;
       state.registrationData = data.registrationData;
       state.teamData = data.teamData;
       state.raceData = data.raceData;
-      state.paymentData = data.paymentData;
+      state.eventData = data.eventData;
     },
     clearConfirmationData(state) {
       state.registrationData = null;
-      state.raceData = null;
       state.teamData = null;
       state.paymentData = null;
+      state.raceData = null;
+      state.eventData = null;
     },
   },
 });

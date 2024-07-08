@@ -24,6 +24,7 @@ export default {
       loading: true,
       error: null,
       activeTab: 0,
+      eventSlug: '',
     };
   },
   computed: {
@@ -61,7 +62,8 @@ export default {
       return parseFloat(price).toFixed(2);
     },
     goToEventPage() {
-      this.$router.push({ name: 'Event', params: { eventUrlAlias: this.event.url_alias } });
+      // this.eventSlug vs this.event.url_alias
+      this.$router.push({ name: 'Event', params: { eventUrlAlias: this.eventSlug } });
     },
     selectTab(tabIndex) {
       if (tabIndex <= this.activeTab && (tabIndex === 0 || this.racerDataComplete)) {
@@ -93,7 +95,7 @@ export default {
     async submit() {
       try {
         this.loading = true;
-        const response = await api.registerForEvent({
+        const response = await api.registerForEvent(this.eventSlug, {
           eventId: this.event.id,
           registrationData: this.registrationData,
         });
@@ -101,24 +103,26 @@ export default {
           this.loading = false; // Hide loader on error
           this.showError('An error occurred while processing your registration. Please try again later.');
         } else {
-          const { registrationData, raceData, teamData } = await response.data;
+          const { registrationResponseData, eventData } = await response.data;
+          console.log(registrationResponseData);
+          console.log(eventData);
           this.$store.commit('setConfirmationData', {
-            registrationData: registrationData,
-            raceData: raceData,
-            teamData: teamData
+            registrationData: registrationResponseData,
+            eventData: eventData,
           });
-          this.loading = false; // Show loader
+          console.log(this.$store);
+          this.loading = false;
           this.$router.push({ name: 'Confirmation' });
         }
       } catch (error) {
-        this.loading = false; // Hide loader on error
+        this.loading = false;
         this.showError('An error occurred while processing your registration. Please try again later.');
       }
     },
   },
   async created() {
-    const eventSlug = this.$route.params.url_alias;
-    await this.fetchEvent(eventSlug);
+    this.eventSlug = this.$route.params.url_alias;
+    await this.fetchEvent(this.eventSlug);
   },
 };
 </script>
@@ -166,7 +170,7 @@ export default {
           <RegistrationData :registrationData="registrationData" @complete="saveRegistrationData" />
         </div>
         <div v-if="activeTab === 1">
-          <WaiverComponent :event="event" :initialAccepted="waiverAccepted" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted" @get-ip="updateIpAddress"/>
+          <WaiverComponent :disabled="loading" :event="event" :initialAccepted="waiverAccepted" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted" @get-ip="updateIpAddress"/>
           <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
           <v-btn @click="submit" color="primary" :disabled="!waiverAccepted" class="mt-3 mr-3">Submit</v-btn>
         </div>

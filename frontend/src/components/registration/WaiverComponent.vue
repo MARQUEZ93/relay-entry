@@ -10,6 +10,10 @@
       },
     },
     props: {
+      disabled: {
+        type: Boolean,
+        default: false,
+      },
       race: {
         type: Object,
         required: false,
@@ -76,6 +80,7 @@
         v-model="accepted"
         label="I have read and accept the waiver"
         class="mt-3"
+        :readonly="disabled"
       ></v-checkbox>
     </v-card-text>
   </v-card>

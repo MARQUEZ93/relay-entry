@@ -55,8 +55,6 @@ export default {
         state: '',
         zip: '',
       },
-      paymentSuccess: false,
-      confirmationCode: '',
     };
   },
   async mounted() {
@@ -165,7 +163,7 @@ export default {
 
 <template>
   <div>
-    <v-card v-if="!paymentSuccess">
+    <v-card>
       <v-card-title>
         <h2>Checkout</h2>
       </v-card-title>

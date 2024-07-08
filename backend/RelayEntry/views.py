@@ -113,7 +113,7 @@ def team_register_and_pay(request):
                     gender=registration_data['gender'],
                     dob=registration_data['date_of_birth'],
                     waiver_text=race.event.waiver_text,
-                    # ip_address=registration_data['ipAddress'],
+                    ip_address=registration_data['ip_address'],
                     # minor=registration_data['minor'],
                     # parent_guardian_name=registration_data.get('parentGuardianName', ''),
                     # parent_guardian_signature=registration_data.get('parentGuardianSignature', ''),

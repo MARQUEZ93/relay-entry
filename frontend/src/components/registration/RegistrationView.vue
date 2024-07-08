@@ -25,6 +25,7 @@ export default {
       teamData: {},
       racerDataComplete: false,
       waiverAccepted: false,
+      ipAddress: '',
       paymentCompleted: false,
       loading: true,
       error: null,
@@ -42,6 +43,11 @@ export default {
     formatMinute,
     updateWaiverAccepted(accepted) {
       this.waiverAccepted = accepted;
+    },
+    updateIpAddress(ipAddress) {
+      this.ipAddress = ipAddress;
+      this.registrationData.ipAddress = ipAddress;
+      console.log(this.registrationData);
     },
     async fetchRace(eventSlug, raceId) {
       try {
@@ -79,6 +85,7 @@ export default {
       this.teamData = teamData;
       this.racerDataComplete = true;
       this.waiverAccepted = false; // Reset waiverAccepted when registrationData is edited
+      this.ipAddress = ''; // Reset waiverAccepted when registrationData is edited
       this.nextTab();
     },
     acceptWaiver() {
@@ -170,7 +177,7 @@ export default {
           <RegistrationData :registrationData="registrationData" :race="race" @complete="saveRegistrationData" />
         </div>
         <div v-if="activeTab === 1">
-          <WaiverComponent :initialAccepted="waiverAccepted" :race="race" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted"/>
+          <WaiverComponent :initialAccepted="waiverAccepted" :race="race" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted" @get-ip="updateIpAddress"/>
           <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
           <v-btn @click="nextTab" color="primary" class="mt-3">Next</v-btn>
         </div>

@@ -99,6 +99,7 @@ export default {
                   <v-card-subtitle class="mb-2">
                     <p class="text-center"><strong>Event Info</strong></p>
                   </v-card-subtitle>
+                  <p><strong>{{ eventData.name }}</strong></p>
                   <p><strong>Date: <span class="confirmation-registration-date"> {{ eventData.time }} {{ formatDate(eventData.date) }}</span></strong> </p>
                   <p><strong>Location:</strong> {{ eventData.address }}, {{ eventData.city }}, {{ eventData.state }}</p>
                   <p><strong>Contact:</strong> {{ eventData.contact }}</p>

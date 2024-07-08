@@ -239,7 +239,12 @@ class Registration(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.email} - {self.race.name}'
+        if (self.race): 
+            return f'{self.email} - {self.race.name}'
+        elif (self.event):
+            return f'{self.email} - {self.event.name}'
+        return self.email
+
 
 class Leg(models.Model):
     race = models.ForeignKey(Race, related_name='legs', on_delete=models.CASCADE)

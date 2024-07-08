@@ -32,7 +32,7 @@ const routes = [
     props: true
   },
   {
-    path: '/events/:url_alias/register_and_sign_waiver',
+    path: '/events/:url_alias/register',
     name: 'RegisterAndWaiver',
     component: RegisterAndWaiver,
     props: true

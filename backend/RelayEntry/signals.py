@@ -88,18 +88,6 @@ def send_team_creation_email(sender, instance, created, **kwargs):
     if created:
         def send_emails():
             try:
-                # Email the team captain
-                send_mail(
-                    'Team Created',
-                    'Your team has been created.',
-                    settings.DEFAULT_FROM_EMAIL,
-                    [instance.captain.email],
-                    fail_silently=True,
-                )
-            except Exception as e:
-                logger.error(f"Failed to send team creation email to {instance.captain.email}: {e}")
-
-            try:
                 # Email the race director
                 if instance.race and instance.race.event:
                     race_director_email = instance.race.event.email

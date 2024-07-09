@@ -16,10 +16,13 @@ export default {
   getRace(eventSlug, raceId) {
     return apiClient.get(`/events/${eventSlug}/races/${raceId}/`);
   },
-  payAndRegisterTeam(data) {
-    return apiClient.post('/teams/register-and-pay/', data);
+  registerTeam(data) {
+    return apiClient.post('/teams/register/', data);
   },
   registerForEvent(eventSlug, data) {
     return apiClient.post(`/events/${eventSlug}/register/`, data);
   },
+  createPaymentIntent(data){
+    return apiClient.post(`/create_payment_intent`, data);
+  }
 };

@@ -187,6 +187,7 @@ class TeamMember(models.Model):
         super().save(*args, **kwargs)
     
 class Registration(models.Model):
+    payment_intent_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
     email_confirmed = models.BooleanField(default=False)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     confirmation_code = models.CharField(max_length=16, unique=True, editable=False)  # Increased length to 16

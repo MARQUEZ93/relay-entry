@@ -11,14 +11,16 @@ export default {
       type: Object,
       required: true,
     },
-    stripePromise: {
-      type: Promise,
-      required: true,
-    },
+  },
+  async mounted() {
+    await this.createPaymentIntent();
+    await this.initStripe();
   },
   data() {
     return {
-      loading: false,
+      loading: true,
+      stripe: null,
+      clientSecret: '',
       nameRules: [
         v => !!v || 'Name is required',
         v => (v && v.length > 1) || 'Name must be more than 1 character',
@@ -44,8 +46,6 @@ export default {
         message: '',
         timeout: 8000
       },
-      stripe: null,
-      cardElement: null,
       valid: false,
       billingInfo: {
         name: '',
@@ -57,20 +57,47 @@ export default {
       },
     };
   },
-  async mounted() {
-    try {
-      this.stripe = await this.stripePromise; // Await the resolution of the promise to get the Stripe instance
-      if (!this.stripe) {
-        throw new Error('Stripe connection problems');
-      }
-      const elements = this.stripe.elements();
-      this.cardElement = elements.create('card');
-      this.cardElement.mount(this.$refs.cardElement);
-    } catch (error) {
-      console.error('Error setting up Stripe elements:', error);
-    }
-  },
   methods: {
+    async initStripe() {
+      if (!window.Stripe) {
+        // Ensure Stripe.js is loaded from the global scope
+        await new Promise((resolve) => {
+          // Fallback in case the script hasn't loaded yet
+          const script = document.createElement('script');
+          script.src = 'https://js.stripe.com/v3/';
+          script.async = true;
+          script.onload = resolve;
+          document.head.appendChild(script);
+        });
+      }
+      this.stripe = Stripe("pk_test_51PNivYBsh8Ne4MdUVijN6hN4Ueoo8vLEFj5o5BqkAinexlV7S2f7P2EufuWHpqIR9SAAdZF5lpvk2kgHDFzTeuOQ009WWgftkv");
+      this.setupElements();
+    },
+    async createPaymentIntent() {
+      try {
+        const response = api.createPaymentIntent({
+          raceId: this.race.id
+        })
+        this.clientSecret = response.data.clientSecret;
+        this.loading = false;
+      } catch (error) {
+        this.showError('Payment gateway error. Please try again later.');
+        console.error('Error creating PaymentIntent:', error);
+      }
+    },
+    setupElements() {
+      const options = {
+        clientSecret: this.clientSecret,
+        // Fully customizable with appearance API.
+        // appearance: {/*...*/},
+      };
+      // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in a previous step
+      const elements = this.stripe.elements(options);
+      // Create and mount the Payment Element
+      const paymentElement = elements.create('payment');
+      paymentElement.mount('#payment-element');
+      this.loading = false;
+    },
     showError(message) {
       this.snackbar.message = message;
       this.snackbar.show = true;
@@ -85,9 +112,8 @@ export default {
         this.billingInfo.email
       );
     },
-    async registerTeamAndPay() {
+    async payAndRegisterTeam() {
       this.loading = true; // Show loader
-      console.log(this.loading);
       if (!this.$refs.form.validate()) {
         this.loading = false;
         return;
@@ -98,64 +124,63 @@ export default {
         this.showError('Please fill out all required billing information.');
         return;
       }
-
-      const { paymentMethod, error } = await this.stripe.createPaymentMethod({
-        type: 'card',
-        card: this.cardElement,
-        billing_details: {
-          name: this.billingInfo.name,
-          email: this.billingInfo.email,
-          address: {
-            line1: this.billingInfo.address,
-            city: this.billingInfo.city,
-            state: this.billingInfo.state,
-            postal_code: this.billingInfo.zip,
+      try {
+        const { paymentMethod, error } = await this.stripe.createPaymentMethod({
+          type: 'card',
+          card: this.cardElement,
+          billing_details: {
+            name: this.billingInfo.name,
+            email: this.billingInfo.email,
+            address: {
+              line1: this.billingInfo.address,
+              city: this.billingInfo.city,
+              state: this.billingInfo.state,
+              postal_code: this.billingInfo.zip,
+            },
           },
-        },
-      });
-
-      if (error) {
+        });
+      } catch (error){
         this.loading = false; // Hide loader on error
         this.showError('There was an issue with your card details. Please check and try again.');
-      } else {
-        try {
-          const response = await api.payAndRegisterTeam({
+        return;
+      }
+      try {
+        const { error: confirmError, paymentIntent } = await this.stripe.confirmCardPayment(this.clientSecret, {
+          payment_method: paymentMethod.id,
+        });
+
+        if (confirmError) {
+          this.loading = false; // Hide loader on error
+          this.showError('An error occurred while confirming your payment. Please try again.');
+          return;
+        } else {
+          const response = await api.registerTeam({
             raceId: this.race.id,
-            price: this.race.price,
             registrationData: this.registrationData,
             teamData: this.teamData,
-            paymentMethod: paymentMethod,
-            billingInfo: this.billingInfo
+            paymentIntent: paymentIntent,
           });
-
           if (response.data.error) {
             this.loading = false; // Hide loader on error
             this.showError('An error occurred while processing your registration. Please try again later.');
+            return;
           } else {
-            
-            // TODO: null check here
-            // package this tighter
             const { registrationData, raceData, paymentData, teamData } = await response.data;
-            // test bad data
-            // Redirect to the confirmation page
-            // Set the data in Vuex store
-            //  TODO: null check
             this.$store.commit('setConfirmationData', {
               registrationData: registrationData,
               raceData: raceData,
               paymentData: paymentData,
               teamData: teamData
             });
-            this.loading = false; // Show loader
-
+            this.loading = false;
             this.$router.push({ name: 'Confirmation' });
           }
-        } catch (err) {
+        }
+      } catch {
           this.loading = false; // Hide loader on error
           this.showError('An error occurred while processing your transaction. Please try again later.');
-        }
+          return;
       }
-      this.loading = false;
     },
   },
 };
@@ -231,7 +256,8 @@ export default {
           </v-row>
           <v-row>
             <v-col cols="12">
-              <div ref="cardElement" id="card-element"></div>
+              <div v-if="loading && !stripe">Loading payment gateway...</div>
+              <div v-else id="payment-element"></div>
               <p class="mt-3 order-total"><strong>Grand Total: ${{ race.price }}</strong></p>
             </v-col>
           </v-row>

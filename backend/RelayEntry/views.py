@@ -38,35 +38,35 @@ class EventDetailView(generics.RetrieveAPIView):
 def index(request):
     return render(request, 'index.html')
 
-@anonymous_required
-def signup(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            user.refresh_from_db()  # load the profile instance created by the signal
-            user.userprofile.is_approved = False
-            user.save()
-            # Send email to admin
-            send_mail(
-                'New User Signup Requires Approval',
-                f'A new user {user.username} has signed up and requires approval.',
-                settings.DEFAULT_FROM_EMAIL,
-                ['admin@example.com'],  # TODO: Replace with the admin's email address
-                fail_silently=False,
-            )
-            # Send email to the user
-            send_mail(
-                'Signup Successful - Approval Pending',
-                f'Thank you for signing up, {user.username}. Your account is currently pending approval by an admin. You will be notified once your account is approved.',
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],  # TODO: Send to the user's email address
-                fail_silently=False,
-            )
-            return redirect('signup_success')
-    else:
-        form = UserCreationForm()
-    return render(request, 'signup.html', {'form': form})
+# @anonymous_required
+# def signup(request):
+#     if request.method == 'POST':
+#         form = UserCreationForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             user.refresh_from_db()  # load the profile instance created by the signal
+#             user.userprofile.is_approved = False
+#             user.save()
+#             # Send email to admin
+#             send_mail(
+#                 'New User Signup Requires Approval',
+#                 f'A new user {user.username} has signed up and requires approval.',
+#                 settings.DEFAULT_FROM_EMAIL,
+#                 ['admin@example.com'],  # TODO: Replace with the admin's email address
+#                 fail_silently=False,
+#             )
+#             # Send email to the user
+#             send_mail(
+#                 'Signup Successful - Approval Pending',
+#                 f'Thank you for signing up, {user.username}. Your account is currently pending approval by an admin. You will be notified once your account is approved.',
+#                 settings.DEFAULT_FROM_EMAIL,
+#                 [user.email],  # TODO: Send to the user's email address
+#                 fail_silently=False,
+#             )
+#             return redirect('signup_success')
+#     else:
+#         form = UserCreationForm()
+#     return render(request, 'signup.html', {'form': form})
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -75,38 +75,45 @@ logger = logging.getLogger(__name__)
 
 @require_POST
 @csrf_exempt
-def team_register_and_pay(request):
+def team_register(request):
     try:
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
         race_id = data['race_id']
-        amount_from_ui = data['price']  # Extract and convert the amount to cents
-        
         registration_data = data['registration_data']
         team_data = registration_data.get('team_data', {})
-        billing_info = data['billing_info']
-        payment_method = data['payment_method']
         payment_method_id = payment_method.get('id', {})
         # Calculate the amount based on the race price
         try:
             race = Race.objects.get(id=race_id)
             race_name = race.name
+            amount = race.price
         except Race.DoesNotExist:
             logger.error("Race not found.")
             return JsonResponse({'error': "Race not found."}, status=404)
-        amount_from_ui = int(float(amount_from_ui) * 100)
-        amount_from_db = int(race.price * 100)  # Convert to cents
-        # Validate price match
-        if amount_from_ui != amount_from_db:
-            logger.error("Price mismatch error.")
-            return JsonResponse({'error': "Price mismatch. Please try again."}, status=400)
+
+        payment_intent = data['payment_intent']
+        payment_intent_id = payment_intent.id
+
+        # Retrieve the PaymentIntent to confirm payment
+        intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+
+        if intent.status != 'succeeded':
+            return JsonResponse({'error': 'Payment not confirmed.'}, status=400)
+
+        expected_amount = int(race.price * 100)  # Convert to cents
+        if intent.amount != expected_amount:
+            return JsonResponse({'error': 'Payment amount does not match the race price.'}, status=400)
+        # confirm amount matches race price + payment made
+        # add unique paymentIntent field to registration 2x
 
         with transaction.atomic():
             try: 
                 print(registration_data)
                 registration = Registration.objects.create(
                     race=race,
-                    amount_paid=amount_from_db,
+                    payment_intent_id=payment_intent_id,
+                    amount=amount,
                     first_name=registration_data['first_name'],
                     last_name=registration_data['last_name'],
                     email=registration_data['email'],
@@ -143,16 +150,7 @@ def team_register_and_pay(request):
                         print(f"Connected registration {registration.id} to team member {team_member.email}")
 
                 registrant_name = f"{registration_data['first_name']} {registration_data['last_name']}"
-                # Process the payment
-                payment_result = process_payment(amount_from_db, payment_method_id, billing_info, race_name, registrant_name, team_name)
-                print(payment_result)
-                if 'status' in payment_result and payment_result['status'] != 'succeeded':
-                    raise Exception(payment_result['message'])  # This will trigger a rollback
                 response_data = {
-                    'payment_data': {
-                        'amount': payment_result.amount,
-                        'billing_info': billing_info
-                    },
                     'registration_data': {
                         'name': registration.first_name + " " + registration.last_name,
                         'email': registration.email,
@@ -172,7 +170,6 @@ def team_register_and_pay(request):
                         'website_url': race.event.website_url,
                         'instagram_url': race.event.instagram_url,
                     },
-                    # TODO: is team name fixed?
                     'team_data': {
                         'race': race.name,
                         'date': race.date,
@@ -261,3 +258,31 @@ def event_register(request, url_alias):
         return JsonResponse({'error': "An unexpected error occurred."}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@require_POST
+@csrf_exempt
+def create_payment_intent(request):
+    try:
+        data = json.loads(request.body)
+        race_id = data['race_id']
+        currency = 'usd'
+
+        # Calculate the amount based on the race price
+        try:
+            race = Race.objects.get(id=race_id)
+        except Race.DoesNotExist:
+            logger.error("Race not found.")
+            return JsonResponse({'error': "Race not found."}, status=404)
+        amount = int(race.price * 100)  # Convert to cents
+
+        # Create a PaymentIntent
+        intent = stripe.PaymentIntent.create(
+            amount=amount,
+            currency=currency,
+        )
+
+        return JsonResponse({
+            'clientSecret': intent.client_secret,
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=403)

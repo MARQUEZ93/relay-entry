@@ -153,12 +153,12 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # SMTP configuration for development
-EMAIL_HOST_USER = 'your_email@example.com'
+EMAIL_HOST_USER = 'contact@relayentry.com'
 EMAIL_HOST_PASSWORD = 'your_password'
-DEFAULT_FROM_EMAIL = 'your_email@example.com'
+DEFAULT_FROM_EMAIL = 'contact@relayentry.com'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'mailhog')
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # MAILJET TODO
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'mailhog') # TODO FIX THIS SHIT
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 1025))
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
@@ -176,3 +176,5 @@ AUTHENTICATION_BACKENDS = ['backend.backends.ApprovedUserBackend']
 # Access the Stripe API key from environment variables
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+
+API_URL = os.getenv('API_URL')

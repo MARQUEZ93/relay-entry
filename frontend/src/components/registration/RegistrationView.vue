@@ -3,7 +3,6 @@ import api from '@/services/api';
 import WaiverComponent from '@/components/registration/WaiverComponent.vue';
 import RegistrationData from '@/components/registration/RegistrationData.vue';
 import CheckoutComponent from '@/components/registration/CheckoutComponent.vue';
-import { loadStripe } from '@stripe/stripe-js';
 import { formattedRaceDate, customSameDistance, formatMinute } from '@/utils/methods';
 
 export default {
@@ -12,15 +11,9 @@ export default {
     RegistrationData,
     CheckoutComponent,
   },
-  provide() {
-    return {
-      stripe: this.stripePromise,
-    };
-  },
   data() {
     return {
       race: {},
-      stripePromise: null,
       registrationData: {},
       teamData: {},
       racerDataComplete: false,
@@ -104,13 +97,6 @@ export default {
     const eventSlug = this.$route.params.url_alias;
     const raceId = this.$route.params.id;
     await this.fetchRace(eventSlug, raceId);
-
-    try{
-      // this.stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
-      this.stripePromise = loadStripe("pk_test_51PNivYBsh8Ne4MdUVijN6hN4Ueoo8vLEFj5o5BqkAinexlV7S2f7P2EufuWHpqIR9SAAdZF5lpvk2kgHDFzTeuOQ009WWgftkv");
-    } catch (error) {
-      // TODO: render errors / re route
-    }
   },
 };
 </script>
@@ -182,7 +168,7 @@ export default {
           <v-btn @click="nextTab" color="primary" class="mt-3">Next</v-btn>
         </div>
         <div v-if="activeTab === 2">
-          <CheckoutComponent :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData" :stripePromise="stripePromise"/>
+          <CheckoutComponent :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData"/>
           <v-btn style="float:left;" @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
         </div>
       </v-col>

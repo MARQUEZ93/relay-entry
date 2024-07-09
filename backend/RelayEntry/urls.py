@@ -11,5 +11,5 @@ urlpatterns = [
     path('api/events/<slug:url_alias>/', EventDetailView.as_view(), name='event-detail'),
     path('api/events/<slug:url_alias>/register/', views.event_register, name='event_register'),
     path('api/teams/register/', views.team_register, name='team_register'),
-    path('api/create-payment-intent/', views.create_payment_intent, name='create-payment-intent'),
+    path('api/create-payment-intent/', views.create_payment_intent, name='create_payment_intent'),
 ]

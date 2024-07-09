@@ -23,6 +23,6 @@ export default {
     return apiClient.post(`/events/${eventSlug}/register/`, data);
   },
   createPaymentIntent(data){
-    return apiClient.post(`/create_payment_intent`, data);
+    return apiClient.post(`/create-payment-intent/`, data);
   }
 };

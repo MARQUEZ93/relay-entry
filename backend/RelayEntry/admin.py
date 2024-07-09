@@ -203,7 +203,7 @@ class TeamMemberAdmin(BaseOwnerAdmin):
         return obj.team.race.name
     
     def registration_info(self, obj):
-        registration = Registration.objects.filter(team_member=obj).first()
+        registration = Registration.objects.filter(member=obj).first()
         if registration:
             return f"Registration ID: {registration.id} - Email: {registration.email}"
         return "No Registration"

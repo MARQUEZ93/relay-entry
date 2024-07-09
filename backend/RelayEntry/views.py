@@ -18,6 +18,8 @@ from django.views.decorators.http import require_POST
 from django.db import transaction
 from .payments import process_payment 
 from .conversion import convert_keys_to_snake_case, convert_keys_to_camel_case
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RaceDetailView(generics.RetrieveAPIView):
@@ -77,12 +79,12 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 def team_register(request):
     try:
+        print("team_register")
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
         race_id = data['race_id']
         registration_data = data['registration_data']
         team_data = registration_data.get('team_data', {})
-        payment_method_id = payment_method.get('id', {})
         # Calculate the amount based on the race price
         try:
             race = Race.objects.get(id=race_id)
@@ -93,16 +95,16 @@ def team_register(request):
             return JsonResponse({'error': "Race not found."}, status=404)
 
         payment_intent = data['payment_intent']
-        payment_intent_id = payment_intent.id
-
         # Retrieve the PaymentIntent to confirm payment
-        intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        intent = stripe.PaymentIntent.retrieve(payment_intent)
 
         if intent.status != 'succeeded':
+            logger.error("Payment not confirmed.")
             return JsonResponse({'error': 'Payment not confirmed.'}, status=400)
 
         expected_amount = int(race.price * 100)  # Convert to cents
         if intent.amount != expected_amount:
+            logger.error("Mismatch payment")
             return JsonResponse({'error': 'Payment amount does not match the race price.'}, status=400)
         # confirm amount matches race price + payment made
         # add unique paymentIntent field to registration 2x
@@ -263,24 +265,26 @@ def event_register(request, url_alias):
 @csrf_exempt
 def create_payment_intent(request):
     try:
+        print("fuck")
         data = json.loads(request.body)
+        data = convert_keys_to_snake_case(data)
         race_id = data['race_id']
         currency = 'usd'
 
         # Calculate the amount based on the race price
         try:
             race = Race.objects.get(id=race_id)
+            print(race)
         except Race.DoesNotExist:
             logger.error("Race not found.")
             return JsonResponse({'error': "Race not found."}, status=404)
         amount = int(race.price * 100)  # Convert to cents
-
+        print(amount)
         # Create a PaymentIntent
         intent = stripe.PaymentIntent.create(
             amount=amount,
             currency=currency,
         )
-
         return JsonResponse({
             'clientSecret': intent.client_secret,
         })

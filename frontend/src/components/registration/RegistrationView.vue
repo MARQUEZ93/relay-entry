@@ -4,6 +4,7 @@ import WaiverComponent from '@/components/registration/WaiverComponent.vue';
 import RegistrationData from '@/components/registration/RegistrationData.vue';
 import CheckoutComponent from '@/components/registration/CheckoutComponent.vue';
 import { formattedRaceDate, customSameDistance, formatMinute } from '@/utils/methods';
+import { loadStripe } from '@stripe/stripe-js';
 
 export default {
   components: {
@@ -14,6 +15,8 @@ export default {
   data() {
     return {
       race: {},
+      clientSecret: '',
+      stripe: null,
       registrationData: {},
       teamData: {},
       racerDataComplete: false,
@@ -31,6 +34,33 @@ export default {
     },
   },
   methods: {
+    async initStripe() {
+      if (!window.Stripe) {
+        // Ensure Stripe.js is loaded from the global scope
+        await new Promise((resolve) => {
+          // Fallback in case the script hasn't loaded yet
+          const script = document.createElement('script');
+          script.src = 'https://js.stripe.com/v3/';
+          script.async = true;
+          script.onload = resolve;
+          document.head.appendChild(script);
+        });
+      }
+      this.stripe = await loadStripe("pk_test_51PNivYBsh8Ne4MdUVijN6hN4Ueoo8vLEFj5o5BqkAinexlV7S2f7P2EufuWHpqIR9SAAdZF5lpvk2kgHDFzTeuOQ009WWgftkv");
+      console.log("stripe loading");
+    },
+    async createPaymentIntentOnMount() {
+      try {
+        const response = await api.createPaymentIntent({
+          raceId: this.race.id
+        })
+        this.clientSecret = response.data.clientSecret;
+        console.log("createPaymentIntentOnMount done");
+        this.loading = false;
+      } catch (e) {
+        this.showError('Payment gateway error. Please try again later.');
+      }
+    },
     customSameDistance,
     formattedRaceDate,
     formatMinute,
@@ -97,6 +127,8 @@ export default {
     const eventSlug = this.$route.params.url_alias;
     const raceId = this.$route.params.id;
     await this.fetchRace(eventSlug, raceId);
+    await this.createPaymentIntentOnMount();
+    await this.initStripe();
   },
 };
 </script>
@@ -168,7 +200,7 @@ export default {
           <v-btn @click="nextTab" color="primary" class="mt-3">Next</v-btn>
         </div>
         <div v-if="activeTab === 2">
-          <CheckoutComponent :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData"/>
+          <CheckoutComponent :stripe="stripe" :clientSecret="clientSecret" :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData"/>
           <v-btn style="float:left;" @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
         </div>
       </v-col>

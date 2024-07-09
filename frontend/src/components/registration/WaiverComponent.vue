@@ -33,13 +33,8 @@
     },
     methods: {
       async getUserIp() {
-        try {
-          const response = await axios.get('https://api.ipify.org?format=json');
-          this.userIp = response.data.ip;
-          console.log(response.data.ip);
-        } catch (error) {
-          console.error('Error fetching IP address:', error);
-        }
+        const response = await axios.get('https://api.ipify.org?format=json');
+        this.userIp = response.data.ip;
       },
     },
     computed: {
@@ -53,8 +48,6 @@
       }
     },
     mounted() {
-      console.log("mounted");
-      console.log(this.event);
       this.getUserIp();
     },
     data() {

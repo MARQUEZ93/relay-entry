@@ -173,6 +173,17 @@ class Team(models.Model):
     
     def __str__(self):
         return f'{self.name} - {self.race.name}'
+    
+    def save(self, *args, **kwargs):
+        base_name = self.name
+        counter = 1
+
+        # Check for other teams with the same name in the same race, excluding the current instance if it's an update
+        while Team.objects.filter(race=self.race, name=self.name).exclude(pk=self.pk).exists():
+            self.name = f"{base_name}_{counter}"
+            counter += 1
+
+        super().save(*args, **kwargs)
 
 class TeamMember(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members')

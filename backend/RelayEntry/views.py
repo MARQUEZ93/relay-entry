@@ -16,9 +16,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.db import transaction
-from .payments import process_payment 
-from .conversion import convert_keys_to_snake_case, convert_keys_to_camel_case
+from .stripe_utils import retrieve_payment_intent 
 import stripe
+from .conversion import convert_keys_to_snake_case, convert_keys_to_camel_case
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -93,21 +93,26 @@ def team_register(request):
         except Race.DoesNotExist:
             logger.error("Race not found.")
             return JsonResponse({'error': "Race not found."}, status=404)
+        print(data)
+        payment_intent_id = data['payment_intent_id']
+         # Retrieve the PaymentIntent to confirm payment
+        intent, error = retrieve_payment_intent(payment_intent_id, race)
+        if error:
+            logger.error(f"Error retrieving PaymentIntent: {error}")
+            return JsonResponse({'error': 'Payment not confirmed.'}, status=400)
 
-        payment_intent = data['payment_intent']
-        # Retrieve the PaymentIntent to confirm payment
-        intent = stripe.PaymentIntent.retrieve(payment_intent)
+        race_price = int(race.price * 100)
 
+        # Confirm payment intent status and amount received
         if intent.status != 'succeeded':
             logger.error("Payment not confirmed.")
             return JsonResponse({'error': 'Payment not confirmed.'}, status=400)
 
-        expected_amount = int(race.price * 100)  # Convert to cents
-        if intent.amount != expected_amount:
+        if intent.amount_received != race_price:
             logger.error("Mismatch payment")
             return JsonResponse({'error': 'Payment amount does not match the race price.'}, status=400)
-        # confirm amount matches race price + payment made
-        # add unique paymentIntent field to registration 2x
+
+        # add unique paymentIntent field to registration
 
         with transaction.atomic():
             try: 
@@ -115,7 +120,7 @@ def team_register(request):
                 registration = Registration.objects.create(
                     race=race,
                     payment_intent_id=payment_intent_id,
-                    amount=amount,
+                    amount_paid=intent.amount_received,
                     first_name=registration_data['first_name'],
                     last_name=registration_data['last_name'],
                     email=registration_data['email'],
@@ -153,6 +158,10 @@ def team_register(request):
 
                 registrant_name = f"{registration_data['first_name']} {registration_data['last_name']}"
                 response_data = {
+                    'payment_data': {
+                        'amount': intent.amount_received,
+                        'receipt_email': intent.receipt_email,
+                    },
                     'registration_data': {
                         'name': registration.first_name + " " + registration.last_name,
                         'email': registration.email,
@@ -160,7 +169,6 @@ def team_register(request):
                     },
                     'race_data': {
                         'name': race.name,
-                        # how to resolve this in py before sending to the UI
                         'time': f"{race.hour:02}:{race.minute:02} {race.time_indicator}",
                         'date': race.date,
                         'description': race.description,
@@ -287,6 +295,8 @@ def create_payment_intent(request):
         )
         return JsonResponse({
             'clientSecret': intent.client_secret,
+            'id': intent.id,
+            'amount': intent.amount,
         })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=403)

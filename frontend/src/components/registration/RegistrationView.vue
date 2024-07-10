@@ -16,6 +16,8 @@ export default {
     return {
       race: {},
       clientSecret: '',
+      paymentIntentId: '',
+      amount: '',
       stripe: null,
       registrationData: {},
       teamData: {},
@@ -38,6 +40,7 @@ export default {
       if (!window.Stripe) {
         // Ensure Stripe.js is loaded from the global scope
         await new Promise((resolve) => {
+          console.log("new Promise");
           // Fallback in case the script hasn't loaded yet
           const script = document.createElement('script');
           script.src = 'https://js.stripe.com/v3/';
@@ -55,7 +58,10 @@ export default {
           raceId: this.race.id
         })
         this.clientSecret = response.data.clientSecret;
-        console.log("createPaymentIntentOnMount done");
+        this.paymentIntentId = response.data.id;
+        this.amount = response.data.amount;
+        console.log(response.data);
+        console.log("createPaymentIntentOnMount");
         this.loading = false;
       } catch (e) {
         this.showError('Payment gateway error. Please try again later.');
@@ -200,7 +206,7 @@ export default {
           <v-btn @click="nextTab" color="primary" class="mt-3">Next</v-btn>
         </div>
         <div v-if="activeTab === 2">
-          <CheckoutComponent :stripe="stripe" :clientSecret="clientSecret" :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData"/>
+          <CheckoutComponent :amount="amount" :paymentIntentId="paymentIntentId" :stripe="stripe" :clientSecret="clientSecret" :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData"/>
           <v-btn style="float:left;" @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
         </div>
       </v-col>

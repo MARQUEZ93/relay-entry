@@ -14,6 +14,14 @@ export default {
       type: String,
       required: true,
     },
+    amount: {
+      type: String,
+      required: true,
+    },
+    paymentIntentId: {
+      type: String,
+      required: true,
+    },
     stripe: {
       required: true,
       type: Object,
@@ -35,17 +43,15 @@ export default {
     };
   },
   methods: {
-    setupElements() {
+    async setupElements() {
       const options = {
         clientSecret: this.clientSecret,
-        // Fully customizable with appearance API.
-        // appearance: {/*...*/},
       };
       // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in a previous step
       this.elements = this.stripe.elements(options);
       // Create and mount the Payment Element
       const paymentElement = this.elements.create('payment');
-      paymentElement.mount('#payment-element');
+      await paymentElement.mount('#payment-element');
       this.elementsLoading = false;
     },
     showError(message) {
@@ -55,27 +61,33 @@ export default {
     async payAndRegisterTeam() {
       this.loading = true; // Show loader
       try {
+        console.log("hit payAndRegisterTeam");
         const cp = await this.stripe.confirmPayment({
           elements: this.elements,
           confirmParams: {
-            return_url: `${window.location.origin}`
+            // return_url: `${window.location.origin}`
+            receipt_email: this.registrationData.email,
           },
           redirect: 'if_required'
         });
         console.log(cp);
-        const error = cp.error;
-        if (error.type === "card_error" || error.type === "validation_error") {
-          this.showError(error.message);
-        } else {
-          this.showError("An unexpected error occured.");
+        if (cp.error) {
+          const error = cp.error;
+          if (error.type === "card_error" || error.type === "validation_error") {
+            this.showError(error.message);
+          } else {
+            this.showError("An unexpected error occured.");
+          }
+          this.loading = false;
+          return;
         }
-        console.log(this.clientSecret);
+        console.log(this.paymentIntentId);
         console.log("HI");
         const response = await api.registerTeam({
           raceId: this.race.id,
           registrationData: this.registrationData,
           teamData: this.teamData,
-          paymentIntent: this.clientSecret,
+          paymentIntentId: this.paymentIntentId,
         });
         if (response.data.error) {
           this.loading = false; // Hide loader on error
@@ -83,12 +95,12 @@ export default {
           return;
         } else {
           console.log(response.data);
-          const { registrationData, raceData, teamData } = response.data;
+          const { registrationData, raceData, teamData, paymentData } = response.data;
           this.$store.commit('setConfirmationData', {
             registrationData: registrationData,
             raceData: raceData,
-            // paymentData: paymentData,
-            teamData: teamData
+            teamData: teamData,
+            paymentData: paymentData,
           });
           this.loading = false;
           this.$router.push({ name: 'Confirmation' });
@@ -116,7 +128,7 @@ export default {
             <v-col cols="12">
               <div v-if="elementsLoading || !stripe || !clientSecret">Loading payment gateway...</div>
               <div id="payment-element"></div>
-              <p class="mt-3 order-total"><strong>Grand Total: ${{ race.price }}</strong></p>
+              <p class="mt-3 order-total"><strong>Grand Total: ${{ amount }}</strong></p>
             </v-col>
           </v-row>
           <!-- Snackbar for error messages -->

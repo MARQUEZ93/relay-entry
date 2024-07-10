@@ -1,5 +1,5 @@
-# Use the official Node.js image from the Docker Hub
-FROM node:14
+# Stage 1: Build the Vue.js application
+FROM node:14 AS build
 
 # Set work directory
 WORKDIR /app
@@ -7,11 +7,25 @@ WORKDIR /app
 # Copy package.json and package-lock.json (if using npm)
 COPY package*.json ./
 
+# Install dependencies
 RUN npm install
+
+# Copy the rest of the application code
 COPY . .
 
-# Expose the port that the app runs on
-EXPOSE 8080
+# Build the application
+RUN npm run build
 
-# Run the application
-CMD ["npm", "run", "serve"]
+# Stage 2: Serve the application with Nginx
+FROM nginx:alpine
+
+# Copy built assets from the build stage
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copy Nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose the port that Nginx runs on
+EXPOSE 80
+
+# The default command for Nginx is to run the server, no need to override it

@@ -2,12 +2,41 @@ import axios from 'axios';
 
 const apiClient = axios.create({
   baseURL: process.env.VUE_APP_API_BASE_URL,
-  withCredentials: false,
+  withCredentials: true,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
 });
+
+// Function to get CSRF token from cookies
+function getCSRFToken() {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, 10) === 'csrftoken=') {
+        cookieValue = decodeURIComponent(cookie.substring(10));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+// Add a request interceptor to include the CSRF token in each request
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getCSRFToken();
+    if (token) {
+      config.headers['X-CSRFToken'] = token;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export default {
   getEvent(eventSlug) {

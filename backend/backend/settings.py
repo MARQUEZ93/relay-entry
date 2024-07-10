@@ -44,12 +44,46 @@ DATABASES = {
 }
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+    # CSRF settings
+if ENVIRONMENT == 'development':
+    CSRF_TRUSTED_ORIGINS = [
+        "http://localhost:8080",
+        "http://frontend:8080",
+    ]
+else:
+    CSRF_TRUSTED_ORIGINS = [
+        os.getenv('MY_DOMAIN', "https://relayentry.com")
+    ]
+
+# This allows for CORS requests to your backend API
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+    "http://frontend:8080",
+] if ENVIRONMENT == 'development' else [
+    "https://your-production-domain.com",
+]
+
+# CSRF cookie settings
+CSRF_COOKIE_SECURE = ENVIRONMENT == 'production'
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax' if ENVIRONMENT == 'development' else 'Strict'
+
+# CSRF header name
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-ALLOWED_HOSTS = []
+# Security settings
+if ENVIRONMENT == 'development':
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'frontend']
+else:
+    ALLOWED_HOSTS = ['relayentry.com']
 
 
 # Application definition
@@ -65,21 +99,16 @@ INSTALLED_APPS = [
     'RelayEntry',
     'corsheaders',
 ]
-
+CORS_ALLOW_CREDENTIALS = True
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080", 
-    "http://frontend:8080", 
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -154,16 +183,27 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# SMTP configuration for development
-EMAIL_HOST_USER = 'contact@relayentry.com'
-EMAIL_HOST_PASSWORD = 'your_password'
-DEFAULT_FROM_EMAIL = 'contact@relayentry.com'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # MAILJET TODO
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'mailhog') # TODO FIX THIS SHIT
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 1025))
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = False
+# Email configuration
+if ENVIRONMENT == 'development':
+    # SMTP configuration for development
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'mailhog')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 1025))
+    EMAIL_USE_TLS = False
+    EMAIL_USE_SSL = False
+    EMAIL_HOST_USER = 'contact@relayentry.com'
+    EMAIL_HOST_PASSWORD = 'your_password'
+    DEFAULT_FROM_EMAIL = 'contact@relayentry.com'
+else:
+    # Email is turned off for production (for now)
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_HOST = ''
+    EMAIL_PORT = 0
+    EMAIL_USE_TLS = False
+    EMAIL_USE_SSL = False
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    DEFAULT_FROM_EMAIL = 'contact@relayentry.com'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -180,6 +220,7 @@ STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 
 API_URL = os.getenv('API_URL')
+UI_BASE_URL = os.getenv('UI_BASE_URL')
 
 LOGGING = {
     'version': 1,
@@ -203,31 +244,55 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'django_debug.log',
+            'filename': os.path.join(LOG_DIR, 'django_debug.log'),
             'formatter': 'verbose',
         },
         'production_file': {
             'level': 'WARNING',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/django/production.log',
+            'filename': os.path.join(LOG_DIR, 'production.log'),
             'formatter': 'verbose',
         },
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-            'formatter': 'verbose',
-        },
+        # 'mail_admins': {
+        #     'level': 'ERROR',
+        #     'class': 'django.utils.log.AdminEmailHandler',
+        #     'formatter': 'verbose',
+        # },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file', 'mail_admins'],
-            'level': 'DEBUG' if ENVIRONMENT == 'development' else 'WARNING',
+            'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
+            'level': 'WARNING',
             'propagate': True,
         },
-        'myapp': {
+        'RelayEntry': {
             'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
             'level': 'DEBUG' if ENVIRONMENT == 'development' else 'WARNING',
             'propagate': False,
         },
+        'django.db.backends': {
+            'handlers': ['console', 'file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'rest_framework': {
+            'handlers': ['console', 'file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'PIL': {  # Adding PIL logger for Pillow image library
+            'handlers': ['console', 'file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
+            'level': 'DEBUG' if ENVIRONMENT == 'development' else 'WARNING',
+            'propagate': False,
+        },
+    },
+     'root': {
+        'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
+        'level': 'WARNING',
     },
 }

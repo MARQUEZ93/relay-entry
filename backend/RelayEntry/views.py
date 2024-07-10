@@ -12,8 +12,6 @@ import json
 from .models import UserProfile, Event, Race, Registration, Team, TeamMember
 from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer
 from rest_framework import generics
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.db import transaction
 from .stripe_utils import retrieve_payment_intent 
@@ -21,7 +19,6 @@ import stripe
 from .conversion import convert_keys_to_snake_case, convert_keys_to_camel_case
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-@method_decorator(csrf_exempt, name='dispatch')
 class RaceDetailView(generics.RetrieveAPIView):
     queryset = Race.objects.all()
     serializer_class = RaceSerializer
@@ -70,13 +67,11 @@ def index(request):
 #         form = UserCreationForm()
 #     return render(request, 'signup.html', {'form': form})
 
-from django.views.decorators.csrf import csrf_exempt
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
 @require_POST
-@csrf_exempt
 def team_register(request):
     try:
         data = json.loads(request.body)
@@ -205,7 +200,6 @@ def team_register(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @require_POST
-@csrf_exempt
 def event_register(request, url_alias):
     try:
         data = json.loads(request.body)
@@ -269,7 +263,6 @@ def event_register(request, url_alias):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @require_POST
-@csrf_exempt
 def create_payment_intent(request):
     try:
         data = json.loads(request.body)

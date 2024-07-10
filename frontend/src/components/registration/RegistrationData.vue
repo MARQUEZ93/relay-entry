@@ -97,50 +97,7 @@ export default {
         this.projectedTeamTimeChoices = this.race.projected_team_time_choices;
       }
     },
-    // TODO REMOVE THIS HSIT
-    generateRandomString(length) {
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let result = '';
-      const charactersLength = characters.length;
-      for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-      return result;
-    },
     submit() {
-      // // TODO: remove this shit
-      this.localRegistrationData = {
-        teamData: {
-          name: 'The Best Relay Team',
-          projectedTeamTime: '5:30 / mile',
-          emails: [
-            {
-              email: 'example@example.com',
-              leg_order: 1
-            },
-            {
-              email: 'example@example.com',
-              leg_order: 2
-            },
-            {
-              email: 'example@example.com',
-              leg_order: 3
-            },
-            {
-              email: 'example@example.com',
-              leg_order: 4
-            },
-          ]
-        },
-        firstName: 'Alejandro',
-        lastName: 'Marquez',
-        email: this.generateRandomString(4) + '@veryimportant.com',
-        gender: 'Male',
-        // phone: '3017675693',
-        dateOfBirth: '1932-06-02'
-      }
-      // TODO: remove this shit
-      this.$emit('complete', this.localRegistrationData);
       if (this.$refs.form.validate()) {
         this.$emit('complete', this.localRegistrationData);
       }
@@ -148,7 +105,6 @@ export default {
   },
 };
 </script>
-
 
 <template>
   <v-form ref="form" v-model="valid" @submit.prevent="submit">

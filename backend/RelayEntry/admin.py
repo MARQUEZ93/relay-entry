@@ -22,12 +22,7 @@ class CustomGroupAdmin(admin.ModelAdmin):
     pass
 
 class CustomUserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'stripe_account_id', 'stripe_account_verified', 'connect_stripe_link')
-    def connect_stripe_link(self, obj):
-        url = reverse('connect_stripe')
-        return format_html('<a href="{}">Connect Stripe</a>', url)
-
-    connect_stripe_link.short_description = 'Connect Stripe'
+    list_display = ('user',)
 
 admin.site.unregister(User)
 admin.site.unregister(Group)
@@ -187,9 +182,12 @@ class TeamMemberInline(admin.TabularInline):
     
 @admin.register(Team)
 class TeamAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'projected_team_time',)
+    list_display = ('name', 'projected_team_time', 'race_name',)
     search_fields = ('name', 'race__name',)
     inlines = [TeamMemberInline]
+
+    def race_name(self, obj):
+        return obj.race.name
 
 
 @admin.register(TeamMember)

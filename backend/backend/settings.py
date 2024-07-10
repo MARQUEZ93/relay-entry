@@ -19,7 +19,15 @@ env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 
 SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'False')
+
+# Determine the environment
+ENVIRONMENT = os.getenv('DJANGO_ENV', 'development')
+
+# Log to console in development and to a file in production
+if ENVIRONMENT == 'production':
+    LOGGING['handlers']['console']['level'] = 'ERROR'
+    LOGGING['handlers']['file']['level'] = 'ERROR'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -40,12 +48,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+d#_*zjz0jnp7b_-f9a&4a9ii$^h$rb%yg&ve=spv_7z*+%!mz'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -178,3 +180,54 @@ STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 
 API_URL = os.getenv('API_URL')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'django_debug.log',
+            'formatter': 'verbose',
+        },
+        'production_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django/production.log',
+            'formatter': 'verbose',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file', 'mail_admins'],
+            'level': 'DEBUG' if ENVIRONMENT == 'development' else 'WARNING',
+            'propagate': True,
+        },
+        'myapp': {
+            'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
+            'level': 'DEBUG' if ENVIRONMENT == 'development' else 'WARNING',
+            'propagate': False,
+        },
+    },
+}

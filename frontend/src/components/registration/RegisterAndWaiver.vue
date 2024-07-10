@@ -49,7 +49,6 @@ export default {
     updateIpAddress(ipAddress) {
       this.ipAddress = ipAddress;
       this.registrationData.ipAddress = ipAddress;
-      console.log(this.registrationData);
     },
     async fetchEvent(eventSlug) {
       try {
@@ -107,13 +106,10 @@ export default {
           this.showError('An error occurred while processing your registration. Please try again later.');
         } else {
           const { registrationResponseData, eventData } = await response.data;
-          console.log(registrationResponseData);
-          console.log(eventData);
           this.$store.commit('setConfirmationData', {
             registrationData: registrationResponseData,
             eventData: eventData,
           });
-          console.log(this.$store);
           this.loading = false;
           this.$router.push({ name: 'Confirmation' });
         }

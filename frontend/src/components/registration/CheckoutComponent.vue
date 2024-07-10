@@ -69,7 +69,6 @@ export default {
     async payAndRegisterTeam() {
       this.loading = true; // Show loader
       try {
-        console.log("hit payAndRegisterTeam");
         const cp = await this.stripe.confirmPayment({
           elements: this.elements,
           confirmParams: {
@@ -78,7 +77,6 @@ export default {
           },
           redirect: 'if_required'
         });
-        console.log(cp);
         if (cp.error) {
           const error = cp.error;
           if (error.type === "card_error" || error.type === "validation_error") {
@@ -89,8 +87,6 @@ export default {
           this.loading = false;
           return;
         }
-        console.log(this.paymentIntentId);
-        console.log("HI");
         const response = await api.registerTeam({
           raceId: this.race.id,
           registrationData: this.registrationData,
@@ -102,7 +98,6 @@ export default {
           this.showError('An error occurred while processing your registration. Please Teamtry again later.');
           return;
         } else {
-          console.log(response.data);
           const { registrationData, raceData, teamData, paymentData } = response.data;
           this.$store.commit('setConfirmationData', {
             registrationData: registrationData,
@@ -114,7 +109,6 @@ export default {
           this.$router.push({ name: 'Confirmation' });
         }
       } catch (e){
-          console.log(e);
           this.loading = false; // Hide loader on error
           this.showError('An error occurred while processing your registration. Please try again later.');
           return;

@@ -79,7 +79,6 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 def team_register(request):
     try:
-        print("team_register")
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
         race_id = data['race_id']
@@ -273,7 +272,6 @@ def event_register(request, url_alias):
 @csrf_exempt
 def create_payment_intent(request):
     try:
-        print("fuck")
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
         race_id = data['race_id']
@@ -282,12 +280,10 @@ def create_payment_intent(request):
         # Calculate the amount based on the race price
         try:
             race = Race.objects.get(id=race_id)
-            print(race)
         except Race.DoesNotExist:
             logger.error("Race not found.")
             return JsonResponse({'error': "Race not found."}, status=404)
         amount = int(race.price * 100)  # Convert to cents
-        print(amount)
         # Create a PaymentIntent
         intent = stripe.PaymentIntent.create(
             amount=amount,

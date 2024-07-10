@@ -15,7 +15,7 @@ module.exports = defineConfig({
     hot: true,
     liveReload: true,
     watchFiles: ['src/**/*', 'public/**/*'],
-    port: '8080',
+    port: process.env.VUE_APP_PORT,
     host: '0.0.0.0',
     client: {
       webSocketURL: process.env.VUE_APP_WEBSOCKET_URL,

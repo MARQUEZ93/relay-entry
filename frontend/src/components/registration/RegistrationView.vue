@@ -43,7 +43,6 @@ export default {
       if (!window.Stripe) {
         // Ensure Stripe.js is loaded from the global scope
         await new Promise((resolve) => {
-          console.log("new Promise");
           // Fallback in case the script hasn't loaded yet
           const script = document.createElement('script');
           script.src = 'https://js.stripe.com/v3/';
@@ -52,8 +51,7 @@ export default {
           document.head.appendChild(script);
         });
       }
-      this.stripe = await loadStripe("pk_test_51PNivYBsh8Ne4MdUVijN6hN4Ueoo8vLEFj5o5BqkAinexlV7S2f7P2EufuWHpqIR9SAAdZF5lpvk2kgHDFzTeuOQ009WWgftkv");
-      console.log("stripe loading");
+      this.stripe = await loadStripe(process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY);
     },
     async createPaymentIntentOnMount() {
       try {
@@ -63,8 +61,6 @@ export default {
         this.clientSecret = response.data.clientSecret;
         this.paymentIntentId = response.data.id;
         this.amount = response.data.amount;
-        console.log(response.data);
-        console.log("createPaymentIntentOnMount");
         this.loading = false;
       } catch (e) {
         this.showError('Payment gateway error. Please try again later.');
@@ -79,7 +75,6 @@ export default {
     updateIpAddress(ipAddress) {
       this.ipAddress = ipAddress;
       this.registrationData.ipAddress = ipAddress;
-      console.log(this.registrationData);
     },
     async fetchRace(eventSlug, raceId) {
       try {
@@ -123,13 +118,6 @@ export default {
     acceptWaiver() {
       this.waiverAccepted = true;
       this.nextTab();
-    },
-    async submitData() {
-      try {
-        console.log("submitData");
-      } catch (error) {
-        console.log("error");
-      }
     },
   },
   async created() {

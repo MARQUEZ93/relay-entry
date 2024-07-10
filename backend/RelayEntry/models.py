@@ -8,6 +8,8 @@ from .constants import STATES, TEAM_GENDER_CHOICES, GENDER_CHOICES, UNIT_CHOICES
 import uuid
 from zoneinfo import ZoneInfo
 from django.contrib.postgres.fields import ArrayField
+import os
+from django.conf import settings
 
 from django.utils.text import slugify
 
@@ -55,8 +57,8 @@ class Event(models.Model):
     url_alias = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
     def get_event_url(self):
-        # TODO ENV VAR HERE
-        return f"http://localhost:8000/events/{self.url_alias}"
+        ui_base_url = os.getenv('UI_BASE_URL')
+        return f"{ui_base_url}/events/{self.url_alias}"
 
     def __str__(self):
         return self.name

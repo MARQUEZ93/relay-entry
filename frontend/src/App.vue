@@ -52,6 +52,7 @@ import brandLogo from '@/assets/brand.svg';
 export default {
   name: 'App',
   data() {
+    console.log('VUE_APP_API_BASE_URL:', process.env.VUE_APP_API_BASE_URL);
     return {
       drawer: false,
       brandLogo

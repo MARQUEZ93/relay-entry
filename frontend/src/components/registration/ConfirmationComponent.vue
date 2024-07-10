@@ -27,8 +27,6 @@ export default {
   },
   mounted() {
     window.scrollTo(0, 0);
-    console.log('Registration Data:', this.registrationData);
-    console.log('Event Data:', this.eventData);
   },
   beforeUnmount() {
     // Clear the data when the component is destroyed

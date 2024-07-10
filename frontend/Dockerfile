@@ -4,7 +4,9 @@ FROM node:14
 # Set work directory
 WORKDIR /app
 
-COPY ./package.json ./
+# Copy package.json and package-lock.json (if using npm)
+COPY package*.json ./
+
 RUN npm install
 COPY . .
 

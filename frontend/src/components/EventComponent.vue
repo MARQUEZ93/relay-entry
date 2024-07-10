@@ -54,9 +54,6 @@ export default {
     formatPrice(price) {
       return Number(price).toFixed(2);
     },
-    formatRaceName(race) {
-      return race.description ? `${race.name}*` : race.name;
-    },
   },
   async created() {
     const eventSlug = this.$route.params.eventUrlAlias;

@@ -28,6 +28,7 @@ export default {
   },
   async mounted() {
     this.setupElements();
+    window.scrollTo(0, 0);
   },
   computed: {
     formattedAmount() {
@@ -136,6 +137,7 @@ export default {
               <div v-if="elementsLoading || !stripe || !clientSecret">Loading payment gateway...</div>
               <div id="payment-element"></div>
               <p class="mt-3 order-total"><strong>Grand Total: ${{ formattedAmount }}</strong></p>
+              <p class="mt-3 text-center"><strong>Note:</strong> All payments are non-refundable.</p>
             </v-col>
           </v-row>
           <!-- Snackbar for error messages -->

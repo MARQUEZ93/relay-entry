@@ -9,6 +9,9 @@ export default {
     WaiverComponent,
     RegistrationData,
   },
+  mounted() {
+    window.scrollTo(0, 0);
+  },
   data() {
     return {
       snackbar: {

@@ -1,5 +1,31 @@
 # relay-entry
 
+Build Docker Images:
+
+docker-compose -f docker-compose.dev.yml build
+Start Services:
+
+docker-compose -f docker-compose.dev.yml up -d
+Stop Services:
+
+docker-compose -f docker-compose.dev.yml down
+View Logs:
+
+docker-compose -f docker-compose.dev.yml logs -f
+Execute Command in Running Container:
+
+docker-compose -f docker-compose.dev.yml exec <service_name> <command>
+Example:
+
+docker-compose -f docker-compose.dev.yml exec backend python manage.py migrate
+Rebuild and Restart Services:
+
+docker-compose -f docker-compose.dev.yml up -d --build
+Restart Services when .env Changes:
+
+docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker-compose.dev.yml up -d --build
+
 ### 
 
 docker-compose up --build

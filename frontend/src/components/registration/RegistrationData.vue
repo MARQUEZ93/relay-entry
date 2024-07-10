@@ -210,8 +210,6 @@ export default {
       label="Parent/Guardian Signature"
     ></v-textarea> -->
     <v-btn type="submit" color="primary" :disabled="!valid">Next</v-btn>
-    <!-- TODO: REMOVE THIS SHIT -->
-    <v-btn type="submit" color="primary" >Demo</v-btn>
   </v-form>
 </template>
 

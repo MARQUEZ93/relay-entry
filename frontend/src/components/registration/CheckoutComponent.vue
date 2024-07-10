@@ -15,7 +15,6 @@ export default {
       required: true,
     },
     amount: {
-      type: String,
       required: true,
     },
     paymentIntentId: {
@@ -29,6 +28,11 @@ export default {
   },
   async mounted() {
     this.setupElements();
+  },
+  computed: {
+    formattedAmount() {
+      return (this.amount / 100).toFixed(2);
+    }
   },
   data() {
     return {
@@ -44,6 +48,9 @@ export default {
   },
   methods: {
     async setupElements() {
+      if (!this.stripe || !this.clientSecret){
+        return;
+      }
       const options = {
         clientSecret: this.clientSecret,
       };
@@ -128,7 +135,7 @@ export default {
             <v-col cols="12">
               <div v-if="elementsLoading || !stripe || !clientSecret">Loading payment gateway...</div>
               <div id="payment-element"></div>
-              <p class="mt-3 order-total"><strong>Grand Total: ${{ amount }}</strong></p>
+              <p class="mt-3 order-total"><strong>Grand Total: ${{ formattedAmount }}</strong></p>
             </v-col>
           </v-row>
           <!-- Snackbar for error messages -->

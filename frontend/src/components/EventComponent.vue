@@ -54,6 +54,9 @@ export default {
     formatPrice(price) {
       return Number(price).toFixed(2);
     },
+    formatRaceName(race) {
+      return race.description ? `${race.name}*` : race.name;
+    },
   },
   async created() {
     const eventSlug = this.$route.params.eventUrlAlias;
@@ -114,8 +117,11 @@ export default {
             class="d-flex align-center justify-center"
           >
             <v-card class="mx-auto my-3 race-card" outlined>
-              <v-card-title v-if="race.name">
+              <v-card-title v-if="race.name" class="d-flex align-center justify-center">
                 <span>{{ race.name }}</span>
+                <v-icon v-if="race.description" size="x-small" class="ml-2" color="primary" v-tooltip.top="race.description">
+                  mdi-information
+                </v-icon>
               </v-card-title>
               <v-card-subtitle v-if="race.is_relay && race.same_distance">
                 <p v-if="race.custom_distance_value && race.custom_distance_unit">

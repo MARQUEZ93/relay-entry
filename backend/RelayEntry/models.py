@@ -31,7 +31,7 @@ class Event(models.Model):
     description = models.TextField(null=True, blank=True)
     date = models.DateField()
     end_date = models.DateField(blank=True, null=True, help_text="Only if the event spans multiple days. Must be after the date field.")
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
+    # created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
     published = models.BooleanField(default=False, help_text="Whether the event can be viewed by the public.")
 
     address = models.CharField(max_length=255, blank=True, null=True)
@@ -74,7 +74,7 @@ class PhotoPackage(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    # created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     event = models.ForeignKey('Event', on_delete=models.CASCADE, related_name='photo_packages',
                               help_text="Which event the photo package is associated with.")
 
@@ -113,7 +113,7 @@ class Race(models.Model):
     same_distance = models.BooleanField(default=False, help_text="Whether each leg of the team relay race is the same distance.")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    # created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
 
     course_map = models.FileField(upload_to='race_course_maps/', blank=True, null=True)
@@ -161,7 +161,7 @@ class CouponCode(models.Model):
     is_active = models.BooleanField(default=True)
     max_uses = models.PositiveIntegerField(default=1, help_text="Max number of times the coupon code can be used.")
     usage_count = models.PositiveIntegerField(default=0, help_text="The amount of times the coupon code has been used.")
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    # created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='coupon_codes')
 
     def __str__(self):
@@ -283,7 +283,7 @@ class Leg(models.Model):
 
     custom_distance_value = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     custom_distance_unit = models.CharField(max_length=2, choices=UNIT_CHOICES, blank=True, null=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    # created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('race', 'leg_number')

@@ -43,11 +43,12 @@ class StaffUserPermissionsMixin:
     def has_change_permission(self, request, obj=None):
         return request.user.is_staff
 
-    # def has_delete_permission(self, request, obj=None):
+    # def has_delete_permi
+    # ssion(self, request, obj=None):
     #     return request.user.is_staff
 
 class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
-    exclude = ('created_by',)  # Hide created_by field in the form
+    # exclude = ('created_by',)  # Hide created_by field in the form
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -78,23 +79,23 @@ class BaseOwnerAdmin(StaffUserPermissionsMixin, admin.ModelAdmin):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         return super().formfield_for_manytomany(db_field, request, **kwargs)
     
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "event":
-            if not request.user.is_superuser:
-                kwargs["queryset"] = Event.objects.filter(created_by=request.user)
-            else:
-                kwargs["queryset"] = Event.objects.all()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if db_field.name == "event":
+    #         if not request.user.is_superuser:
+    #             kwargs["queryset"] = Event.objects.filter(created_by=request.user)
+    #         else:
+    #             kwargs["queryset"] = Event.objects.all()
+    #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Event)
 class EventAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'description', 'date', 'created_by', 'created_at', 'updated_at', 'url_alias', 'event_url', )
-    search_fields = ('name', 'created_by__email',)
+    list_display = ('name', 'description', 'date', 'created_at', 'updated_at', 'url_alias', 'event_url', )
+    search_fields = ('name',)
     prepopulated_fields = {"url_alias": ("name",)}
 
     def save_model(self, request, obj, form, change):
-        if not change or not obj.created_by_id:
-            obj.created_by = request.user
+        # if not change or not obj.created_by_id:
+        #     obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
     def event_url(self, obj):
@@ -110,23 +111,23 @@ class RaceAdmin(BaseOwnerAdmin):
     list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator','projected_team_time_choices',)
     search_fields = ('name', 'event__name', 'distance',)
 
-    # the events dropdown
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "event":
-            kwargs["queryset"] = Event.objects.filter(created_by=request.user)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    # # the events dropdown
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if db_field.name == "event":
+    #         kwargs["queryset"] = Event.objects.filter(created_by=request.user)
+    #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
     list_display = ('event', 'race', 'first_name', 'last_name', 'email', 'amount_paid', 'created_at', 'updated_at', 'ip_address', 'parent_guardian_name', 'minor')
     search_fields = ('email', 'event__name', 'race__name')
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if request.user.is_staff and not request.user.is_superuser:
-            # Only show registrations for races created by the current user
-            return qs.filter(race__created_by=request.user)
-        return qs
+    # def get_queryset(self, request):
+    #     qs = super().get_queryset(request)
+    #     if request.user.is_staff and not request.user.is_superuser:
+    #         # Only show registrations for races created by the current user
+    #         return qs.filter(race__created_by=request.user)
+    #     return qs
 
     def has_change_permission(self, request, obj=None):
         # if obj and obj.race.created_by != request.user and not request.user.is_superuser:

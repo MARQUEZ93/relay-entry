@@ -57,6 +57,19 @@ else:
         os.getenv('MY_DOMAIN', "https://relayentry.com")
     ]
 
+# Ensure CSRF cookies are sent over HTTP
+# This should be set to True when deploying with HTTPS to ensure the cookie is only sent over secure connections.
+CSRF_COOKIE_SECURE = False
+
+# Ensure session cookies are sent over HTTP
+# This should be set to True when deploying with HTTPS to ensure the cookie is only sent over secure connections.
+SESSION_COOKIE_SECURE = False
+
+# Set this if your Django application is behind a reverse proxy
+USE_X_FORWARDED_HOST = True
+# Comment out this line until you enable SSL
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
+
 # This allows for CORS requests to your backend API
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
@@ -81,7 +94,7 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 if ENVIRONMENT == 'development':
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'frontend']
 else:
-    ALLOWED_HOSTS = [os.getenv('MY_HOST', "relayentry.com")]
+    ALLOWED_HOSTS = ['relayentry.com', os.getenv('MY_HOST')]
 
 
 # Application definition

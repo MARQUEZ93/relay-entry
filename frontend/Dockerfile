@@ -1,11 +1,5 @@
 # Stage 1: Build the Vue.js application
-FROM node:14 AS build
-
-# Initial check to see if there is a package.json in the root directory
-RUN echo "Checking root directory contents before setting WORKDIR:" && ls -l /
-
-# Create the work directory explicitly
-RUN mkdir -p /app
+FROM node:14 as build
 
 # Initial check to see if there is a package.json in the root directory
 RUN echo "Checking root directory contents before setting WORKDIR:" && ls -l /
@@ -17,8 +11,8 @@ WORKDIR /app
 RUN echo "Checking /app directory contents after setting WORKDIR:" && ls -l /app
 
 # Copy package.json and package-lock.json
-COPY package.json /app/
-COPY package-lock.json /app/
+COPY package.json ./
+COPY package-lock.json ./
  
 # Check the contents of /app after copying package.json and package-lock.json
 RUN echo "Checking /app directory contents after copying package.json and package-lock.json:" && ls -l /app
@@ -30,7 +24,7 @@ RUN echo "Contents of /app after copying package.json:" && ls -l /app
 RUN npm install
 
 # Copy the rest of the application code
-COPY . /app/
+COPY . .
 
 # Debugging step: List the contents of /app before building
 RUN echo "Contents of /app before building:" && ls -l /app
@@ -54,8 +48,3 @@ COPY --from=build /app/dist /usr/share/nginx/html
 RUN echo "After copying, contents of /usr/share/nginx/html:" && ls -l /usr/share/nginx/html
 # Expose the port that Nginx will run on
 EXPOSE 80
-# Copy the Nginx configuration file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]

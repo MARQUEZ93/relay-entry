@@ -35,11 +35,11 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
-  # nginx:
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - frontend
-  #   restart: always
+  nginx:
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+    restart: always
 volumes:
   pgdata:

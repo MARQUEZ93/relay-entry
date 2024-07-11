@@ -5,7 +5,7 @@ FROM node:14 AS build
 WORKDIR /app
 
 # Copy package.json and package-lock.json
-COPY package*.json ./
+COPY package*.json /app/
 
 # Debugging step: List the contents of /app after copying package.json
 RUN echo "Contents of /app after copying package.json:" && ls -l /app
@@ -14,7 +14,7 @@ RUN echo "Contents of /app after copying package.json:" && ls -l /app
 RUN npm install
 
 # Copy the rest of the application code
-COPY . .
+COPY . /app/
 
 # Debugging step: List the contents of /app before building
 RUN echo "Contents of /app before building:" && ls -l /app

@@ -79,7 +79,6 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # CSRF cookie settings
-CSRF_COOKIE_SECURE = ENVIRONMENT == 'production'
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax' if ENVIRONMENT == 'development' else 'Strict'
 

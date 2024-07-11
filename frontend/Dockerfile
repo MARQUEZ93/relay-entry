@@ -5,7 +5,7 @@ FROM node:14 AS build
 WORKDIR /app
 
 # Copy package.json and package-lock.json (if using npm)
-COPY package*.json ./
+COPY package*.json /app/
 
 # Debugging step: List the contents of /app after copying package.json
 RUN echo "Contents of /app after copying package.json:" && ls -l /app

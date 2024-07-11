@@ -26,4 +26,5 @@ module.exports = defineConfig({
       progress: true,
     },
   },
+  productionSourceMap: false,
 });

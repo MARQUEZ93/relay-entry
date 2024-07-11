@@ -4,6 +4,12 @@ FROM node:14 AS build
 # Initial check to see if there is a package.json in the root directory
 RUN echo "Checking root directory contents before setting WORKDIR:" && ls -l /
 
+# Create the work directory explicitly
+RUN mkdir -p /app
+
+# Initial check to see if there is a package.json in the root directory
+RUN echo "Checking root directory contents before setting WORKDIR:" && ls -l /
+
 # Set work directory
 WORKDIR /app
 

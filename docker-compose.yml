@@ -7,7 +7,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     expose:
-      - "80" # Use expose instead of ports for internal communicatio
+      - "80" # Use expose instead of ports for internal communication
     depends_on:
       - backend
     restart: always

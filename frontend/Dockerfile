@@ -25,6 +25,9 @@ FROM nginx:alpine
 # Copy built assets from the build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# List the contents of the html directory (for debugging)
+RUN ls /usr/share/nginx/html
+
 # Expose the port that Nginx runs on
 EXPOSE 80
 

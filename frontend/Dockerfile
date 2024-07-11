@@ -17,8 +17,8 @@ WORKDIR /app
 RUN echo "Checking /app directory contents after setting WORKDIR:" && ls -l /app
 
 # Copy package.json and package-lock.json
-COPY package.json ./
-COPY package-lock.json ./
+COPY package.json /app/
+COPY package-lock.json /app/
  
 # Check the contents of /app after copying package.json and package-lock.json
 RUN echo "Checking /app directory contents after copying package.json and package-lock.json:" && ls -l /app
@@ -52,12 +52,10 @@ COPY --from=build /app/dist /usr/share/nginx/html
 
 # Debugging step: List the contents of the html directory
 RUN echo "After copying, contents of /usr/share/nginx/html:" && ls -l /usr/share/nginx/html
-
-# Copy the Nginx configuration file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
 # Expose the port that Nginx will run on
 EXPOSE 80
+# Copy the Nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]

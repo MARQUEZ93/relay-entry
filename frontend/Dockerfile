@@ -12,8 +12,8 @@ RUN echo "Checking /app directory contents after setting WORKDIR:" && ls -l /app
 
 # Copy package.json and package-lock.json
 COPY package.json /app/
-COPY package-lock.json /app/
-
+# COPY package-lock.json /app/
+ 
 # Check the contents of /app after copying package.json and package-lock.json
 RUN echo "Checking /app directory contents after copying package.json and package-lock.json:" && ls -l /app
 

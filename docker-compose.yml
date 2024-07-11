@@ -1,16 +1,18 @@
 version: '3.8'
 services:
   frontend:
-    env_file:
-      - .env.frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production 
     expose:
       - "80" # Use expose instead of ports for internal communication
     depends_on:
       - backend
     restart: always
+    env_file:
+      - .env.frontend
   backend:
     build:
       context: ./backend

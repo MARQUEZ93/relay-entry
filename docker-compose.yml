@@ -4,12 +4,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
+    expose:
       - "80" # Use expose instead of ports for internal communicatio
     depends_on:
       - backend
     restart: always
-
   backend:
     build:
       context: ./backend
@@ -23,7 +22,6 @@ services:
     depends_on:
       - postgres
     restart: always
-
   postgres:
     image: postgres:13
     env_file:
@@ -33,7 +31,6 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
-
   nginx:
     build:
       context: ./nginx

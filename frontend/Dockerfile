@@ -1,11 +1,21 @@
 # Stage 1: Build the Vue.js application
 FROM node:14 AS build
 
+# Initial check to see if there is a package.json in the root directory
+RUN echo "Checking root directory contents before setting WORKDIR:" && ls -l /
+
 # Set work directory
 WORKDIR /app
 
+# Check the contents of /app after setting WORKDIR
+RUN echo "Checking /app directory contents after setting WORKDIR:" && ls -l /app
+
 # Copy package.json and package-lock.json
-COPY package*.json /app/
+COPY package.json /app/
+COPY package-lock.json /app/
+
+# Check the contents of /app after copying package.json and package-lock.json
+RUN echo "Checking /app directory contents after copying package.json and package-lock.json:" && ls -l /app
 
 # Debugging step: List the contents of /app after copying package.json
 RUN echo "Contents of /app after copying package.json:" && ls -l /app

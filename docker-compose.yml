@@ -6,8 +6,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=production 
-    expose:
-      - "80" # Use expose instead of ports for internal communication
+    ports:
+      - "80:80" # Use expose instead of ports for internal communication
     depends_on:
       - backend
     restart: always

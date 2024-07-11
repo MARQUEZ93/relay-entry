@@ -16,6 +16,9 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# List the contents of the dist directory (for debugging)
+RUN ls /app/dist
+
 # Stage 2: Serve the application with Nginx
 FROM nginx:alpine
 

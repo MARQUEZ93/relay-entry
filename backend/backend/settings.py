@@ -27,11 +27,6 @@ STATIC_ROOT = '/staticfiles/'
 # Determine the environment
 ENVIRONMENT = os.getenv('DJANGO_ENV', 'development')
 
-# Log to console in development and to a file in production
-if ENVIRONMENT == 'production':
-    LOGGING['handlers']['console']['level'] = 'ERROR'
-    LOGGING['handlers']['file']['level'] = 'ERROR'
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -299,3 +294,8 @@ LOGGING = {
         'level': 'WARNING',
     },
 }
+
+# Log to console in development and to a file in production
+if ENVIRONMENT == 'production':
+    LOGGING['handlers']['console']['level'] = 'ERROR'
+    LOGGING['handlers']['file']['level'] = 'ERROR'

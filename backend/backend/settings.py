@@ -21,9 +21,6 @@ load_dotenv(dotenv_path=env_path)
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False')
 
-# Define where collected static files will go in production
-STATIC_ROOT = '/staticfiles/'
-
 # Determine the environment
 ENVIRONMENT = os.getenv('DJANGO_ENV', 'development')
 
@@ -43,6 +40,8 @@ DATABASES = {
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
+# Define where collected static files will go in production
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 

@@ -5,7 +5,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "80" # Use expose instead of ports for internal communicatio
     depends_on:
       - backend
     restart: always
@@ -16,8 +16,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./backend/logs:/app/logs
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000" # Use expose instead of ports for internal communication
     env_file:
       - .env
     depends_on:

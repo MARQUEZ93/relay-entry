@@ -21,6 +21,9 @@ load_dotenv(dotenv_path=env_path)
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False')
 
+# Define where collected static files will go in production
+STATIC_ROOT = '/staticfiles/'
+
 # Determine the environment
 ENVIRONMENT = os.getenv('DJANGO_ENV', 'development')
 

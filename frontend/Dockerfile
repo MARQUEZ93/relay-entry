@@ -17,6 +17,9 @@ COPY . .
 RUN npm run build
 
 # List the contents of the dist directory (for debugging)
+RUN echo "Contents of /app/dist:" && ls /app/dist
+
+# List the contents of the dist directory (for debugging)
 RUN ls /app/dist
 
 # Stage 2: Serve the application with Nginx
@@ -26,7 +29,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # List the contents of the html directory (for debugging)
-RUN ls /usr/share/nginx/html
+RUN echo "Contents of /usr/share/nginx/html:" && ls /usr/share/nginx/html
 
 # Expose the port that Nginx runs on
 EXPOSE 80

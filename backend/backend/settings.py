@@ -62,7 +62,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://frontend:8080",
 ] if ENVIRONMENT == 'development' else [
-    "https://your-production-domain.com",
+    os.getenv('MY_DOMAIN', "https://relayentry.com"),
 ]
 
 # CSRF cookie settings
@@ -81,7 +81,7 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 if ENVIRONMENT == 'development':
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'frontend']
 else:
-    ALLOWED_HOSTS = ['relayentry.com']
+    ALLOWED_HOSTS = [os.getenv('MY_HOST', "relayentry.com")]
 
 
 # Application definition

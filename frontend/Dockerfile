@@ -53,7 +53,11 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Debugging step: List the contents of the html directory
 RUN echo "After copying, contents of /usr/share/nginx/html:" && ls -l /usr/share/nginx/html
 
-# Expose the port that Nginx runs on
+# Copy the Nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose the port that Nginx will run on
 EXPOSE 80
 
-# The default command for Nginx is to run the server, no need to override it
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]

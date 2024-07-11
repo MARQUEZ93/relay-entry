@@ -26,7 +26,6 @@ module.exports = defineConfig({
       progress: true,
     },
   },
-  productionSourceMap: false,
   // Explicitly set the output directory to dist
   outputDir: 'dist',
 });

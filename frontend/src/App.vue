@@ -1,3 +1,49 @@
+<script>
+import brandLogo from '@/assets/brand.svg';
+export default {
+  name: 'App',
+  data() {
+    return {
+      drawer: false,
+      brandLogo
+    };
+  },
+};
+</script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+.white--text {
+  color: white !important;
+}
+.logo-image {
+  height: 130px; /* Adjust height as needed */
+  width: 130px;
+  max-width: 100%;
+  display: block !important; /* Ensure the logo is displayed */
+}
+.v-navigation-drawer .v-list-item-title {
+  font-weight: 500; /* Make the text bolder */
+  text-transform: uppercase; /* Make the text all caps */
+  color: white; /* Ensure the text color matches the header */
+}
+/* Remove underline from links */
+.v-navigation-drawer a {
+  text-decoration: none;
+  color: inherit; /* Ensure the text color is inherited */
+}
+
+.v-navigation-drawer a:hover {
+  text-decoration: underline;
+}
+</style>
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
@@ -46,50 +92,3 @@
     </v-footer>
   </v-app>
 </template>
-
-<script>
-import brandLogo from '@/assets/brand.svg';
-export default {
-  name: 'App',
-  data() {
-    return {
-      drawer: false,
-      brandLogo
-    };
-  },
-};
-</script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-.white--text {
-  color: white !important;
-}
-.logo-image {
-  height: 130px; /* Adjust height as needed */
-  width: 130px;
-  max-width: 100%;
-  display: block !important; /* Ensure the logo is displayed */
-}
-.v-navigation-drawer .v-list-item-title {
-  font-weight: 500; /* Make the text bolder */
-  text-transform: uppercase; /* Make the text all caps */
-  color: white; /* Ensure the text color matches the header */
-}
-/* Remove underline from links */
-.v-navigation-drawer a {
-  text-decoration: none;
-  color: inherit; /* Ensure the text color is inherited */
-}
-
-.v-navigation-drawer a:hover {
-  text-decoration: underline;
-}
-</style>

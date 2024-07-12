@@ -79,6 +79,7 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax' if ENVIRONMENT == 'development' else 'Strict'
 
+WWW_HOST = os.getenv('WWW_HOST')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -87,7 +88,7 @@ CSRF_COOKIE_SAMESITE = 'Lax' if ENVIRONMENT == 'development' else 'Strict'
 if ENVIRONMENT == 'development':
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'frontend']
 else:
-    ALLOWED_HOSTS = ['relayentry.com', os.getenv('WWW_HOST')]
+    ALLOWED_HOSTS = ['relayentry.com', WWW_HOST]
 
 
 # Application definition

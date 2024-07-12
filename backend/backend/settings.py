@@ -19,10 +19,9 @@ env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 
 SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG', 'False')
 
 # Determine the environment
-ENVIRONMENT = os.getenv('DJANGO_ENV', 'development')
+ENVIRONMENT = os.getenv('DJANGO_ENV', 'production')
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -52,7 +51,9 @@ if ENVIRONMENT == 'development':
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_HTTPONLY = False
+    DEBUG = True
 else:
+    DEBUG = False
     CSRF_TRUSTED_ORIGINS = [
         os.getenv('MY_DOMAIN', "https://relayentry.com")
     ]

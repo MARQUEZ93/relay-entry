@@ -199,7 +199,7 @@ def team_register(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-@require_
+@require_POST
 @csrf_exempt
 def event_register(request, url_alias):
     try:

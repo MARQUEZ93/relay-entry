@@ -106,7 +106,7 @@ else:
     CSRF_COOKIE_SAMESITE = 'Strict'
     ALLOWED_HOSTS = ['relayentry.com', WWW_HOST]
     CORS_ALLOWED_ORIGINS = ["https://relayentry.com"]
-    USE_X_FORWARDED_HOST = True
+    # USE_X_FORWARDED_HOST = True
 
 ROOT_URLCONF = 'backend.urls'
 

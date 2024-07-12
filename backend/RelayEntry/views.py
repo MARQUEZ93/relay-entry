@@ -20,6 +20,7 @@ from .conversion import convert_keys_to_snake_case, convert_keys_to_camel_case
 stripe.api_key = settings.STRIPE_SECRET_KEY
 # Set up logging
 logger = logging.getLogger(__name__)
+from django.views.decorators.csrf import csrf_exempt
 
 class RaceDetailView(generics.RetrieveAPIView):
     queryset = Race.objects.all()
@@ -70,6 +71,7 @@ def index(request):
 #     return render(request, 'signup.html', {'form': form})
 
 @require_POST
+@csrf_exempt
 def team_register(request):
     try:
         data = json.loads(request.body)
@@ -197,7 +199,8 @@ def team_register(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-@require_POST
+@require_
+@csrf_exempt
 def event_register(request, url_alias):
     try:
         data = json.loads(request.body)
@@ -261,6 +264,7 @@ def event_register(request, url_alias):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @require_POST
+@csrf_exempt
 def create_payment_intent(request):
     try:
         data = json.loads(request.body)

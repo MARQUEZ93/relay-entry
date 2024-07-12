@@ -42,7 +42,7 @@
                       </li>
                       <li>
                         <v-icon left>mdi-access-point</v-icon>
-                        &nbsp;Accessible software for all participants, including the visually impaired.
+                        &nbsp;Accessible software for all participants.
                       </li>
                       <li>
                         <v-icon left>mdi-run-fast</v-icon>

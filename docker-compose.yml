@@ -4,8 +4,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    environment:
-      - NODE_ENV=production 
     volumes:
       - staticfiles:/app/staticfiles
       - /etc/letsencrypt:/etc/letsencrypt  # Map the SSL certificates

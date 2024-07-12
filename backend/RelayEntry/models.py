@@ -57,7 +57,7 @@ class Event(models.Model):
     url_alias = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
     def get_event_url(self):
-        ui_base_url = os.getenv('UI_BASE_URL')
+        ui_base_url = os.getenv('WWW_HOST')
         return f"{ui_base_url}/events/{self.url_alias}"
 
     def __str__(self):

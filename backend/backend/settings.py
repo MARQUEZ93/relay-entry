@@ -49,28 +49,31 @@ if ENVIRONMENT == 'development':
         "http://localhost:8080",
         "http://frontend:8080",
     ]
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_HTTPONLY = False
 else:
     CSRF_TRUSTED_ORIGINS = [
         os.getenv('MY_DOMAIN', "https://relayentry.com")
     ]
-
-# Ensure CSRF cookies are sent over HTTP
-# This should be set to True when deploying with HTTPS to ensure the cookie is only sent over secure connections.
-CSRF_COOKIE_SECURE = False
-
-# Ensure session cookies are sent over HTTP
-# This should be set to True when deploying with HTTPS to ensure the cookie is only sent over secure connections.
-SESSION_COOKIE_SECURE = False
+    # Ensure CSRF cookies are sent over HTTP
+    # This should be set to True when deploying with HTTPS to ensure the cookie is only sent over secure connections.
+    CSRF_COOKIE_SECURE = True
+    # Ensure session cookies are sent over HTTP
+    # This should be set to True when deploying with HTTPS to ensure the cookie is only sent over secure connections.
+    SESSION_COOKIE_SECURE = True
+    # Secure headers
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    # enabled SSL
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Set this if your Django application is behind a reverse proxy
 USE_X_FORWARDED_HOST = True
-# Comment out this line until you enable SSL
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
 
 # This allows for CORS requests to your backend API
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
-    "http://frontend:8080",
 ] if ENVIRONMENT == 'development' else [
     os.getenv('MY_DOMAIN', "https://relayentry.com"),
 ]
@@ -78,9 +81,6 @@ CORS_ALLOWED_ORIGINS = [
 # CSRF cookie settings
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax' if ENVIRONMENT == 'development' else 'Strict'
-
-# CSRF header name
-CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
 
 # Quick-start development settings - unsuitable for production
@@ -90,7 +90,7 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 if ENVIRONMENT == 'development':
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'frontend']
 else:
-    ALLOWED_HOSTS = ['relayentry.com', os.getenv('MY_HOST')]
+    ALLOWED_HOSTS = ['relayentry.com', os.getenv('WWW_HOST')]
 
 
 # Application definition
@@ -228,7 +228,6 @@ AUTHENTICATION_BACKENDS = ['backend.backends.ApprovedUserBackend']
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 
-API_URL = os.getenv('API_URL')
 UI_BASE_URL = os.getenv('UI_BASE_URL')
 
 LOGGING = {

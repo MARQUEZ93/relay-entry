@@ -90,7 +90,7 @@ if ENVIRONMENT == 'development':
     CORS_ALLOWED_ORIGINS = ["http://localhost:8080"]
 else:
     DEBUG = False
-    CSRF_TRUSTED_ORIGINS = ["https://relayentry.com"]
+    CSRF_TRUSTED_ORIGINS = ["https://relayentry.com", "https://www.relayentry.com"]
     # Ensure CSRF cookies are sent over HTTP
     # This should be set to True when deploying with HTTPS to ensure the cookie is only sent over secure connections.
     CSRF_COOKIE_SECURE = True
@@ -104,8 +104,8 @@ else:
     CSRF_COOKIE_HTTPONLY = True
     CSRF_COOKIE_SAMESITE = 'Strict'
     ALLOWED_HOSTS = ['relayentry.com', WWW_HOST]
-    CORS_ALLOWED_ORIGINS = ["https://relayentry.com"]
-    # USE_X_FORWARDED_HOST = True
+    CORS_ALLOWED_ORIGINS = ["https://relayentry.com", "https://www.relayentry.com"]
+    USE_X_FORWARDED_HOST = True
 
 ROOT_URLCONF = 'backend.urls'
 

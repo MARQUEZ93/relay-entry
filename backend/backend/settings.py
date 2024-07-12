@@ -37,7 +37,8 @@ LOG_DIR = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
-    # CSRF settings
+# CSRF settings
+WWW_HOST = os.getenv('WWW_HOST', 'www.relayentry.com')
 if ENVIRONMENT == 'development':
     CSRF_TRUSTED_ORIGINS = [
         "http://localhost:8080",
@@ -47,6 +48,9 @@ if ENVIRONMENT == 'development':
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_HTTPONLY = False
     DEBUG = True
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'frontend']
+    CORS_ALLOWED_ORIGINS = ["http://localhost:8080"]
 else:
     DEBUG = False
     CSRF_TRUSTED_ORIGINS = ["https://relayentry.com"]
@@ -61,30 +65,16 @@ else:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     # enabled SSL
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    CSRF_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_SAMESITE = 'Strict'
+    ALLOWED_HOSTS = ['relayentry.com', WWW_HOST]
+    CORS_ALLOWED_ORIGINS = ["https://relayentry.com"]
 
 # Set this if your Django application is behind a reverse proxy
 USE_X_FORWARDED_HOST = True
 
-# This allows for CORS requests to your backend API
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
-] if ENVIRONMENT == 'development' else ["https://relayentry.com"]
-
-# CSRF cookie settings
-CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = 'Lax' if ENVIRONMENT == 'development' else 'Strict'
-
-WWW_HOST = os.getenv('WWW_HOST')
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# Security settings
-if ENVIRONMENT == 'development':
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'frontend']
-else:
-    ALLOWED_HOSTS = ['relayentry.com', WWW_HOST]
-
 
 # Application definition
 

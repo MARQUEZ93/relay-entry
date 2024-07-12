@@ -18,6 +18,8 @@ from .stripe_utils import retrieve_payment_intent
 import stripe
 from .conversion import convert_keys_to_snake_case, convert_keys_to_camel_case
 stripe.api_key = settings.STRIPE_SECRET_KEY
+# Set up logging
+logger = logging.getLogger(__name__)
 
 class RaceDetailView(generics.RetrieveAPIView):
     queryset = Race.objects.all()
@@ -66,10 +68,6 @@ def index(request):
 #     else:
 #         form = UserCreationForm()
 #     return render(request, 'signup.html', {'form': form})
-
-
-# Set up logging
-logger = logging.getLogger(__name__)
 
 @require_POST
 def team_register(request):

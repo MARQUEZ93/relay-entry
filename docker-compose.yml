@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=production 
+    volumes:
+      - staticfiles:/app/staticfiles
     ports:
       - "80:80" # Use expose instead of ports for internal communication
     depends_on:
@@ -19,6 +21,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./backend/logs:/app/logs
+      - staticfiles:/app/staticfiles
     expose:
       - "8000" # Use expose instead of ports for internal communication
     env_file:

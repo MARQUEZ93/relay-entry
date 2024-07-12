@@ -40,6 +40,8 @@ apiClient.interceptors.request.use(
 
 export default {
   getEvent(eventSlug) {
+    // TODO: shit
+    console.log(process.env.VUE_APP_API_BASE_URL);
     return apiClient.get(`/events/${eventSlug}/`);
   },
   getRace(eventSlug, raceId) {

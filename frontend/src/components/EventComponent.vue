@@ -56,9 +56,14 @@ export default {
     },
   },
   async created() {
+    // TODO: shit
+    console.log("created");
     const eventSlug = this.$route.params.eventUrlAlias;
+    console.log(eventSlug);
+    console.log(this.$route.params);
     try {
       const response = await api.getEvent(eventSlug);
+      console.log(response);
       this.event = response.data;
       this.loading = false;
     } catch (error) {

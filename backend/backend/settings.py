@@ -54,9 +54,7 @@ if ENVIRONMENT == 'development':
     DEBUG = True
 else:
     DEBUG = False
-    CSRF_TRUSTED_ORIGINS = [
-        os.getenv('MY_DOMAIN', "https://relayentry.com")
-    ]
+    CSRF_TRUSTED_ORIGINS = ["https://relayentry.com"]
     # Ensure CSRF cookies are sent over HTTP
     # This should be set to True when deploying with HTTPS to ensure the cookie is only sent over secure connections.
     CSRF_COOKIE_SECURE = True
@@ -75,9 +73,7 @@ USE_X_FORWARDED_HOST = True
 # This allows for CORS requests to your backend API
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
-] if ENVIRONMENT == 'development' else [
-    os.getenv('MY_DOMAIN', "https://relayentry.com"),
-]
+] if ENVIRONMENT == 'development' else ["https://relayentry.com"]
 
 # CSRF cookie settings
 CSRF_COOKIE_HTTPONLY = True

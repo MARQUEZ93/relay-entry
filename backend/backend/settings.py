@@ -21,7 +21,7 @@ load_dotenv(dotenv_path=env_path)
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Determine the environment
-ENVIRONMENT = os.getenv('DJANGO_ENV', 'production')
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'production')
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

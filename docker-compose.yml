@@ -8,8 +8,10 @@ services:
       - NODE_ENV=production 
     volumes:
       - staticfiles:/app/staticfiles
+      - /etc/letsencrypt:/etc/letsencrypt  # Map the SSL certificates
     ports:
       - "80:80" # Use expose instead of ports for internal communication
+      - "443:443"
     depends_on:
       - backend
     restart: always

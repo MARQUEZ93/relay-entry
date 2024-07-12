@@ -40,12 +40,6 @@ apiClient.interceptors.request.use(
 
 export default {
   getEvent(eventSlug) {
-    // TODO: shit
-    console.log(process.env.VUE_APP_API_BASE_URL);
-    console.log(process.env.NODE_ENV);
-    console.log(process.env.POSTGRES_DB);
-    console.log(process.env.TEST);
-    console.log(process.env.VUE_APP_TEST);
     return apiClient.get(`/events/${eventSlug}/`);
   },
   getRace(eventSlug, raceId) {

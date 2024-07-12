@@ -22,6 +22,7 @@ services:
     volumes:
       - ./backend/logs:/app/logs
       - staticfiles:/app/staticfiles
+      - media:/app/media
     expose:
       - "8000" # Use expose instead of ports for internal communication
     env_file:

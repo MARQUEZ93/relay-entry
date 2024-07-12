@@ -17,6 +17,11 @@ export default {
   },
   data() {
     return {
+      snackbar: {
+        show: false,
+        message: '',
+        timeout: 8000
+      },
       race: {},
       clientSecret: '',
       paymentIntentId: '',
@@ -39,6 +44,10 @@ export default {
     },
   },
   methods: {
+    showError(message) {
+      this.snackbar.message = message;
+      this.snackbar.show = true;
+    },
     async initStripe() {
       if (!window.Stripe) {
         // Ensure Stripe.js is loaded from the global scope
@@ -202,6 +211,11 @@ export default {
         </div>
       </v-col>
     </v-row>
+    <!-- Snackbar for error messages -->
+    <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout" color="error">
+      {{ snackbar.message }}
+      <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 

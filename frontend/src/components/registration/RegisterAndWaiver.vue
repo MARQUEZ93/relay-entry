@@ -10,7 +10,6 @@ export default {
     RegistrationData,
   },
   mounted() {
-    console.log("waiver");
     window.scrollTo(0, 0);
   },
   data() {
@@ -121,7 +120,6 @@ export default {
   async created() {
     this.eventSlug = this.$route.params.url_alias;
     await this.fetchEvent(this.eventSlug);
-    console.log(this.eventSlug);
   },
 };
 </script>

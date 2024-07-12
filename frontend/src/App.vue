@@ -3,9 +3,6 @@ import brandLogo from '@/assets/brand.svg';
 export default {
   name: 'App',
   data() {
-    // TODO: shit
-    console.log('VUE_APP_API_BASE_URL:', process.env.VUE_APP_API_BASE_URL);
-    console.log('NODE_ENV:', process.env.NODE_ENV);
     return {
       drawer: false,
       brandLogo

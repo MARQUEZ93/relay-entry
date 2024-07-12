@@ -30,3 +30,4 @@ services:
     restart: always
 volumes:
   staticfiles:
+  media:

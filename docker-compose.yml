@@ -40,3 +40,4 @@ services:
     restart: always
 volumes:
   pgdata:
+  staticfiles:

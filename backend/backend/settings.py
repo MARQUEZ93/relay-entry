@@ -95,7 +95,6 @@ else:
     # This should be set to True when deploying with HTTPS to ensure the cookie is only sent over secure connections.
     CSRF_COOKIE_SECURE = True
     # Ensure session cookies are sent over HTTP
-    # This should be set to True when deploying with HTTPS to ensure the cookie is only sent over secure connections.
     SESSION_COOKIE_SECURE = True
     # Secure headers
     SECURE_BROWSER_XSS_FILTER = True

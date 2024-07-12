@@ -28,6 +28,7 @@ function getCSRFToken() {
 apiClient.interceptors.request.use(
   (config) => {
     const token = getCSRFToken();
+    console.log('CSRF Token:', token);  // Add this line for debugging
     if (token) {
       config.headers['X-CSRFToken'] = token;
     }

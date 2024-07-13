@@ -7,17 +7,15 @@
             <v-sheet class="mx-auto my-5 pa-5" elevation="2">
             <v-row>
                 <v-col cols="12">
-                <h2>Simple Pricing</h2>
-                <p class="texas-transaction"><strong>
-                    3.6% + $1 per Transaction*
-                    <v-tooltip
-                        activator="parent"
-                        location="top"
-                        color="primary"
-                    >
-                        <span>Contact us if your race is in the state of Texas. Texas races are eligible for lower rates because RelayEntry is a Texas small business.</span>
-                    </v-tooltip>
-                </strong></p>
+                  <h2>Simple Pricing</h2>
+                  <p class="texas-transaction d-flex align-center justify-center">
+                    <strong>
+                      3.6% + $1 per Transaction 
+                    </strong>
+                    <v-icon size="x-small" class="ml-2" color="primary" v-tooltip.top="texasDescription">
+                          mdi-information
+                    </v-icon>
+                  </p>
                 </v-col>
             </v-row>
             <v-divider class="my-5"></v-divider>
@@ -64,6 +62,11 @@
   <script>
   export default {
     name: 'PricingComponent',
+    data(){
+      return {
+        texasDescription: "Texas races are eligible for lower rates because RelayEntry is a Texas small business. Contact us!",
+      }
+    },
   };
   </script>
   

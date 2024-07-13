@@ -90,8 +90,11 @@ export default {
     </v-main>
 
     <v-footer app color="primary" dark>
-      <v-col class="text-center" cols="12">
+      <v-col class="text-center" cols="6">
         &copy; 2024 RelayEntry - Alpha 1.0.0 (Early Access)
+      </v-col>
+      <v-col class="text-center" cols="6">
+        For any inquiries, email <a href="mailto:contact@relayentry.com" style="color: white; text-decoration: underline;">contact@relayentry.com</a>
       </v-col>
     </v-footer>
   </v-app>

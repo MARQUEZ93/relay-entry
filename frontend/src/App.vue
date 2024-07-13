@@ -3,8 +3,8 @@ import brandLogo from '@/assets/brand.svg';
 import api from '@/services/api';
 export default {
   name: 'App',
-  mounted() {
-    const response = api.fetchCsrfToken();
+  async mounted() {
+    const response = await api.fetchCsrfToken();
     console.log(response);
   },
   data() {

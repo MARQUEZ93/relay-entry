@@ -203,8 +203,6 @@ AUTHENTICATION_BACKENDS = ['backend.backends.ApprovedUserBackend']
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 
-UI_BASE_URL = os.getenv('UI_BASE_URL')
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

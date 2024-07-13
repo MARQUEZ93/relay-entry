@@ -187,17 +187,17 @@ export default {
       </v-col>
     </v-row>
     <v-row justify="center" v-if="race">
-      <v-col cols="12" md="8">
+      <v-col cols="12">
         <v-tabs v-model="activeTab">
-          <v-tab :key="0" @click="selectTab(0)">
+          <v-tab :key="0" @click="selectTab(0)" class="tab-text">
             <v-icon left>mdi-account</v-icon>
             {{ participantLabel }}
           </v-tab>
-          <v-tab :key="1" :disabled="!racerDataComplete" @click="selectTab(1)">
+          <v-tab :key="1" :disabled="!racerDataComplete" @click="selectTab(1)" class="tab-text">
             <v-icon left>mdi-file-document</v-icon>
             Waiver
           </v-tab>
-          <v-tab :key="2" :disabled="!racerDataComplete || !waiverAccepted" @click="selectTab(2)">
+          <v-tab :key="2" :disabled="!racerDataComplete || !waiverAccepted" @click="selectTab(2)" class="tab-text">
             <v-icon left>mdi-credit-card</v-icon>
             Checkout
           </v-tab>
@@ -235,5 +235,10 @@ export default {
   }
   .race-name{
     font-size: 2.5rem;
+  }
+  @media (max-width: 600px) {
+    .tab-text {
+      font-size: 0.7rem; /* Adjust font size for mobile */
+    }
   }
 </style>

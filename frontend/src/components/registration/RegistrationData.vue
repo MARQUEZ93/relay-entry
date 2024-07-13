@@ -110,7 +110,7 @@ export default {
   <v-form ref="form" v-model="valid" @submit.prevent="submit">
     <template v-if="race && race.is_relay">
       <v-row>
-        <v-col cols="12" md="6">
+        <v-col cols="6">
           <v-text-field
             v-model="localRegistrationData.teamData.name"
             label="Team Name"
@@ -118,7 +118,7 @@ export default {
             required
           ></v-text-field>
         </v-col>
-        <v-col cols="12" md="6">
+        <v-col cols="6">
           <v-select
             v-model="localRegistrationData.teamData.projectedTeamTime"
             :items="projectedTeamTimeChoices"
@@ -128,7 +128,7 @@ export default {
         </v-col>
       </v-row>
       <v-row>
-        <v-col v-for="(member, index) in localRegistrationData.teamData.emails" :key="index" cols="12" md="6">
+        <v-col v-for="(member, index) in localRegistrationData.teamData.emails" :key="index" cols="6">
           <v-text-field
             v-model="member.email"
             :rules="emailRules"
@@ -139,7 +139,7 @@ export default {
       </v-row>
     </template>
     <v-row>
-      <v-col cols="12" md="6">
+      <v-col cols="6">
         <v-text-field
           v-model="localRegistrationData.firstName"
           :rules="nameRules"
@@ -147,7 +147,7 @@ export default {
           required
         ></v-text-field>
       </v-col>
-      <v-col cols="12" md="6">
+      <v-col cols="6">
         <v-text-field
           v-model="localRegistrationData.lastName"
           :rules="nameRules"
@@ -157,7 +157,7 @@ export default {
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" md="6">
+      <v-col cols="6">
         <v-text-field
           v-model="localRegistrationData.email"
           :rules="emailRules"
@@ -165,7 +165,7 @@ export default {
           required
         ></v-text-field>
       </v-col>
-      <v-col cols="12" md="6">
+      <v-col cols="6">
         <v-select
           v-model="localRegistrationData.gender"
           :items="genders"
@@ -183,7 +183,7 @@ export default {
       </v-col> -->
     </v-row>
     <v-row>
-      <v-col cols="12" md="6">
+      <v-col cols="6">
         <v-text-field
           v-model="localRegistrationData.dateOfBirth"
           label="Date of Birth"

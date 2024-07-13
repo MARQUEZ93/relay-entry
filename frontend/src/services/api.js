@@ -40,6 +40,10 @@ apiClient.interceptors.request.use(
 );
 
 export default {
+  // shit todo
+  testGet() {
+    return apiClient.get(`/test-get/`);
+  },
   getEvent(eventSlug) {
     return apiClient.get(`/events/${eventSlug}/`);
   },

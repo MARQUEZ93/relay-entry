@@ -7,6 +7,7 @@ from .views import EventDetailView, RaceDetailView
 urlpatterns = [
     path('', views.index, name='index'), 
     # path('signup/', views.signup, name='signup'),
+    path('api/test-get/', views.test_get, name='test-get'),
     path('api/events/<slug:url_alias>/races/<int:id>/', RaceDetailView.as_view(), name='race-detail'),
     path('api/events/<slug:url_alias>/', EventDetailView.as_view(), name='event-detail'),
     path('api/events/<slug:url_alias>/register/', views.event_register, name='event_register'),

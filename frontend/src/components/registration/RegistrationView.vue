@@ -156,32 +156,32 @@ export default {
       </v-col>
     </v-row>
     <v-row justify="center" v-if="race">
-      <v-col cols="12" md="8">
-        <v-card class="mx-auto my-5 pa-5" max-width="800">
-          <v-img v-if="race && race.event && race.event.logo" style="width: 50%; height: auto; margin:auto;" :src="race.event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
-          <v-card-title v-if="race.event" class="text-center">
-            <h1 class="text-h4">{{ race.name }}</h1>
-            <h2 class="text-h5">{{ race.event.name }}</h2>
-            </v-card-title>
-          <v-card-subtitle v-if="race.description">
-            <p class="text-center">{{ race.description }}</p>
+      <v-col cols="10">
+        <v-card class="mx-auto my-5 pa-5">
+          <v-img v-if="race && race.event && race.event.logo" :src="race.event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
+          <v-card-title v-if="race.event" class="text-center race-name">
+            {{ race.name }}
+          </v-card-title>
+          <v-card-title v-if="race.event" class="text-center race-event-name">
+            {{ race.event.name }}
+          </v-card-title>
+          <v-card-subtitle v-if="race.description" class="text-center">
+            {{ race.description }}
           </v-card-subtitle>
-          <v-card-subtitle v-if="race.is_relay && race.same_distance">
-            <p v-if="race.custom_distance_value && race.custom_distance_unit">
-              {{race.num_runners }} x {{customSameDistance(race)}}
-            </p>
-          </v-card-subtitle>
-          <v-card-subtitle>
-              <p>{{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }} </p>
+          <v-card-subtitle v-if="race.is_relay && race.same_distance && race.custom_distance_value && race.custom_distance_unit">
+            {{race.num_runners }} x {{customSameDistance(race)}}
           </v-card-subtitle>
           <v-card-subtitle>
-            <p class="text-center">{{ formattedRaceDate(race.date) }}</p>
+            {{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }}
           </v-card-subtitle>
-          <v-card-subtitle v-if="race.is_relay">
-            <p class="text-center"><strong>${{ formatPrice(race.price) }} per Team</strong></p>
+          <v-card-subtitle class="text-center">
+            {{ formattedRaceDate(race.date) }}
           </v-card-subtitle>
-          <v-card-subtitle v-if="!race.is_relay">
-            <p class="text-center"><strong>${{ formatPrice(race.price) }}</strong></p>
+          <v-card-subtitle v-if="race.is_relay" class="text-center">
+            <strong>${{ formatPrice(race.price) }} per Team</strong>
+          </v-card-subtitle>
+          <v-card-subtitle v-if="!race.is_relay" class="text-center">
+            <strong>${{ formatPrice(race.price) }}</strong>
           </v-card-subtitle>
         </v-card>
       </v-col>
@@ -228,5 +228,12 @@ export default {
 <style scoped>
   .v-btn {
     margin: 0 5px;
+  }
+  .race-event-name {
+    word-wrap: break-word;
+    white-space: normal;
+  }
+  .race-name{
+    font-size: 2.5rem;
   }
 </style>

@@ -14,7 +14,59 @@ export default {
   },
 };
 </script>
+<template>
+  <v-app>
+    <v-app-bar app color="primary" dark>
+      <router-link to="/">
+        <v-img :src="brandLogo" alt="RelayEntry Logo" class="logo-image ml-5"></v-img>
+      </router-link>
+      <v-spacer></v-spacer>
+      <v-app-bar-nav-icon class="mr-5" @click="drawer = !drawer" v-show="!$vuetify.display.mdAndUp"></v-app-bar-nav-icon>
+      <router-link to="/" class="white--text" v-show="$vuetify.display.mdAndUp">
+        <v-btn text class="white--text">Home</v-btn>
+      </router-link>
+      <router-link to="/pricing" class="white--text" v-show="$vuetify.display.mdAndUp">
+        <v-btn text class="white--text">Pricing</v-btn>
+      </router-link>
+      <v-btn text href="mailto:contact@relayentry.com" class="white--text" v-show="$vuetify.display.mdAndUp">Contact</v-btn>
+    </v-app-bar>
 
+    <v-navigation-drawer app v-model="drawer" color="primary" dark v-show="!$vuetify.display.mdAndUp">
+      <v-list dense>
+        <router-link to="/" @click="drawer = false">
+          <v-list-item>
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item>
+        </router-link>
+        <router-link to="/pricing" @click="drawer = false">
+          <v-list-item>
+            <v-list-item-title>Pricing</v-list-item-title>
+          </v-list-item>
+        </router-link>
+        <a href="mailto:contact@relayentry.com" @click="drawer = false">
+          <v-list-item>
+            <v-list-item-title>Contact</v-list-item-title>
+          </v-list-item>
+        </a>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+
+    <v-footer app color="primary" dark>
+      <v-row class="text-center">
+        <v-col class="text-center" cols="12" md="6">
+          <v-card-subtitle>&copy; 2024 RelayEntry - Alpha 1.0.0 (Early Access)</v-card-subtitle>
+        </v-col>
+        <v-col class="text-center" cols="12" md="6">
+          <v-card-subtitle>For any inquiries, email <a href="mailto:contact@relayentry.com" style="color: white; text-decoration: underline;">contact@relayentry.com</a></v-card-subtitle>
+        </v-col>
+      </v-row>
+    </v-footer>
+  </v-app>
+</template>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -48,54 +100,3 @@ export default {
   text-decoration: underline;
 }
 </style>
-<template>
-  <v-app>
-    <v-app-bar app color="primary" dark>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <router-link to="/">
-        <v-img :src="brandLogo" alt="RelayEntry Logo" class="logo-image"></v-img>
-      </router-link>
-      <v-spacer></v-spacer>
-      <router-link to="/" class="white--text">
-        <v-btn text class="white--text">Home</v-btn>
-      </router-link>
-      <router-link to="/pricing" class="white--text">
-        <v-btn text class="white--text">Pricing</v-btn>
-      </router-link>
-      <v-btn text href="mailto:contact@relayentry.com" class="white--text">Contact</v-btn>
-    </v-app-bar>
-
-    <v-navigation-drawer app v-model="drawer" color="primary" dark>
-      <v-list dense>
-        <router-link to="/" @click="drawer = false">
-          <v-list-item>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item>
-        </router-link>
-        <router-link to="/pricing" @click="drawer = false">
-          <v-list-item>
-            <v-list-item-title>Pricing</v-list-item-title>
-          </v-list-item>
-        </router-link>
-        <a href="mailto:contact@relayentry.com" @click="drawer = false">
-          <v-list-item>
-            <v-list-item-title>Contact</v-list-item-title>
-          </v-list-item>
-        </a>
-      </v-list>
-    </v-navigation-drawer>
-
-    <v-main>
-      <router-view></router-view>
-    </v-main>
-
-    <v-footer app color="primary" dark>
-      <v-col class="text-center" cols="6">
-        &copy; 2024 RelayEntry - Alpha 1.0.0 (Early Access)
-      </v-col>
-      <v-col class="text-center" cols="6">
-        For any inquiries, email <a href="mailto:contact@relayentry.com" style="color: white; text-decoration: underline;">contact@relayentry.com</a>
-      </v-col>
-    </v-footer>
-  </v-app>
-</template>

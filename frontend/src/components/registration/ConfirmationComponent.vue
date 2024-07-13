@@ -80,7 +80,7 @@ export default {
                   <p class="mt-1"><a :href="raceData.instagramUrl" target="_blank"><v-icon class="instagram-icon pa-2">mdi-instagram</v-icon></a></p>
                 </v-col>
               </v-row>
-              <v-row v-if="!teamData && eventData && registrationData">
+              <v-row v-else>
                 <!-- Column 1: Registrant Information -->
                 <v-col cols="6">
                   <v-card-subtitle class="mb-2">

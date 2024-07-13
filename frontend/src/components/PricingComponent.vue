@@ -24,31 +24,31 @@
                   <ul class="pricing-list">
                       <li>
                         <v-icon left>mdi-currency-usd</v-icon>
-                        &nbsp;The lowest transaction fees.
+                        &nbsp;The lowest transaction fees
                       </li>
                       <li>
                         <v-icon left>mdi-map-marker</v-icon>
-                        &nbsp;Perfect for races across the USA.
-                      </li>
-                      <li>
-                        <v-icon left>mdi-web</v-icon>
-                        &nbsp;Make your event page your race's website.
-                      </li>
-                      <li>
-                        <v-icon left>mdi-pencil</v-icon>
-                        &nbsp;Ensure waivers are signed by every racer.
+                        &nbsp;Perfect for races across the USA
                       </li>
                       <li>
                         <v-icon left>mdi-access-point</v-icon>
-                        &nbsp;Accessible software for all participants.
+                        &nbsp;Accessibility Compliant
                       </li>
                       <li>
                         <v-icon left>mdi-run-fast</v-icon>
-                        &nbsp;Designed for team relay races.
+                        &nbsp;Designed for team relay races
                       </li>
                       <li>
                         <v-icon left>mdi-cellphone</v-icon>
-                        &nbsp;Mobile-first platform for easy access.
+                        &nbsp;Mobile-first platform
+                      </li>
+                      <li>
+                        <v-icon left>mdi-pencil</v-icon>
+                        &nbsp;Waivers completed by all participants
+                      </li>
+                      <li>
+                        <v-icon left>mdi-web</v-icon>
+                        &nbsp;Your event page can be your race site
                       </li>
                   </ul>
                 </v-col>
@@ -102,10 +102,13 @@
   }
   
   .pricing-list li {
+    textAlign: left;
     display: flex;
     align-items: center;
     margin-bottom: 10px;
     font-size: 1.1em;
+    word-wrap: break-word;
+    white-space: normal;
   }
   
   .pricing-list li v-icon {

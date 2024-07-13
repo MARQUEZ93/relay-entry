@@ -14,8 +14,6 @@ export default {
   },
   async mounted() {
     window.scrollTo(0, 0);
-    const response = await api.testGet();
-    console.log(response);
   },
   data() {
     return {

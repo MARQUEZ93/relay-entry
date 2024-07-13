@@ -10,6 +10,7 @@ const apiClient = axios.create({
 });
 
 // Function to get CSRF token from cookies
+// TODO SHIT
 function getCSRFToken() {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {
@@ -24,6 +25,7 @@ function getCSRFToken() {
   }
   return cookieValue;
 }
+// TODO SHIT
 // Add a request interceptor to include the CSRF token in each request
 apiClient.interceptors.request.use(
   (config) => {
@@ -40,10 +42,6 @@ apiClient.interceptors.request.use(
 );
 
 export default {
-  // shit todo
-  testGet() {
-    return apiClient.get(`/test-get/`);
-  },
   getEvent(eventSlug) {
     return apiClient.get(`/events/${eventSlug}/`);
   },

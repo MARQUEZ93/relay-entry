@@ -83,7 +83,6 @@ if ENVIRONMENT == 'development':
     ]
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_HTTPONLY = False
     DEBUG = True
     CSRF_COOKIE_SAMESITE = 'Lax'
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'frontend']
@@ -101,7 +100,6 @@ else:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     # enabled SSL
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    CSRF_COOKIE_HTTPONLY = True
     CSRF_COOKIE_SAMESITE = 'Strict'
     ALLOWED_HOSTS = ['relayentry.com', WWW_HOST]
     CORS_ALLOWED_ORIGINS = ["https://relayentry.com", "https://www.relayentry.com"]

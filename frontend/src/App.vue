@@ -1,7 +1,12 @@
 <script>
 import brandLogo from '@/assets/brand.svg';
+import api from '@/services/api';
 export default {
   name: 'App',
+  mounted() {
+    const response = api.fetchCsrfToken();
+    console.log(response);
+  },
   data() {
     return {
       drawer: false,

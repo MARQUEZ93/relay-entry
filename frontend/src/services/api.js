@@ -42,6 +42,9 @@ apiClient.interceptors.request.use(
 );
 
 export default {
+  fetchCsrfToken() {
+    return apiClient.get(`/get-csrf/`);
+  },
   getEvent(eventSlug) {
     return apiClient.get(`/events/${eventSlug}/`);
   },

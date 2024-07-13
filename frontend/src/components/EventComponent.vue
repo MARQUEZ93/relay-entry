@@ -49,7 +49,7 @@ export default {
     formatDateToUTC,
     formatMinute,
     getRegisterButtonText(race) {
-      return race.is_relay ? 'Register My Team' : 'Register';
+      return race.is_relay ? 'Register Team' : 'Register';
     },
     formatPrice(price) {
       return Number(price).toFixed(2);
@@ -73,16 +73,14 @@ export default {
   <v-container>
     <v-row>
       <v-col>
-        <v-card class="mx-auto my-5 pa-5" max-width="800">
+        <v-card class="mx-auto my-5 pa-5">
           <v-img :src="event.logo" v-if="event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
-          <v-card-title>
-            <h1>{{ event.name }}</h1>
-          </v-card-title>
+          <v-card-title class="event-name">{{ event.name }}</v-card-title>
           <v-card-subtitle v-if="formattedEventDate">
-            <p><strong>Date:</strong> {{ formattedEventDate }}</p>
+            <strong>Date:</strong> {{ formattedEventDate }}
           </v-card-subtitle>
           <v-card-subtitle v-if="formattedEventLocation">
-            <p><strong>Location:</strong> {{ formattedEventLocation }}</p>
+            <strong>Location:</strong> {{ formattedEventLocation }}
           </v-card-subtitle>
           <!-- <v-card-subtitle v-if="event.google_maps_link">
             <p><a :href="event.google_maps_link" target="_blank">View on Google Maps</a></p>
@@ -91,7 +89,7 @@ export default {
             <p v-html="event.google_maps_html"></p>
           </v-card-subtitle> -->
           <v-card-text v-if="event.description">
-            <p>{{ event.description }}</p>
+            {{ event.description }}
           </v-card-text>
           <v-card-actions class="social-icons">
             <v-btn v-for="icon in socialIcons" :key="icon.name" :href="icon.url" target="_blank" icon>
@@ -102,7 +100,7 @@ export default {
             <router-link :to="`/events/${event.url_alias}/register`">
               <v-btn color="primary">Register & Sign Waiver</v-btn>
             </router-link>
-            <div class="help-text mt-2 text-center"><strong>Team Members: </strong>Register & sign the waiver above. <strong>Team Captains:</strong> Register yourself & your team for your race below.</div>
+            <div class="help-text mt-2 text-center"><strong>Team Members: </strong>Register & sign the waiver above. <strong>Team Captains:</strong> Register your team & yourself below.</div>
           </v-card-actions>
         </v-card>
         <v-row>
@@ -110,7 +108,8 @@ export default {
             v-for="race in event.races"
             :key="race.id"
             cols="12"
-            :md="event.races.length === 1 ? 12 : 4"
+            xs="6"
+            md="4"
             class="d-flex align-center justify-center"
           >
             <v-card class="mx-auto my-3 race-card" outlined>
@@ -120,19 +119,17 @@ export default {
                   mdi-information
                 </v-icon>
               </v-card-title>
-              <v-card-subtitle v-if="race.is_relay && race.same_distance">
-                <p v-if="race.custom_distance_value && race.custom_distance_unit">
-                  {{race.num_runners }} x {{customSameDistance(race)}}
-                </p>
+              <v-card-subtitle v-if="race.is_relay && race.same_distance && race.custom_distance_value && race.custom_distance_unit">
+                {{race.num_runners }} x {{customSameDistance(race)}}
               </v-card-subtitle>
               <v-card-subtitle>
-                <p>{{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }} </p>
+                {{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }}
               </v-card-subtitle>
               <!-- <v-card-subtitle>
-                <p>{{ formattedRaceDate(race.date) }} </p>
+                {{ formattedRaceDate(race.date) }}
               </v-card-subtitle> -->
               <v-card-subtitle>
-                <p>${{ formatPrice(race.price) }}</p>
+                ${{ formatPrice(race.price) }}
               </v-card-subtitle>
               <v-card-actions class="justify-center">
                 <router-link :to="`/events/${event.url_alias}/${race.id}`">
@@ -150,14 +147,9 @@ export default {
 </template>
 
 <style scoped>
-h1 {
-  color: #2c3e50;
-  margin-top: 20px;
-}
-
-p {
-  font-size: 1.2em;
-  color: #2c3e50;
+.event-name {
+  word-wrap: break-word;
+  white-space: normal;
 }
 .help-text {
   font-size: 0.9rem;
@@ -166,22 +158,6 @@ p {
 
 .v-btn {
   margin: 0 5px;
-}
-
-.v-card {
-  max-width: 100%;
-}
-
-@media (min-width: 600px) {
-  .v-card {
-    max-width: 80%;
-  }
-}
-
-@media (min-width: 960px) {
-  .v-card {
-    max-width: 60%;
-  }
 }
 
 .social-icons {

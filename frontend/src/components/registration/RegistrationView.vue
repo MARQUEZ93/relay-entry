@@ -17,6 +17,7 @@ export default {
   },
   data() {
     return {
+      paymentElementContainer: null,
       snackbar: {
         show: false,
         message: '',
@@ -49,18 +50,23 @@ export default {
       this.snackbar.show = true;
     },
     async initStripe() {
-      if (!window.Stripe) {
-        // Ensure Stripe.js is loaded from the global scope
-        await new Promise((resolve) => {
-          // Fallback in case the script hasn't loaded yet
-          const script = document.createElement('script');
-          script.src = 'https://js.stripe.com/v3/';
-          script.async = true;
-          script.onload = resolve;
-          document.head.appendChild(script);
-        });
-      }
       this.stripe = await loadStripe(process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY);
+      if (this.clientSecret){
+        const options = {
+          clientSecret: this.clientSecret,
+          loader: 'auto',
+        };
+        // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in a previous step
+        this.elements = await this.stripe.elements(options);
+        // Create and mount the Payment Element
+        this.paymentElement = await this.elements.create('payment');
+        // Create a container div for the payment element
+        this.paymentElementContainer = await document.createElement('div');
+        this.paymentElementContainer.id = 'payment-element-container';
+
+        // Mount the Payment Element to the container div
+        await this.paymentElement.mount(this.paymentElementContainer);
+      }
     },
     async createPaymentIntentOnMount() {
       try {
@@ -206,7 +212,7 @@ export default {
           <v-btn @click="nextTab" color="primary" class="mt-3">Next</v-btn>
         </div>
         <div v-if="activeTab === 2">
-          <CheckoutComponent :amount="amount" :paymentIntentId="paymentIntentId" :stripe="stripe" :clientSecret="clientSecret" :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData"/>
+          <CheckoutComponent :amount="amount" :paymentElementContainer="paymentElementContainer" :paymentIntentId="paymentIntentId" :stripe="stripe" :clientSecret="clientSecret" :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData"/>
           <v-btn style="float:left;" @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
         </div>
       </v-col>

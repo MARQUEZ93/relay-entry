@@ -25,6 +25,10 @@ export default {
       required: true,
       type: Object,
     },
+    paymentElementContainer: {
+      type: HTMLElement,
+      required: true
+    },
   },
   async mounted() {
     this.setupElements();
@@ -49,17 +53,7 @@ export default {
   },
   methods: {
     async setupElements() {
-      if (!this.stripe || !this.clientSecret){
-        return;
-      }
-      const options = {
-        clientSecret: this.clientSecret,
-      };
-      // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in a previous step
-      this.elements = this.stripe.elements(options);
-      // Create and mount the Payment Element
-      const paymentElement = this.elements.create('payment');
-      await paymentElement.mount('#payment-element');
+      await this.$refs.paymentElementWrapper.appendChild(this.paymentElementContainer);
       this.elementsLoading = false;
     },
     showError(message) {
@@ -72,7 +66,6 @@ export default {
         const cp = await this.stripe.confirmPayment({
           elements: this.elements,
           confirmParams: {
-            // return_url: `${window.location.origin}`
             receipt_email: this.registrationData.email,
           },
           redirect: 'if_required'
@@ -128,8 +121,12 @@ export default {
         <v-form>
           <v-row>
             <v-col cols="12">
-              <div v-if="elementsLoading || !stripe || !clientSecret">Loading payment gateway...</div>
-              <div id="payment-element"></div>
+              <div v-if="paymentElementContainer">
+                <!-- Render the payment element container passed from the parent -->
+                <div ref="paymentElementWrapper"></div>
+              </div>
+              <div v-if="elementsLoading || !paymentElementContainer || !stripe || !clientSecret">Loading payment gateway...</div>
+              <!-- <div id="payment-element"></div> -->
               <p class="mt-3 order-total"><strong>Grand Total: ${{ formattedAmount }}</strong></p>
               <p class="mt-3 text-center"><strong>Note:</strong> All payments are non-refundable.</p>
             </v-col>

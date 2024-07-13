@@ -15,7 +15,6 @@ export default {
   },
   data() {
     return {
-      receiptEmail: "This email will receive a confirmation email from our payment provider (if registration involves payment).",
       valid: false,
       localRegistrationData: {
         ...this.registrationData,
@@ -165,9 +164,6 @@ export default {
           label="Email"
           required
         ></v-text-field>
-        <v-icon size="x-small" class="ml-2" color="primary" v-tooltip.top="receiptEmail">
-          mdi-information
-        </v-icon>
       </v-col>
       <v-col cols="12" md="6">
         <v-select

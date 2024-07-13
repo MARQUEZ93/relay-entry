@@ -209,7 +209,7 @@ export default {
         <div v-if="activeTab === 1">
           <WaiverComponent :initialAccepted="waiverAccepted" :race="race" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted" @get-ip="updateIpAddress"/>
           <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
-          <v-btn @click="nextTab" color="primary" class="mt-3">Next</v-btn>
+          <v-btn :disabled="!waiverAccepted" @click="nextTab" color="primary" class="mt-3">Next</v-btn>
         </div>
         <div v-if="activeTab === 2">
           <CheckoutComponent :amount="amount" :paymentElementContainer="paymentElementContainer" :paymentIntentId="paymentIntentId" :stripe="stripe" :clientSecret="clientSecret" :waiverAccepted="waiverAccepted" :race="race" :registrationData="registrationData"/>

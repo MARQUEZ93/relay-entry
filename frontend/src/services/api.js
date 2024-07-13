@@ -10,7 +10,6 @@ const apiClient = axios.create({
 });
 
 // Function to get CSRF token from cookies
-// TODO SHIT
 function getCSRFToken() {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {
@@ -25,15 +24,15 @@ function getCSRFToken() {
   }
   return cookieValue;
 }
-// TODO SHIT
+// TODO SHIT123
 // Add a request interceptor to include the CSRF token in each request
 apiClient.interceptors.request.use(
   (config) => {
     const token = getCSRFToken();
     console.log('CSRF Token:', token);  // Add this line for debugging
-    if (token) {
-      config.headers['X-CSRFToken'] = token;
-    }
+    // if (token) {
+    //   config.headers['X-CSRFToken'] = token;
+    // }
     return config;
   },
   (error) => {

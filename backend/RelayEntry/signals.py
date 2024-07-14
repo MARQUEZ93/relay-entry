@@ -118,12 +118,11 @@ def send_team_creation_email(sender, instance, created, **kwargs):
 
                 html_content = f"""
                 <h3>Dear Team Captain,</h3>
-                <p>The team: {team_name} registered/paid for the {race_name} race in {event_name}.</p>
-                <p>Team Members:</p>
-                    <ul>
-                        {team_members_info}
-                    </ul>
-                <br />
+                <p>Your team registered for the {race_name} race in {event_name}.</p>
+                <p>{team_name} Members:</p>
+                <ul>
+                    {team_members_info}
+                </ul>
                 <p>Your confirmation code: {confirmation_code}.</p>
                 <p>Please email relayentry@gmail.com if help is needed with your team registration. Include your confirmation code!</p>
                 """

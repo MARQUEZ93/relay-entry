@@ -136,16 +136,16 @@ export default {
     </v-row>
     <v-row justify="center" v-if="event">
       <v-col cols="12" md="8">
-        <v-card class="mx-auto my-5 pa-5" max-width="800">
-          <v-img v-if="event && event.logo" style="width: 50%; height: auto; margin:auto;" :src="event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
-          <v-card-title v-if="event" class="text-center">
-            <h1 class="text-h4">{{ event.name }}</h1>
-            </v-card-title>
-          <v-card-text v-if="event.description">
-            <p class="text-center">{{ event.description }}</p>
+        <v-card class="mx-auto my-5 pa-5">
+          <v-img v-if="event && event.logo" :src="event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
+          <v-card-title v-if="event" class="text-center event-name">
+            {{ event.name }}
+          </v-card-title>
+          <v-card-text v-if="event.description" class="text-center">
+            {{ event.description }}
           </v-card-text>
-          <v-card-subtitle>
-            <p class="text-center">{{ formattedRaceDate(event.date) }}</p>
+          <v-card-subtitle class="text-center">
+            {{ formattedRaceDate(event.date) }}
           </v-card-subtitle>
         </v-card>
       </v-col>
@@ -153,11 +153,11 @@ export default {
     <v-row justify="center" v-if="event">
       <v-col cols="12" md="8">
         <v-tabs v-model="activeTab">
-          <v-tab :key="0" @click="selectTab(0)">
+          <v-tab :key="0" @click="selectTab(0)" class="tab-text">
             <v-icon left>mdi-account</v-icon>
             {{ participantLabel }}
           </v-tab>
-          <v-tab :key="1" :disabled="!racerDataComplete" @click="selectTab(1)">
+          <v-tab :key="1" :disabled="!racerDataComplete" @click="selectTab(1)" class="tab-text">
             <v-icon left>mdi-file-document</v-icon>
             Waiver
           </v-tab>
@@ -184,5 +184,10 @@ export default {
 <style scoped>
   .v-btn {
     margin: 0 5px;
+  }
+  .event-name{
+    font-size: 2.5rem;
+    word-wrap: break-word;
+    white-space: normal;
   }
 </style>

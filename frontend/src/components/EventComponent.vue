@@ -148,6 +148,7 @@ export default {
 
 <style scoped>
 .event-name {
+  font-size: 2.5rem;
   word-wrap: break-word;
   white-space: normal;
 }

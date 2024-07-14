@@ -3,11 +3,9 @@ export default {
   props: {
     race: {
       type: Object,
-      default: () => ({}),
     },
     event: {
       type: Object,
-      default: () => ({ races: [] }) // Ensure a default value
     },
     registrationData: { 
       type: Object,

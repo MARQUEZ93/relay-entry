@@ -14,7 +14,7 @@ import os
 
 # Get your environment Mailjet keys
 # Initialize MailJet client
-mailjet = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE))
+mailjet = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version='v3.1')
 # Set up logging
 logger = logging.getLogger(__name__)
 

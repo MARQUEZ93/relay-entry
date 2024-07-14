@@ -34,7 +34,6 @@ export default {
   },
 };
 </script>
-
 <template>
   <div>
     <p class="confirmation-header"><strong>{{ confirmationHeader }}</strong>&nbsp;#{{ registrationData.confirmationCode }}</p>
@@ -62,9 +61,7 @@ export default {
                       <p class="mb-0"><strong>Leg {{ member.legOrder }}:</strong> {{ member.email }}</p>
                     </v-col>
                   </v-row>
-
                 </v-col>
-
                 <!-- Column 2: Registration Information -->
                 <v-col cols="6">
                   <v-card-subtitle class="mb-1">
@@ -89,15 +86,13 @@ export default {
                   <p class="mt-1"><strong>{{ registrationData.name }}</strong></p>
                   <p class="mt-1">{{ registrationData.email }}</p>
                   <p class="mt-1"><strong>Confirmation Code:</strong> #{{ registrationData.confirmationCode }}</p>
-
                 </v-col>
-
                 <!-- Column 2: Event Information -->
                 <v-col cols="6">
                   <v-card-subtitle class="mb-1">
-                    <p class="text-center"><strong>Event Info</strong></p>
+                    <strong class="text-center">Event Info</strong>
                   </v-card-subtitle>
-                  <p class="mt-1"><strong>{{ eventData.name }}</strong></p>
+                  <strong class="mt-1">{{ eventData.name }}</strong>
                   <p class="mt-1"><strong>Date: <span class="confirmation-registration-date"> {{ eventData.time }} {{ formatDate(eventData.date) }}</span></strong> </p>
                   <p class="mt-1"><strong>Location:</strong> {{ eventData.address }}, {{ eventData.city }}, {{ eventData.state }}</p>
                   <p class="mt-1"><strong>Contact:</strong> {{ eventData.contact }}</p>
@@ -111,23 +106,23 @@ export default {
           <v-card class="mx-auto my-5 pa-5" max-width="1000" v-if="paymentData">
             <v-card-title class="d-flex justify-center">
               <v-icon class="mr-3">mdi-credit-card</v-icon>
-              <h3>Order Summary</h3>
+              Order Summary
             </v-card-title>
             <v-card-text>
               <v-row>
                 <!-- Column 1: Billing Amount -->
                 <v-col cols="6">
                   <v-card-subtitle class="mb-1">
-                    <p class="text-center"><strong>Transaction Details</strong></p>
+                    <strong class="text-center">Transaction Details</strong>
                   </v-card-subtitle>
                   <!-- Correctly format amount -->
-                  <p class="confirmation-billing-amount mt-1"><strong>Total: ${{ (paymentData.amount / 100).toFixed(2) }}</strong></p>
+                  <strong class="confirmation-billing-amount mt-1">Total: ${{ (paymentData.amount / 100).toFixed(2) }}</strong>
                   <p class="mt-1"><strong>Transaction receipt sent to: </strong>{{ paymentData.receiptEmail }}</p>
                 </v-col>
                 <v-col cols="6">
                   <v-card-subtitle class="mb-1">
                     <!-- change this here. what is appropriate? -->
-                    <p class="text-center"><strong>Payment Information</strong></p>
+                    <strong class="text-center">Payment Information</strong>
                   </v-card-subtitle>
                   <p class="mt-1">Please note this transaction will appear on your credit card statement as a variation of <strong>RelayEntry</strong>.</p>
                   <p class="mt-1"><strong>Important:</strong> RelayEntry does not store any payment details or credit card information. Your transaction is securely processed through our payment provider.</p>
@@ -140,25 +135,23 @@ export default {
     </v-container>
   </div>
 </template>
-
-
 <style scoped>
-    .v-card {
-      max-width: 100%;
-    }
-    .confirmation-header{
-      font-size: 2rem;
-    }
-    .confirmation-registration-date{
-      color: #4caf50;
-    }
-    .confirmation-billing-amount{
-      color: rgb(24, 103, 192);
-      font-size: 1.5rem;
-    }
-    .instagram-icon {
-      color: #e1306c;
-      background-color: #f7f7f7;
-      border-radius: 50%;
-    }
+  .v-card {
+    max-width: 100%;
+  }
+  .confirmation-header{
+    font-size: 2rem;
+  }
+  .confirmation-registration-date{
+    color: #4caf50;
+  }
+  .confirmation-billing-amount{
+    color: rgb(24, 103, 192);
+    font-size: 1.5rem;
+  }
+  .instagram-icon {
+    color: #e1306c;
+    background-color: #f7f7f7;
+    border-radius: 50%;
+  }
 </style>

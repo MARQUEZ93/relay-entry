@@ -137,7 +137,7 @@ export default {
     <v-row justify="center" v-if="event">
       <v-col cols="12" md="8">
         <v-card class="mx-auto my-5 pa-5">
-          <v-img v-if="event && event.logo" :src="event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
+          <v-img v-if="event && event.logo" :alt="`Event logo for ${event.name}`" :src="event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
           <v-card-title v-if="event" class="text-center event-name">
             {{ event.name }}
           </v-card-title>

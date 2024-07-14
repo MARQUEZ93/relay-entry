@@ -93,7 +93,6 @@ def team_register(request):
         except Race.DoesNotExist:
             logger.error("Race not found.")
             return JsonResponse({'error': "Race not found."}, status=404)
-        print(data)
         payment_intent_id = data['payment_intent_id']
          # Retrieve the PaymentIntent to confirm payment
         intent, error = retrieve_payment_intent(payment_intent_id, race)
@@ -120,7 +119,6 @@ def team_register(request):
         amount_received_dollars = Decimal(amount_received_cents) / 100
         with transaction.atomic():
             try: 
-                print(registration_data)
                 registration = Registration.objects.create(
                     race=race,
                     payment_intent_id=payment_intent_id,

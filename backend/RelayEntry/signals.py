@@ -125,7 +125,6 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                     </ul>
                 <br />
                 <p>Your confirmation code: {confirmation_code}.</p>
-                <br />
                 <p>Please email relayentry@gmail.com if help is needed with your team registration. Include your confirmation code!</p>
                 """
                 send_mailjet_email(

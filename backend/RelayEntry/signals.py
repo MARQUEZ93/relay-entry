@@ -62,10 +62,9 @@ def send_registration_email(sender, instance, created, **kwargs):
 
             html_content = f"""
             <h3>Dear {instance.first_name}, welcome to RelayEntry!</h3>
-            <p>You are registered for the race <strong>{race_name}</strong> in the event <strong>{event_name}</strong>.</p>
-            <p>For updates, please visit <a href="{url}">here</a>.</p>
+            <p>You are registered for the <strong>{race_name}</strong> race in the event <strong>{event_name}</strong>.</p>
+            <p>For updates about the event, please visit {url}</p>
             <p>Your confirmation code: {confirmation_code}.</p>
-            <br />
             <p>Please email {contact} if help is needed with your registration. Include your confirmation code!</p>
             """
 

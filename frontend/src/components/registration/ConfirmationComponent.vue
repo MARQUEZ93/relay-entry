@@ -116,7 +116,7 @@ export default {
                     <strong class="text-center">Transaction Details</strong>
                   </v-card-subtitle>
                   <!-- Correctly format amount -->
-                  <strong class="confirmation-billing-amount mt-1">Total: ${{ (paymentData.amount / 100).toFixed(2) }}</strong>
+                  <strong class="confirmation-billing-amount mt-1">Total: ${{ paymentData.amount }}</strong>
                   <p class="mt-1"><strong>Transaction receipt sent to: </strong>{{ paymentData.receiptEmail }}</p>
                 </v-col>
                 <v-col cols="12" md="6">

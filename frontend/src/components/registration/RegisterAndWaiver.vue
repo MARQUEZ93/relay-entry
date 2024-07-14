@@ -189,5 +189,13 @@ export default {
     font-size: 2.5rem;
     word-wrap: break-word;
     white-space: normal;
+    overflow-wrap: break-word; 
+  }
+  @media (max-width: 600px) {
+    .event-name {
+      font-size: 2rem; /* Adjust the size as needed for mobile */
+      word-break: keep-all; /* Prevents words from breaking up */
+      white-space: normal; /* Allows normal wrapping */
+    }
   }
 </style>

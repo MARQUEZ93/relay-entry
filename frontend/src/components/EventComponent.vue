@@ -147,69 +147,77 @@ export default {
 </template>
 
 <style scoped>
-.event-name {
-  font-size: 2.5rem;
-  word-wrap: break-word;
-  white-space: normal;
-}
-.help-text {
-  font-size: 0.9rem;
-  color: #6c757d; /* A subtle gray color */
-}
+  .event-name {
+    font-size: 2.5rem;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word; 
+  }
+  @media (max-width: 600px) {
+    .event-name {
+      font-size: 2rem; /* Adjust the size as needed for mobile */
+      word-break: keep-all; /* Prevents words from breaking up */
+      white-space: normal; /* Allows normal wrapping */
+    }
+  }
+  .help-text {
+    font-size: 0.9rem;
+    color: #6c757d; /* A subtle gray color */
+  }
 
-.v-btn {
-  margin: 0 5px;
-}
+  .v-btn {
+    margin: 0 5px;
+  }
 
-.social-icons {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
 
-.social-icons .v-btn {
-  margin: 0 10px;
-}
+  .social-icons .v-btn {
+    margin: 0 10px;
+  }
 
-.social-icons .v-icon {
-  font-size: 30px;
-}
+  .social-icons .v-icon {
+    font-size: 30px;
+  }
 
-.facebook-icon {
-  color: #3b5998;
-  background-color: #e9ebee;
-  border-radius: 50%;
-}
+  .facebook-icon {
+    color: #3b5998;
+    background-color: #e9ebee;
+    border-radius: 50%;
+  }
 
-.instagram-icon {
-  color: #e1306c;
-  background-color: #f7f7f7;
-  border-radius: 50%;
-}
+  .instagram-icon {
+    color: #e1306c;
+    background-color: #f7f7f7;
+    border-radius: 50%;
+  }
 
-.twitter-icon {
-  color: #1da1f2;
-  background-color: #e8f5fd;
-  border-radius: 50%;
-}
+  .twitter-icon {
+    color: #1da1f2;
+    background-color: #e8f5fd;
+    border-radius: 50%;
+  }
 
-.email-icon {
-  color: #ea4335;
-  background-color: #fce8e6;
-  border-radius: 50%;
-}
+  .email-icon {
+    color: #ea4335;
+    background-color: #fce8e6;
+    border-radius: 50%;
+  }
 
-.website-icon {
-  color: #4285f4;
-  background-color: #e8f0fe;
-  border-radius: 50%;
-}
-.race-card {
-  transition: transform 0.3s, box-shadow 0.3s;
-}
+  .website-icon {
+    color: #4285f4;
+    background-color: #e8f0fe;
+    border-radius: 50%;
+  }
+  .race-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
 
-.race-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
+  .race-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
 </style>

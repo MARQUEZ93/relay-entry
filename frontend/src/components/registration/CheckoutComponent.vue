@@ -91,7 +91,7 @@ export default {
         });
         if (response.data.error) {
           this.loading = false; // Hide loader on error
-          this.showError('An error occurred while processing your registration. Please email contact@relayentry.com');
+          this.showError('An error occurred while processing your registration. Please email relayentry@gmail.com');
           return;
         } else {
           const { registrationData, raceData, teamData, paymentData } = response.data;

@@ -28,7 +28,7 @@ export default {
       <router-link to="/pricing" class="white--text" v-if="$vuetify.display.mdAndUp">
         <v-btn text class="white--text">Pricing</v-btn>
       </router-link>
-      <v-btn text href="mailto:contact@relayentry.com" class="white--text" v-if="$vuetify.display.mdAndUp">Contact</v-btn>
+      <v-btn text href="mailto:relayentry@gmail.com" class="white--text" v-if="$vuetify.display.mdAndUp">Contact</v-btn>
     </v-app-bar>
 
     <v-navigation-drawer app v-model="drawer" color="primary" dark v-if="!$vuetify.display.mdAndUp">

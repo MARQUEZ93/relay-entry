@@ -167,6 +167,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
 # Email configuration
 if ENVIRONMENT == 'development':
     # SMTP configuration for development
@@ -175,19 +176,17 @@ if ENVIRONMENT == 'development':
     EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 1025))
     EMAIL_USE_TLS = False
     EMAIL_USE_SSL = False
-    EMAIL_HOST_USER = 'contact@relayentry.com'
+    EMAIL_HOST_USER = 'no-reply@relayentry.com'
     EMAIL_HOST_PASSWORD = 'your_password'
-    DEFAULT_FROM_EMAIL = 'contact@relayentry.com'
+    DEFAULT_FROM_EMAIL = 'no-reply@relayentry.com'
 else:
-    # Email is turned off for production (for now)
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    EMAIL_HOST = ''
-    EMAIL_PORT = 0
-    EMAIL_USE_TLS = False
-    EMAIL_USE_SSL = False
-    EMAIL_HOST_USER = ''
-    EMAIL_HOST_PASSWORD = ''
-    DEFAULT_FROM_EMAIL = 'contact@relayentry.com'
+    EMAIL_HOST = 'in-v3.mailjet.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ.get('MJ_APIKEY_PUBLIC', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('MJ_APIKEY_PRIVATE', '')
+    DEFAULT_FROM_EMAIL = 'no-reply@relayentry.com'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -56,7 +56,7 @@ export default {
                   <p class="mt-1"><strong>Event:</strong> {{ raceData.event }}</p>
                   <p class="mt-1"><strong>Race:</strong> {{ raceData.name }}</p>
                   <p class="mt-1"><strong>Projected Team Time:</strong> {{ teamData.projectedTeamTime }}</p>
-                  <p class="mb-2 mt-1 wrap-break-word">Email contact@relayentry.com from your registration email to make team member changes. Include your confirmation number.</p>
+                  <p class="mb-2 mt-1 wrap-break-word">Email relayentry@gmail.com from your registration email to make team member changes. Include your confirmation number.</p>
                   <v-row>
                     <v-col cols="12" md="6" v-for="(member, index) in teamData.emails" :key="index" class="d-flex align-center justify-center">
                       <v-icon class="mr-2">mdi-account</v-icon>

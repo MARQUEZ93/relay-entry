@@ -172,21 +172,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 if ENVIRONMENT == 'development':
     # SMTP configuration for development
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'mailhog')
-    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 1025))
+    EMAIL_HOST = 'mailhog'
+    EMAIL_PORT = 1025
     EMAIL_USE_TLS = False
-    EMAIL_USE_SSL = False
     EMAIL_HOST_USER = 'no-reply@relayentry.com'
     EMAIL_HOST_PASSWORD = 'your_password'
     DEFAULT_FROM_EMAIL = 'no-reply@relayentry.com'
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    EMAIL_HOST = 'in-v3.mailjet.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = os.environ.get('MJ_APIKEY_PUBLIC', '')
-    EMAIL_HOST_PASSWORD = os.environ.get('MJ_APIKEY_PRIVATE', '')
-    DEFAULT_FROM_EMAIL = 'no-reply@relayentry.com'
+    # Get your environment Mailjet keys
+    MJ_APIKEY_PUBLIC = os.environ.get('MJ_APIKEY_PUBLIC', '')
+    MJ_APIKEY_PRIVATE = os.environ.get('MJ_APIKEY_PRIVATE', '') 
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -8,125 +8,125 @@ import logging
 
 from .models import UserProfile, Registration, Team, TeamMember, Event, Race
 
+# import the mailjet wrapper
+from mailjet_rest import Client
+import os
+
+# Get your environment Mailjet keys
+# Initialize MailJet client
+mailjet = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE))
 # Set up logging
 logger = logging.getLogger(__name__)
 
-# send email on registration (Registration.email) (to either Registration.race.event.email)
-# send email to team captain when team is created (team.captain.email) + race.event.email
-# send email to the team member when a team member is created  (TeamMember.email)
-# email team captain when a registration is created, 
-# and the email of the registration matches a team member email (that belong to the team captain's team) + Team.race.event equals (registartion.race)
-# @receiver(post_save, sender=Registration)
-# def send_registration_email(sender, instance, created, **kwargs):
-#     if created:
-#         def send_emails():
-#             if instance.race and instance.race.event:
-#                 race_director_email = instance.race.event.email
-#                 race_name = instance.race.name
-#             else:
-#                 race_director_email = None
-#                 race_name = None
-#                 event_name = None
+def send_mailjet_email(recipient_email, recipient_name, subject, text_part, html_part):
+    data = {
+        'Messages': [
+            {
+                "From": {
+                    "Email": "no-reply@relayentry.com",
+                    "Name": "RelayEntry"
+                },
+                "To": [
+                    {
+                        "Email": recipient_email,
+                        "Name": recipient_name
+                    }
+                ],
+                "Subject": subject,
+                "TextPart": text_part,
+                "HTMLPart": html_part
+            }
+        ]
+    }
+    try:
+        result = mailjet.send.create(data=data)
+        print(result.status_code)
+        print(result.json())
+    except Exception as e:
+        logger.error(f"Failed to send email to {recipient_email}: {e}")
 
-#             try:
-#                 # Email the registrant
-#                 send_mail(
-#                     'Registration Successful',
-#                     'Thank you for registering.',
-#                     settings.DEFAULT_FROM_EMAIL,
-#                     [instance.email],
-#                     fail_silently=True,
-#                 )
-#             except Exception as e:
-#                 logger.error(f"Failed to send registration email to {instance.email}: {e}")
+@receiver(post_save, sender=Registration)
+def send_registration_email(sender, instance, created, **kwargs):
+    if created:
+        def send_emails():
+            race_name = instance.race.name
+            event_name = instance.race.event.name
+            confirmation_code = instance.confirmation_code
+            if instance.race.event.instagram_url:
+                url = instance.race.event.instagram_url
+            elif instance.race.event.website_url:
+                url = instance.race.event.website_url
+            else:
+                url = "https://default.url"  # Default URL if none provided
+            contact = "relayentry@gmail.com" # email this if you have questions
 
-#             try:
-#                 if race_director_email:
-#                     send_mail(
-#                         'New Registration For Your Race',
-#                         f'A new registration has been made by {instance.email}.',
-#                         settings.DEFAULT_FROM_EMAIL,
-#                         [race_director_email],
-#                         fail_silently=True,
-#                     )
-#             except Exception as e:
-#                 logger.error(f"Failed to send email to race director for {instance.email}: {e}")
-#             try:
-#                 if instance.race:  # This means the registrant only registered
-#                     print(f"Processing email notification for registration {instance.email} for event {instance.race.name}")
-#                     # Query all teams with team.race that matches instance.race
-#                     print(f"Checking race {instance.race.name}")
-#                     # Iterate through all teams for the race
-#                     for team in race.teams.all():
-#                       print(f"Checking team {team.name}")
-#                       # Check if a team member's email matches the registration email
-#                       captain_email = team.captain.email
-#                       team_member = team.members.filter(email=instance.email).first()
-#                       if team_member:
-#                           print(f"Found matching team member {team_member.email}, sending email to captain {captain_email}")
-#                           send_mail(
-#                               'Team Member Registration For Your Team',
-#                               f'Team member {instance.email} has registered.',
-#                               settings.DEFAULT_FROM_EMAIL,
-#                               [captain_email],
-#                               fail_silently=True,
-#                           )
-#                           break  # No need to check further once the team is found
-#             except Exception as e:
-#                 logger.error(f"Failed to send team member registration email for {instance.email}: {e}")
-#                 print(f"Error sending team member registration email for {instance.email}: {e}")
+            html_content = f"""
+            <h3>Dear {instance.first_name}, welcome to RelayEntry!</h3>
+            <p>You are registered for the race <strong>{race_name}</strong> in the event <strong>{event_name}</strong>.</p>
+            <p>For updates, please visit <a href="{url}">here</a>.</p>
+            <p>Your confirmation code: {confirmation_code}.</p>
+            <br />
+            <p>Please email {contact} if help is needed with your registration. Include your confirmation code!</p>
+            """
 
-#         # Use transaction.on_commit to ensure emails are sent only after the transaction is committed
-#         transaction.on_commit(send_emails)
+            send_mailjet_email(
+                recipient_email=instance.email,
+                recipient_name=instance.first_name,
+                subject=f'You are registered for {event_name}',
+                text_part="Greetings from RelayEntry!",
+                html_part=html_content,
+            )
+        # Use transaction.on_commit to ensure emails are sent only after the transaction is committed
+        transaction.on_commit(send_emails)
 
-# @receiver(post_save, sender=Team)
-# def send_team_creation_email(sender, instance, created, **kwargs):
-#     if created:
-#         def send_emails():
-#             try:
-#                 # Email the race director
-#                 if instance.race and instance.race.event:
-#                     race_director_email = instance.race.event.email
-#                     send_mail(
-#                         'New Team Created',
-#                         f'A new team has been created by {instance.captain.email}.',
-#                         settings.DEFAULT_FROM_EMAIL,
-#                         [race_director_email],
-#                         fail_silently=True,
-#                     )
-#             except Exception as e:
-#                 logger.error(f"Failed to send team creation email to race director for {instance.captain.email}: {e}")
-        
-#         # Use transaction.on_commit to ensure emails are sent only after the transaction is committed
-#         transaction.on_commit(send_emails)
-# @receiver(post_save, sender=TeamMember)
-# def send_team_member_creation_email(sender, instance, created, **kwargs):
-#     if created:
-#         def send_emails():
-#             try:
-#                 # Email the team member
-#                 send_mail(
-#                     'You have been added to a team.',
-#                     'You have been added to a team.',
-#                     settings.DEFAULT_FROM_EMAIL,
-#                     [instance.email],
-#                     fail_silently=True,
-#                 )
-#             except Exception as e:
-#                 logger.error(f"Failed to send team member creation email to {instance.email}: {e}")
-#         transaction.on_commit(send_emails)
+@receiver(post_save, sender=Team)
+def send_team_creation_email(sender, instance, created, **kwargs):
+    if created:
+        def send_emails():
+            if instance.race and instance.race.event:
+                race_director_email = instance.race.event.email
+                team_name = instance.name
+                race_name = instance.race.name
+                event_name = instance.race.event.name
+                captain_first_name = instance.captain.first_name
+                captain_last_name = instance.captain.last_name
+                captain_email = instance.captain.email
+                html_content = f"""
+                <h3>Dear Race Director,</h3>
+                <p>The team: {team_name} registered/paid for the {race_name} race in {event_name}.</p>
+                <p>The team captain: {captain_first_name} {captain_last_name}</p>
+                <p>The team captain email: {captain_email}</p>
+                <br />
+                <p>Please email relayentry@gmail.com if you need help!</p>
+                """
+                send_mailjet_email(
+                    recipient_email=race_director_email,
+                    recipient_name="Race Director",
+                    subject=f'A new team registered for {race_name}',
+                    text_part="Greetings from RelayEntry!",
+                    html_part=html_content,
+                )
+        transaction.on_commit(send_emails)
 
+@receiver(post_save, sender=Registration)
+def set_team_member(sender, instance, created, **kwargs):
+    if created:
+        def set_member():
+            try:
+                if instance.member:
+                    return
+                for team in instance.race.teams.all():
+                  team_members = team.members.all()
+                  team_member = team.members.filter(email=instance.email).first()
+                  if team_member:
+                      instance.member = team_member
+                      instance.save()
+                      return
+            except Exception as e:
+                logger.error(f"Failed to set team member for registration {instance.email}: {e}")
 
-# @receiver(post_save, sender=User)
-# def send_welcome_email(sender, instance, created, **kwargs):
-#     if created:
-#         send_mail(
-#             'Welcome to RelayEntry',
-#             "Thank you for registering with RelayEntry. Let's have a great race day!",
-#             'admin@relayentry.com',
-#             [instance.email],
-#             fail_silently=False,
-#         )
+        # Use transaction.on_commit to ensure the team member is set only after the transaction is committed
+        transaction.on_commit(set_member)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -136,32 +136,3 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
-
-# @receiver(post_save, sender=Registration)
-# def set_team_member(sender, instance, created, **kwargs):
-#     if created:
-#         def set_member():
-#             try:
-#                 print(f"Processing registration {instance.email} for race {instance.race.name}")
-#                 # Iterate through all races for the event
-#                 print(f"Checking race {instance.race.name}")
-#                 # Iterate through all teams for the race
-#                 for team in race.teams.all():
-#                   print(f"Checking team {team.name}")
-#                   team_members = team.members.all()
-#                   print(f"Team members for team {team.name}: {[member.email for member in team_members]}")
-#                   # Check if a team member's email matches the registration email
-#                   team_member = team.members.filter(email=instance.email).first()
-#                   if team_member:
-#                       print(f"Found matching team member {team_member.email}")
-#                       # TODO: fool proof this - later
-#                       instance.member = team_member
-#                       instance.save()
-#                       break
-#                   if instance.member:
-#                       break
-#             except Exception as e:
-#                 logger.error(f"Failed to set team member for registration {instance.email}: {e}")
-
-#         # Use transaction.on_commit to ensure the team member is set only after the transaction is committed
-#         transaction.on_commit(set_member)

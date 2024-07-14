@@ -37,6 +37,7 @@ export function customSameDistance(race) {
 
   if (race.custom_distance_unit === 'm') {
     // Strip .00 decimal
+    // TODO: test this shit
     value = parseFloat(value).toFixed(2);
     if (value.endsWith('.00')) {
       value = value.slice(0, -3);

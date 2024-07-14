@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
+from decimal import Decimal
 
 @ensure_csrf_cookie
 def get_csrf_token(request):
@@ -112,14 +113,18 @@ def team_register(request):
             return JsonResponse({'error': 'Payment amount does not match the race price.'}, status=400)
 
         # add unique paymentIntent field to registration
+        # Assuming `intent` is the payment intent object from Stripe
+        amount_received_cents = intent['amount_received']
 
+        # Convert from cents to dollars (or the base unit of your currency)
+        amount_received_dollars = Decimal(amount_received_cents) / 100
         with transaction.atomic():
             try: 
                 print(registration_data)
                 registration = Registration.objects.create(
                     race=race,
                     payment_intent_id=payment_intent_id,
-                    amount_paid=intent.amount_received,
+                    amount_paid=amount_received_dollars,
                     first_name=registration_data['first_name'],
                     last_name=registration_data['last_name'],
                     email=registration_data['email'],
@@ -158,7 +163,7 @@ def team_register(request):
                 registrant_name = f"{registration_data['first_name']} {registration_data['last_name']}"
                 response_data = {
                     'payment_data': {
-                        'amount': intent.amount_received,
+                        'amount': registration.amount_paid,
                         'receipt_email': intent.receipt_email,
                     },
                     'registration_data': {

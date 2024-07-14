@@ -36,23 +36,23 @@ export default {
 </script>
 <template>
   <div>
-    <p class="confirmation-header"><strong>{{ confirmationHeader }}</strong>&nbsp;#{{ registrationData.confirmationCode }}</p>
+    <p class="confirmation-header wrap-break-word pa-2"><strong>{{ confirmationHeader }}</strong>&nbsp;#{{ registrationData.confirmationCode }}</p>
     <v-container>
       <v-row justify="center">
         <v-col cols="12" md="10">
           <v-card class="mx-auto my-5 pa-5" max-width="1000">
-            <v-card-title class="d-flex justify-center">
-              <v-icon class="mr-3">mdi-email</v-icon>
-              <h3>We'll send you a confirmation email.</h3>
+            <v-icon class="mr-3">mdi-email</v-icon>
+            <v-card-title class="wrap-break-word">
+              We'll send you a confirmation email
             </v-card-title>
             <v-card-text>
               <v-row v-if="teamData">
                 <!-- Column 1: Team Information -->
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                   <v-card-subtitle class="mb-1">
                     <p class="text-center"><strong>Team Info</strong></p>
                   </v-card-subtitle>
-                  <p class="mt-1"><strong>{{ teamData.name }}</strong></p>
+                  <p class="mt-1"><strong>Team Name:</strong> {{ teamData.name }}</p>
                   <p class="mt-1"><strong>Race:</strong> {{ raceData.name }}</p>
                   <p class="mb-2 mt-1"><strong>Projected Team Time:</strong> {{ teamData.projectedTeamTime }}</p>
                   <v-row>
@@ -63,7 +63,7 @@ export default {
                   </v-row>
                 </v-col>
                 <!-- Column 2: Registration Information -->
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                   <v-card-subtitle class="mb-1">
                     <p class="text-center"><strong>Registration & Race Info</strong></p>
                   </v-card-subtitle>
@@ -79,7 +79,7 @@ export default {
               </v-row>
               <v-row v-else>
                 <!-- Column 1: Registrant Information -->
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                   <v-card-subtitle class="mb-2">
                     <p class="text-center"><strong>Registrant Info</strong></p>
                   </v-card-subtitle>
@@ -88,7 +88,7 @@ export default {
                   <p class="mt-1"><strong>Confirmation Code:</strong> #{{ registrationData.confirmationCode }}</p>
                 </v-col>
                 <!-- Column 2: Event Information -->
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                   <v-card-subtitle class="mb-1">
                     <strong class="text-center">Event Info</strong>
                   </v-card-subtitle>
@@ -111,7 +111,7 @@ export default {
             <v-card-text>
               <v-row>
                 <!-- Column 1: Billing Amount -->
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                   <v-card-subtitle class="mb-1">
                     <strong class="text-center">Transaction Details</strong>
                   </v-card-subtitle>
@@ -119,7 +119,7 @@ export default {
                   <strong class="confirmation-billing-amount mt-1">Total: ${{ (paymentData.amount / 100).toFixed(2) }}</strong>
                   <p class="mt-1"><strong>Transaction receipt sent to: </strong>{{ paymentData.receiptEmail }}</p>
                 </v-col>
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                   <v-card-subtitle class="mb-1">
                     <!-- change this here. what is appropriate? -->
                     <strong class="text-center">Payment Information</strong>
@@ -142,6 +142,11 @@ export default {
   .confirmation-header{
     font-size: 2rem;
   }
+  @media (max-width: 600px) {
+    .confirmation-header {
+      font-size: 1.5rem; /* Adjust the size as needed for mobile */
+    }
+  }
   .confirmation-registration-date{
     color: #4caf50;
   }
@@ -153,5 +158,9 @@ export default {
     color: #e1306c;
     background-color: #f7f7f7;
     border-radius: 50%;
+  }
+  .wrap-break-word{
+    word-wrap: break-word;
+    white-space: normal;
   }
 </style>

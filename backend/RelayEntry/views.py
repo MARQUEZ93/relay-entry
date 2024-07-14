@@ -210,9 +210,9 @@ def event_register(request, url_alias):
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
         event_id = data['event_id']
-        race_id = data['race_id']
         
         registration_data = data['registration_data']
+        race_id = registration_data['selected_race']
         try:
             event = Event.objects.get(id=event_id)
             event_name = event.name

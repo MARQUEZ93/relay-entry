@@ -164,7 +164,7 @@ export default {
         </v-tabs>
 
         <div v-if="activeTab === 0">
-          <RegistrationData :registrationData="registrationData" @complete="saveRegistrationData" />
+          <RegistrationData :event="event" :raceField="true" :registrationData="registrationData" @complete="saveRegistrationData" />
         </div>
         <div v-if="activeTab === 1">
           <WaiverComponent :disabled="loading" :event="event" :initialAccepted="waiverAccepted" @complete="acceptWaiver" @update-accepted="updateWaiverAccepted" @get-ip="updateIpAddress"/>

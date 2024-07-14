@@ -3,15 +3,25 @@ export default {
   props: {
     race: {
       type: Object,
+      default: () => ({}),
+    },
+    event: {
+      type: Object,
+      default: () => ({ races: [] }) // Ensure a default value
     },
     registrationData: { 
       type: Object,
       required: true,
     },
+    raceField:{
+      type: Boolean,
+      default: false,
+    }
   },
   created() {
     this.initializeRunnerEmails();
     this.initializeProjectTeamTimeChoices();
+    this.initializeRaceChoices();
   },
   data() {
     return {
@@ -23,11 +33,13 @@ export default {
           projectedTeamTime: this.registrationData.teamData?.projectedTeamTime || '',
           emails: this.registrationData.teamData?.emails || [],
         },
+        selectedRace: this.registrationData.selectedRace || '',
         dateOfBirth: this.registrationData.dateOfBirth || '',
         // parentGuardianName: this.registrationData.parentGuardianName || '',
         // parentGuardianSignature: this.registrationData.parentGuardianSignature || '',
         // minor: this.registrationData.minor || false,
       },
+      races: [],
       projectedTeamTimeChoices: this.race?.projected_team_time_choices || [],
       nameRules: [
         v => !!v || 'Name is required',
@@ -48,6 +60,13 @@ export default {
     };
   },
   watch: {
+    event: {
+      handler() {
+        this.initializeRaceChoices();
+      },
+      deep: true,
+      immediate: true,
+    },
     race: {
       handler() {
         this.initializeRunnerEmails();
@@ -60,6 +79,7 @@ export default {
       handler(newVal) {
         this.localRegistrationData = {
           ...newVal,
+          selectedRace: newVal.selectedRace || '',
           dateOfBirth: newVal.dateOfBirth || '',
           // parentGuardianName: newVal.parentGuardianName || '',
           // parentGuardianSignature: newVal.parentGuardianSignature || '',
@@ -95,6 +115,11 @@ export default {
     initializeProjectTeamTimeChoices() {
       if (this.race && this.race.projected_team_time_choices) {
         this.projectedTeamTimeChoices = this.race.projected_team_time_choices;
+      }
+    },
+    initializeRaceChoices() {
+      if (this.raceField && this.event && this.event.races) {
+        this.races = this.event.races;
       }
     },
     submit() {
@@ -183,6 +208,16 @@ export default {
       </v-col> -->
     </v-row>
     <v-row>
+      <v-col cols="6" v-if="this.raceField">
+        <v-select
+            v-model="localRegistrationData.selectedRace"
+            :items="races"
+            item-title="name"
+            item-value="id"
+            label="Race"
+            required
+          ></v-select>
+      </v-col>
       <v-col cols="6">
         <v-text-field
           v-model="localRegistrationData.dateOfBirth"

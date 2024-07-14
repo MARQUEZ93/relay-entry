@@ -21,17 +21,17 @@ export default {
         <v-img :src="brandLogo" alt="RelayEntry Logo" class="logo-image ml-5"></v-img>
       </router-link>
       <v-spacer></v-spacer>
-      <v-app-bar-nav-icon class="mr-5" @click="drawer = !drawer" v-show="!$vuetify.display.mdAndUp"></v-app-bar-nav-icon>
-      <router-link to="/" class="white--text" v-show="$vuetify.display.mdAndUp">
+      <v-app-bar-nav-icon class="mr-5" @click="drawer = !drawer" v-if="!$vuetify.display.mdAndUp"></v-app-bar-nav-icon>
+      <router-link to="/" class="white--text" v-if="$vuetify.display.mdAndUp">
         <v-btn text class="white--text">Home</v-btn>
       </router-link>
-      <router-link to="/pricing" class="white--text" v-show="$vuetify.display.mdAndUp">
+      <router-link to="/pricing" class="white--text" v-if="$vuetify.display.mdAndUp">
         <v-btn text class="white--text">Pricing</v-btn>
       </router-link>
-      <v-btn text href="mailto:contact@relayentry.com" class="white--text" v-show="$vuetify.display.mdAndUp">Contact</v-btn>
+      <v-btn text href="mailto:contact@relayentry.com" class="white--text" v-if="$vuetify.display.mdAndUp">Contact</v-btn>
     </v-app-bar>
 
-    <v-navigation-drawer app v-model="drawer" color="primary" dark v-show="!$vuetify.display.mdAndUp">
+    <v-navigation-drawer app v-model="drawer" color="primary" dark v-if="!$vuetify.display.mdAndUp">
       <v-list dense>
         <router-link to="/" @click="drawer = false">
           <v-list-item>

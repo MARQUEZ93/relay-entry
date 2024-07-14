@@ -204,7 +204,7 @@ class Registration(models.Model):
     email_confirmed = models.BooleanField(default=False)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     confirmation_code = models.CharField(max_length=16, unique=True, editable=False)  # Increased length to 16
-    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations', null=True, blank=True)
+    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations')
     amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
     email = models.EmailField()

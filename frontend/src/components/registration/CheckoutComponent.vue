@@ -29,6 +29,10 @@ export default {
       type: HTMLElement,
       required: true
     },
+    elements: {
+      required: true,
+      type: Object,
+    }
   },
   async mounted() {
     this.setupElements();
@@ -41,7 +45,6 @@ export default {
   },
   data() {
     return {
-      elements: {},
       elementsLoading: true,
       loading: false,
       snackbar: {
@@ -75,7 +78,7 @@ export default {
           if (error.type === "card_error" || error.type === "validation_error") {
             this.showError(error.message);
           } else {
-            this.showError("An unexpected error occured.");
+            this.showError("An unexpected error occured. No payment was processed.");
           }
           this.loading = false;
           return;
@@ -88,7 +91,7 @@ export default {
         });
         if (response.data.error) {
           this.loading = false; // Hide loader on error
-          this.showError('An error occurred while processing your registration. Please Teamtry again later.');
+          this.showError('An error occurred while processing your registration. Please email contact@relayentry.com');
           return;
         } else {
           const { registrationData, raceData, teamData, paymentData } = response.data;
@@ -103,7 +106,7 @@ export default {
         }
       } catch (e){
           this.loading = false; // Hide loader on error
-          this.showError('An error occurred while processing your registration. Please try again later.');
+          this.showError('Something unexpected occurred while processing your registration. Please try again later.');
           return;
       }
     },

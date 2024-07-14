@@ -210,6 +210,7 @@ def event_register(request, url_alias):
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
         event_id = data['event_id']
+        race_id = data['race_id']
         
         registration_data = data['registration_data']
         try:
@@ -218,10 +219,18 @@ def event_register(request, url_alias):
         except Event.DoesNotExist:
             logger.error("Event not found.")
             return JsonResponse({'error': "Event not found."}, status=404)
+        
+        try:
+            race = Race.objects.get(id=race_id)
+            race_name = race.name
+        except Race.DoesNotExist:
+            logger.error("Race not found.")
+            return JsonResponse({'error': "Race not found."}, status=404)
+        
         with transaction.atomic():
             try: 
                 registration = Registration.objects.create(
-                    event=event,
+                    race=race,
                     first_name=registration_data['first_name'],
                     last_name=registration_data['last_name'],
                     email=registration_data['email'],

@@ -92,7 +92,7 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                 captain_email = instance.captain.email
                 html_content = f"""
                 <h3>Dear Race Director,</h3>
-                <p>The team: {team_name} registered/paid for the {race_name} race in {event_name}.</p>
+                <p>The team: {team_name} registered for the {race_name} race in {event_name}.</p>
                 <p>The team captain: {captain_first_name} {captain_last_name}</p>
                 <p>The team captain email: {captain_email}</p>
                 <br />

@@ -102,10 +102,41 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                 send_mailjet_email(
                     recipient_email=race_director_email,
                     recipient_name="Race Director",
-                    subject=f'A new team registered for {race_name}',
+                    subject=f'A new team registered for {race_name} in {event_name}',
                     text_part="Greetings from RelayEntry!",
                     html_part=html_content,
                 )
+
+                captain_first_name = instance.captain.first_name
+                captain_last_name = instance.captain.last_name
+                captain_email = instance.captain.email
+                confirmation_code = instance.captain.confirmation_code
+
+                # iterate team.members & provide info in the confirmation email
+                team_members_info = ""
+                for member in instance.members.all():
+                    team_members_info += f"<li>{member.email} (Leg Order: {member.leg_order})</li>"
+
+                html_content = f"""
+                <h3>Dear Team Captain,</h3>
+                <p>The team: {team_name} registered/paid for the {race_name} race in {event_name}.</p>
+                <p>Team Members:</p>
+                    <ul>
+                        {team_members_info}
+                    </ul>
+                <br />
+                <p>Your confirmation code: {confirmation_code}.</p>
+                <br />
+                <p>Please email relayentry@gmail.com if help is needed with your team registration. Include your confirmation code!</p>
+                """
+                send_mailjet_email(
+                    recipient_email=captain_email,
+                    recipient_name=captain_first_name,
+                    subject=f'Your registered team for {event_name}',
+                    text_part="Greetings from RelayEntry!",
+                    html_part=html_content,
+                )
+
         transaction.on_commit(send_emails)
 
 @receiver(post_save, sender=Registration)

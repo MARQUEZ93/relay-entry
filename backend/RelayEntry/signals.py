@@ -11,11 +11,11 @@ from .models import UserProfile, Registration, Team, TeamMember, Event, Race
 # Set up logging
 logger = logging.getLogger(__name__)
 
-# send email on registration (Registration.email) (to either Registration.race.event.email or Registration.event.email)
+# send email on registration (Registration.email) (to either Registration.race.event.email)
 # send email to team captain when team is created (team.captain.email) + race.event.email
 # send email to the team member when a team member is created  (TeamMember.email)
 # email team captain when a registration is created, 
-# and the email of the registration matches a team member email (that belong to the team captain's team) + Team.race.event equals (registartion.event - null check bTW optional field)
+# and the email of the registration matches a team member email (that belong to the team captain's team) + Team.race.event equals (registartion.race)
 # @receiver(post_save, sender=Registration)
 # def send_registration_email(sender, instance, created, **kwargs):
 #     if created:
@@ -23,9 +23,6 @@ logger = logging.getLogger(__name__)
 #             if instance.race and instance.race.event:
 #                 race_director_email = instance.race.event.email
 #                 race_name = instance.race.name
-#             elif instance.event:
-#                 race_director_email = instance.event.email
-#                 event_name = instance.event.name
 #             else:
 #                 race_director_email = None
 #                 race_name = None
@@ -55,27 +52,26 @@ logger = logging.getLogger(__name__)
 #             except Exception as e:
 #                 logger.error(f"Failed to send email to race director for {instance.email}: {e}")
 #             try:
-#                 if instance.event:  # This means the registrant only registered & did not pay/is not the team captain
-#                     print(f"Processing email notification for registration {instance.email} for event {instance.event.name}")
-#                     # Query all teams with team.race.event that matches instance.event
-#                     for race in instance.event.races.all():
-#                         print(f"Checking race {race.name}")
-#                         # Iterate through all teams for the race
-#                         for team in race.teams.all():
-#                             print(f"Checking team {team.name}")
-#                             # Check if a team member's email matches the registration email
-#                             captain_email = team.captain.email
-#                             team_member = team.members.filter(email=instance.email).first()
-#                             if team_member:
-#                                 print(f"Found matching team member {team_member.email}, sending email to captain {captain_email}")
-#                                 send_mail(
-#                                     'Team Member Registration For Your Team',
-#                                     f'Team member {instance.email} has registered.',
-#                                     settings.DEFAULT_FROM_EMAIL,
-#                                     [captain_email],
-#                                     fail_silently=True,
-#                                 )
-#                                 break  # No need to check further once the team is found
+#                 if instance.race:  # This means the registrant only registered
+#                     print(f"Processing email notification for registration {instance.email} for event {instance.race.name}")
+#                     # Query all teams with team.race that matches instance.race
+#                     print(f"Checking race {instance.race.name}")
+#                     # Iterate through all teams for the race
+#                     for team in race.teams.all():
+#                       print(f"Checking team {team.name}")
+#                       # Check if a team member's email matches the registration email
+#                       captain_email = team.captain.email
+#                       team_member = team.members.filter(email=instance.email).first()
+#                       if team_member:
+#                           print(f"Found matching team member {team_member.email}, sending email to captain {captain_email}")
+#                           send_mail(
+#                               'Team Member Registration For Your Team',
+#                               f'Team member {instance.email} has registered.',
+#                               settings.DEFAULT_FROM_EMAIL,
+#                               [captain_email],
+#                               fail_silently=True,
+#                           )
+#                           break  # No need to check further once the team is found
 #             except Exception as e:
 #                 logger.error(f"Failed to send team member registration email for {instance.email}: {e}")
 #                 print(f"Error sending team member registration email for {instance.email}: {e}")
@@ -146,25 +142,24 @@ def save_user_profile(sender, instance, **kwargs):
 #     if created:
 #         def set_member():
 #             try:
-#                 print(f"Processing registration {instance.email} for event {instance.event.name}")
+#                 print(f"Processing registration {instance.email} for race {instance.race.name}")
 #                 # Iterate through all races for the event
-#                 for race in instance.event.races.all():
-#                     print(f"Checking race {race.name}")
-#                     # Iterate through all teams for the race
-#                     for team in race.teams.all():
-#                         print(f"Checking team {team.name}")
-#                         team_members = team.members.all()
-#                         print(f"Team members for team {team.name}: {[member.email for member in team_members]}")
-#                         # Check if a team member's email matches the registration email
-#                         team_member = team.members.filter(email=instance.email).first()
-#                         if team_member:
-#                             print(f"Found matching team member {team_member.email}")
-#                             # TODO: fool proof this - later
-#                             instance.member = team_member
-#                             instance.save()
-#                             break
-#                     if instance.member:
-#                         break
+#                 print(f"Checking race {instance.race.name}")
+#                 # Iterate through all teams for the race
+#                 for team in race.teams.all():
+#                   print(f"Checking team {team.name}")
+#                   team_members = team.members.all()
+#                   print(f"Team members for team {team.name}: {[member.email for member in team_members]}")
+#                   # Check if a team member's email matches the registration email
+#                   team_member = team.members.filter(email=instance.email).first()
+#                   if team_member:
+#                       print(f"Found matching team member {team_member.email}")
+#                       # TODO: fool proof this - later
+#                       instance.member = team_member
+#                       instance.save()
+#                       break
+#                   if instance.member:
+#                       break
 #             except Exception as e:
 #                 logger.error(f"Failed to set team member for registration {instance.email}: {e}")
 

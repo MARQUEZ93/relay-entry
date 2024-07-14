@@ -185,7 +185,7 @@ export default {
   .v-btn {
     margin: 0 5px;
   }
-  .event-name{
+  .event-name {
     font-size: 2.5rem;
     word-wrap: break-word;
     white-space: normal;

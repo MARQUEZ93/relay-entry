@@ -134,9 +134,7 @@ class Race(models.Model):
     projected_team_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
 
     def __str__(self):
-        if self.distance in [self.CUSTOM, self.ULTRA_MARATHON]:
-            return f'{self.name} ({self.custom_distance_value} {self.get_custom_distance_unit_display()}) - {self.event.name}'
-        return f'{self.name} ({self.get_distance_display()}) - {self.event.name}'
+        return f'{self.name} - {self.event.name}'
 
     def save(self, *args, **kwargs):
         self.full_clean()  # Ensure all validations are checked

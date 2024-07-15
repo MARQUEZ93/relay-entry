@@ -63,8 +63,9 @@ class TeamMemberInline(admin.TabularInline):
     
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'projected_team_time', 'race_name',)
+    list_display = ('name', 'race_name', 'projected_team_time',)
     search_fields = ('name', 'race__name',)
+    list_filter = ('race',)
     inlines = [TeamMemberInline]
 
     def race_name(self, obj):
@@ -75,7 +76,7 @@ class TeamAdmin(admin.ModelAdmin):
 class TeamMemberAdmin(admin.ModelAdmin):
     list_display = ('email', 'team', 'leg_order', 'race_name', 'registration_info')
     search_fields = ('email', 'team__name', 'team__race__name')
-    list_filter = ('team__race__name',)
+    list_filter = ('team', 'team__race__name',)
     ordering = ('team', 'leg_order')
 
     def race_name(self, obj):

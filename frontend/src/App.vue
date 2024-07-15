@@ -61,7 +61,7 @@ export default {
           <v-card-subtitle>&copy; 2024 RelayEntry - Alpha 1.0.0 (Early Access)</v-card-subtitle>
         </v-col>
         <v-col class="text-center" cols="12" md="6">
-          <v-card-subtitle>For any inquiries, email <a href="mailto:relayentry@gmail.com" style="color: white; text-decoration: underline;">relayentry@gmail.com</a></v-card-subtitle>
+          <v-card-subtitle>For all inquiries, email <a href="mailto:relayentry@gmail.com" style="color: white; text-decoration: underline;">relayentry@gmail.com</a></v-card-subtitle>
         </v-col>
       </v-row>
     </v-footer>

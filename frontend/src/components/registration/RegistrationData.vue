@@ -146,6 +146,7 @@ export default {
             v-model="localRegistrationData.teamData.projectedTeamTime"
             :items="projectedTeamTimeChoices"
             label="Projected Team Time"
+            :rules="[v => !!v || 'Projected Team Time is required']"
             required
           ></v-select>
         </v-col>
@@ -193,6 +194,7 @@ export default {
           v-model="localRegistrationData.gender"
           :items="genders"
           label="Gender"
+          :rules="[v => !!v || 'Gender is required']"
           required
         ></v-select>
       </v-col>
@@ -213,6 +215,7 @@ export default {
             item-title="name"
             item-value="id"
             label="Race"
+            :rules="[v => !!v || 'Race is required']"
             required
           ></v-select>
       </v-col>

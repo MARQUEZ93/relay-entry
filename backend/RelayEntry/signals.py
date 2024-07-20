@@ -105,9 +105,6 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                     html_part=html_content,
                 )
 
-                captain_first_name = instance.captain.first_name
-                captain_last_name = instance.captain.last_name
-                captain_email = instance.captain.email
                 confirmation_code = instance.captain.confirmation_code
 
                 # iterate team.members & provide info in the confirmation email

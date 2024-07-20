@@ -43,6 +43,12 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                         [race_director_email],
                         fail_silently=True,
                     )
+                    captain_email = instance.captain.email
+
+                    for member in instance.members.all():
+                        if member.email != captain_email:
+                            print(member.email)
+                            print(member.leg_order)
             except Exception as e:
                 logger.error(f"Failed to send team creation email to race director for {instance.captain.email}: {e}")
         # Use transaction.on_commit to ensure emails are sent only after the transaction is committed

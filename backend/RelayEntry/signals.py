@@ -132,23 +132,45 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                     text_part="Greetings from RelayEntry!",
                     html_part=html_content,
                 )
+                # TODO do not hard code this shit
+                for member in instance.members.all():
+                    if member.email != captain_email:
+                        html_content = f"""
+                        <h3>Join your team!</h3>
+                        <p>You were added to a team for the {race_name} race in {event_name}.</p>
+                        <p>Your team: {team_name}, created by {captain_first_name} {captain_last_name}.</p>
+                        <p>{team_name} Members:</p>
+                        <ul>
+                            {team_members_info}
+                        </ul>
+                        <p>Your team is already paid for. You only have to register here: https://www.relayentry.com/events/sunrise-track-club-sunset-relays/register</p>
+                        <p>For more information, see: https://www.instagram.com/sunrise_track_club/</p>
+                        """
+
+                        send_mailjet_email(
+                            recipient_email=member.email,
+                            recipient_name="Team Member",
+                            subject=f'Please register for {event_name}',
+                            text_part="Greetings from RelayEntry!",
+                            html_part=html_content,
+                        )
+
 
         transaction.on_commit(send_emails)
 
 @receiver(post_save, sender=Registration)
 def set_team_member(sender, instance, created, **kwargs):
+    # TODO: this shit is insane & needs to be rethought
     if created:
         def set_member():
             try:
                 if instance.member:
+                    logger.warning(f"Did not set team member for registration {instance.email}: due to already being tied to a team member")
                     return
                 for team in instance.race.teams.all():
                   team_members = team.members.all()
                   team_member = team.members.filter(email=instance.email).first()
                   if team_member:
-                    if instance.member:
-                        logger.warning(f"Failed to set team member for registration {instance.email}: due to already being tied to a team member")
-                        return
                     instance.member = team_member
                     instance.save()
                     return

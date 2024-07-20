@@ -1,7 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
 from django.conf import settings
 from django.db import transaction
 import logging
@@ -147,9 +146,12 @@ def set_team_member(sender, instance, created, **kwargs):
                   team_members = team.members.all()
                   team_member = team.members.filter(email=instance.email).first()
                   if team_member:
-                      instance.member = team_member
-                      instance.save()
-                      return
+                    if instance.member:
+                        logger.warning(f"Failed to set team member for registration {instance.email}: due to already being tied to a team member")
+                        return
+                    instance.member = team_member
+                    instance.save()
+                    return
             except Exception as e:
                 logger.error(f"Failed to set team member for registration {instance.email}: {e}")
 

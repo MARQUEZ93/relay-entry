@@ -22,7 +22,6 @@ def send_registration_email(sender, instance, created, **kwargs):
                     'Thank you for registering.',
                     settings.DEFAULT_FROM_EMAIL,
                     [instance.email],
-                    fail_silently=True,
                 )
             except Exception as e:
                 logger.error(f"Failed to send registration email to {instance.email}: {e}")

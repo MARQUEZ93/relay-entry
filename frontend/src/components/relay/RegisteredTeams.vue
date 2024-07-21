@@ -151,9 +151,6 @@ export default {
                                         <span v-if="member.registration && member.registration.length > 0">
                                             {{ member.registration[0].first_name }} {{ member.registration[0].last_name }}
                                         </span>
-                                        <span v-else>
-                                            {{ member.email }}
-                                        </span>
                                     </v-list-item-title>
                                 </v-list-item>
                             </v-list>

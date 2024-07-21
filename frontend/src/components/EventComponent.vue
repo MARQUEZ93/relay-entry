@@ -97,6 +97,11 @@ export default {
             </v-btn>
           </v-card-actions>
           <v-card-actions class="d-flex flex-column align-center">
+            <router-link :to="`/events/${event.url_alias}/teams`">
+              <v-btn color="primary">Registered Teams</v-btn>
+            </router-link>
+          </v-card-actions>
+          <v-card-actions class="d-flex flex-column align-center">
             <router-link :to="`/events/${event.url_alias}/register`">
               <v-btn color="primary">Register & Sign Waiver</v-btn>
             </router-link>

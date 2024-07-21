@@ -6,6 +6,7 @@ import EventComponent from '../components/EventComponent.vue';
 import NotFound from '../components/NotFound.vue';
 import RegistrationView from '../components/registration/RegistrationView.vue';
 import RegisterAndWaiver from '../components/registration/RegisterAndWaiver.vue';
+import RegisteredTeams from '../components/relay/RegisteredTeams.vue';
 
 import ConfirmationComponent from '../components/registration/ConfirmationComponent.vue';
 import store from '@/store'; // Import the store
@@ -24,6 +25,11 @@ const routes = [
     path: '/events/:eventUrlAlias',
     name: 'Event',
     component: EventComponent,
+  },
+  {
+    path: '/events/:eventUrlAlias/teams',
+    name: 'RegisteredTeams',
+    component: RegisteredTeams,
   },
   {
     path: '/events/:url_alias/:id',

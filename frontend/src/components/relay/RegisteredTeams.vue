@@ -14,14 +14,6 @@ export default {
     };
   },
   computed: {
-    // sortedRaces() {
-    //     return this.event?.races?.map(race => {
-    //         return {
-    //             ...race,
-    //             teams: race.teams?.sort((a, b) => a.projected_team_time.localeCompare(b.projected_team_time))
-    //         };
-    //     }) || [];
-    // },
     formattedEventDate() {
       if (this.event.date) {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -54,6 +46,9 @@ export default {
     },
   },
   methods: {
+    getSortedMembers(members) {
+      return members.slice().sort((a, b) => a.leg_order - b.leg_order);
+    },
     toggleTeam(teamId) {
       this.expandedTeam = this.expandedTeam === teamId ? null : teamId;
     },
@@ -143,7 +138,7 @@ export default {
                         <v-card>
                             <v-list dense class="team-member-details">
                                 <v-list-item
-                                    v-for="member in team.members"
+                                    v-for="member in getSortedMembers(team.members)"
                                     :key="member.id + team.name"
                                 >
                                     <v-list-item-title>

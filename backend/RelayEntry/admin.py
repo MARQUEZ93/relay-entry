@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Team, Event, Race, Registration, TeamMember, PhotoPackage, CouponCode, Leg
+from .models import UserProfile, Team, Event, Race, Registration, TeamMember, PhotoPackage, CouponCode, Leg, Result
 from django.contrib.auth.models import User, Group
 
 from django.contrib.admin import AdminSite
@@ -90,3 +90,24 @@ class TeamMemberAdmin(admin.ModelAdmin):
     
     registration_info.short_description = 'Registration'
     race_name.short_description = 'Race'
+
+@admin.register(Result)
+class ResultAdmin(admin.ModelAdmin):
+    list_display = ('race', 'team', 'registrant', 'time', 'leg_order', 'is_team_total')
+    list_filter = ('race', 'team', 'registrant', 'is_team_total')
+    search_fields = ('race__name', 'team__name', 'registrant__name')
+    ordering = ('race', 'team', 'leg_order', 'time')
+    fieldsets = (
+        (None, {
+            'fields': ('race', 'team', 'registrant', 'time', 'leg_order', 'is_team_total')
+        }),
+    )
+    readonly_fields = ('is_team_total',)
+
+    def save_model(self, request, obj, form, change):
+        # Ensure the is_team_total flag is set correctly based on leg_order and team
+        if obj.team and obj.leg_order is None:
+            obj.is_team_total = True
+        else:
+            obj.is_team_total = False
+        super().save_model(request, obj, form, change)

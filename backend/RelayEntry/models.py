@@ -287,3 +287,16 @@ class Leg(models.Model):
 
     def __str__(self):
         return f"Leg {self.leg_number} - {self.distance}"
+
+class Result(models.Model):
+    registrant = models.ForeignKey(Registration, on_delete=models.CASCADE, null=True, blank=True)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True)
+    race = models.ForeignKey(Race, on_delete=models.CASCADE)
+    time = models.DurationField()
+    leg_order = models.PositiveIntegerField(null=True, blank=True)
+    is_team_total = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.team and self.leg_order is None:
+            self.is_team_total = True
+        super(Result, self).save(*args, **kwargs)

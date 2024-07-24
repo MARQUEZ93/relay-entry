@@ -25,6 +25,9 @@ export default {
       <router-link to="/" class="white--text" v-if="$vuetify.display.mdAndUp">
         <v-btn text class="white--text">Home</v-btn>
       </router-link>
+      <router-link to="/about" class="white--text" v-if="$vuetify.display.mdAndUp">
+        <v-btn text class="white--text">About</v-btn>
+      </router-link>
       <router-link to="/pricing" class="white--text" v-if="$vuetify.display.mdAndUp">
         <v-btn text class="white--text">Pricing</v-btn>
       </router-link>
@@ -36,6 +39,11 @@ export default {
         <router-link to="/" @click="drawer = false">
           <v-list-item>
             <v-list-item-title>Home</v-list-item-title>
+          </v-list-item>
+        </router-link>
+        <router-link to="/about" @click="drawer = false">
+          <v-list-item>
+            <v-list-item-title>About</v-list-item-title>
           </v-list-item>
         </router-link>
         <router-link to="/pricing" @click="drawer = false">

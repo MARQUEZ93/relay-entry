@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event, Race, Team, TeamMember, Registration
+from .models import Event, Race, Team, TeamMember, Registration, Result
 class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Registration
@@ -37,3 +37,18 @@ class EventWithRacesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
+
+class ResultSerializer(serializers.ModelSerializer):
+    registrant = RegistrationSerializer()
+
+    class Meta:
+        model = Result
+        fields = ['registrant', 'time', 'leg_order', 'is_team_total']
+
+class TeamResultSerializer(serializers.ModelSerializer):
+    team_result = ResultSerializer()
+    leg_results = ResultSerializer(many=True)
+
+    class Meta:
+        model = Team
+        fields = ['id', 'name', 'team_result', 'leg_results']

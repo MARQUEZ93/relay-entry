@@ -9,12 +9,18 @@ import RegisterAndWaiver from '../components/registration/RegisterAndWaiver.vue'
 import RegisteredTeams from '../components/relay/RegisteredTeams.vue';
 
 import ConfirmationComponent from '../components/registration/ConfirmationComponent.vue';
+import AboutComponent from '../components/AboutComponent.vue';
 import store from '@/store'; // Import the store
 const routes = [
   {
     path: '/',
     name: 'HomeComponent',
     component: HomeComponent,
+  },
+  {
+    path: '/about',
+    name: 'AboutComponent',
+    component: AboutComponent,
   },
   {
     path: '/pricing',

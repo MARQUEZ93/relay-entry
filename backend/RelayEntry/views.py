@@ -10,7 +10,7 @@ import os
 import logging
 import json
 from .models import UserProfile, Event, Race, Registration, Team, TeamMember
-from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer
+from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer
 from rest_framework import generics
 from django.views.decorators.http import require_POST, require_GET
 from django.db import transaction
@@ -306,3 +306,37 @@ def create_payment_intent(request):
         })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=403)
+
+class RaceResultsView(generics.RetrieveAPIView):
+    queryset = Race.objects.all()
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        race = self.get_object()
+        results = Result.objects.filter(race=race).order_by('team_id', 'leg_order')
+        teams = {}
+
+        for result in results:
+            if result.team_id not in teams:
+                teams[result.team_id] = {
+                    'team_result': None,
+                    'leg_results': []
+                }
+            if result.is_team_total:
+                teams[result.team_id]['team_result'] = result
+            else:
+                teams[result.team_id]['leg_results'].append(result)
+
+        # Serialize the data
+        serialized_teams = []
+        for team_id, result_data in teams.items():
+            team = Team.objects.get(id=team_id)
+            team_serializer = TeamResultSerializer({
+                'id': team.id,
+                'name': team.name,
+                'team_result': result_data['team_result'],
+                'leg_results': result_data['leg_results']
+            })
+            serialized_teams.append(team_serializer.data)
+
+        return Response(serialized_teams)

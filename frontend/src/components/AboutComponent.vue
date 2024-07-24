@@ -19,7 +19,7 @@ export default {
                     <v-row>
                         <v-col cols="12">
                             <h2>Our Story</h2>
-                            <p>RelayEntry was founded by a runner in Texas whose favorite day is race day. With a vision to simplify race management, RelayEntry was created to make it easier for anyone to start their own race.</p>
+                            <p>RelayEntry was founded because race day is our favorite day. With a vision to simplify race management, RelayEntry was created to make it easier for anyone to start their own race.</p>
                         </v-col>
                     </v-row>
                     <v-divider class="my-5"></v-divider>

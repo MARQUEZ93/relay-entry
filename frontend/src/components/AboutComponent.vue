@@ -26,7 +26,7 @@ export default {
                     <v-row>
                         <v-col cols="12">
                             <h2>Our Mission</h2>
-                            <p>At RelayEntry, our mission is to provide the best racing software that meets the needs of race directors and volunteers. We understand the complexities involved in organizing races, from registration to managing participants on race day.</p>
+                            <p>At RelayEntry, our mission is to provide the best racing software that meets the needs of race directors, racers, spectators & volunteers.</p>
                             <p>We are offering our product to races in the state of Texas. We will go nationwide in Q4 2024.</p>
                         </v-col>
                     </v-row>

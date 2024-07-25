@@ -48,13 +48,15 @@ export default {
   getRace(eventSlug, raceId) {
     return apiClient.get(`/events/${eventSlug}/races/${raceId}/`);
   },
-  registerTeam(data) {
-    return apiClient.post('/teams/register/', data);
-  },
+  // TODO: revert
+  // registerTeam(data) {
+  //   return apiClient.post('/teams/register/', data);
+  // },
   registerForEvent(eventSlug, data) {
     return apiClient.post(`/events/${eventSlug}/register/`, data);
   },
-  createPaymentIntent(data){
-    return apiClient.post(`/create-payment-intent/`, data);
-  }
+  // TODO: revert
+  // createPaymentIntent(data){
+  //   return apiClient.post(`/create-payment-intent/`, data);
+  // }
 };

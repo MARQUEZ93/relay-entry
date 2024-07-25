@@ -140,8 +140,9 @@ export default {
     const eventSlug = this.$route.params.url_alias;
     const raceId = this.$route.params.id;
     await this.fetchRace(eventSlug, raceId);
-    await this.createPaymentIntentOnMount();
-    await this.initStripe();
+    // TODO: revert
+    // await this.createPaymentIntentOnMount();
+    // await this.initStripe();
   },
 };
 </script>

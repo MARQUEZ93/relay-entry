@@ -49,7 +49,9 @@ export default {
     formatDateToUTC,
     formatMinute,
     getRegisterButtonText(race) {
-      return race.is_relay ? 'Register Team' : 'Register';
+      // TODO: revert
+      return race.is_relay ? 'Closed' : 'Register';
+      // return race.is_relay ? 'Register Team' : 'Register';
     },
     formatPrice(price) {
       return Number(price).toFixed(2);
@@ -136,9 +138,10 @@ export default {
               <v-card-subtitle>
                 ${{ formatPrice(race.price) }}
               </v-card-subtitle>
+              <!-- TODO: revert -->
               <v-card-actions class="justify-center">
-                <router-link :to="`/events/${event.url_alias}/${race.id}`">
-                  <v-btn color="primary">{{ getRegisterButtonText(race) }}</v-btn>
+                <router-link :to="`/events/${event.url_alias}/`">
+                  <v-btn disabled color="red">{{ getRegisterButtonText(race) }}</v-btn>
                 </router-link>
               </v-card-actions>
             </v-card>

@@ -56,9 +56,6 @@ export default {
     formattedRaceDate,
     formatDateToUTC,
     formatMinute,
-    getRegisterButtonText(race) {
-      return race.is_relay ? 'Register Team' : 'Register';
-    },
     formatPrice(price) {
       return Number(price).toFixed(2);
     },
@@ -107,6 +104,9 @@ export default {
                 <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
                 </v-btn>
             </v-card-actions>
+            <v-card-subtitle>
+                Each team member must register for their name to appear for their leg
+            </v-card-subtitle>
             </v-card>
         </v-col>
     </v-row>

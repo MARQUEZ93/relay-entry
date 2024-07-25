@@ -79,6 +79,8 @@ def index(request):
 
 @require_POST
 def team_register(request):
+    # TODO: turned off
+    return
     try:
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
@@ -281,6 +283,8 @@ def event_register(request, url_alias):
 
 @require_POST
 def create_payment_intent(request):
+    # TODO: revert
+    return
     try:
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
@@ -307,36 +311,36 @@ def create_payment_intent(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=403)
 
-class RaceResultsView(generics.RetrieveAPIView):
-    queryset = Race.objects.all()
-    lookup_field = 'id'
+# class RaceResultsView(generics.RetrieveAPIView):
+#     queryset = Race.objects.all()
+#     lookup_field = 'id'
 
-    def get(self, request, *args, **kwargs):
-        race = self.get_object()
-        results = Result.objects.filter(race=race).order_by('team_id', 'leg_order')
-        teams = {}
+#     def get(self, request, *args, **kwargs):
+#         race = self.get_object()
+#         results = Result.objects.filter(race=race).order_by('team_id', 'leg_order')
+#         teams = {}
 
-        for result in results:
-            if result.team_id not in teams:
-                teams[result.team_id] = {
-                    'team_result': None,
-                    'leg_results': []
-                }
-            if result.is_team_total:
-                teams[result.team_id]['team_result'] = result
-            else:
-                teams[result.team_id]['leg_results'].append(result)
+#         for result in results:
+#             if result.team_id not in teams:
+#                 teams[result.team_id] = {
+#                     'team_result': None,
+#                     'leg_results': []
+#                 }
+#             if result.is_team_total:
+#                 teams[result.team_id]['team_result'] = result
+#             else:
+#                 teams[result.team_id]['leg_results'].append(result)
 
-        # Serialize the data
-        serialized_teams = []
-        for team_id, result_data in teams.items():
-            team = Team.objects.get(id=team_id)
-            team_serializer = TeamResultSerializer({
-                'id': team.id,
-                'name': team.name,
-                'team_result': result_data['team_result'],
-                'leg_results': result_data['leg_results']
-            })
-            serialized_teams.append(team_serializer.data)
+#         # Serialize the data
+#         serialized_teams = []
+#         for team_id, result_data in teams.items():
+#             team = Team.objects.get(id=team_id)
+#             team_serializer = TeamResultSerializer({
+#                 'id': team.id,
+#                 'name': team.name,
+#                 'team_result': result_data['team_result'],
+#                 'leg_results': result_data['leg_results']
+#             })
+#             serialized_teams.append(team_serializer.data)
 
-        return Response(serialized_teams)
+#         return Response(serialized_teams)

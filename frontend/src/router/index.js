@@ -7,6 +7,8 @@ import NotFound from '../components/NotFound.vue';
 import RegistrationView from '../components/registration/RegistrationView.vue';
 import RegisterAndWaiver from '../components/registration/RegisterAndWaiver.vue';
 import RegisteredTeams from '../components/relay/RegisteredTeams.vue';
+import TeamResultsParent from '../components/relay/TeamResultsParent.vue';
+import TeamRaceResults from '../components/relay/TeamRaceResults.vue';
 
 import ConfirmationComponent from '../components/registration/ConfirmationComponent.vue';
 import AboutComponent from '../components/AboutComponent.vue';
@@ -31,6 +33,17 @@ const routes = [
     path: '/events/:eventUrlAlias',
     name: 'Event',
     component: EventComponent,
+  },
+  // TODO: null check this for non relay races
+  {
+    path: '/events/:eventUrlAlias/results',
+    name: 'TeamResultsParent',
+    component: TeamResultsParent,
+  },
+  {
+    path: '/events/:eventUrlAlias/results/:raceId',
+    name: 'TeamRaceResults',
+    component: TeamRaceResults,
   },
   {
     path: '/events/:eventUrlAlias/teams',

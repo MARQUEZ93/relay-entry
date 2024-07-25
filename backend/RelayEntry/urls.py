@@ -2,7 +2,8 @@
 
 from django.urls import path
 from . import views
-from .views import EventDetailView, RaceDetailView, RaceResultsView
+from .views import EventDetailView, RaceDetailView
+# , RaceResultsView
 
 urlpatterns = [
     path('', views.index, name='index'), 

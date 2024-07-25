@@ -15,6 +15,7 @@ from django.utils.text import slugify
 
 UNIT_CHOICES = UNIT_CHOICES_CONSTANT
 TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES
+# TODO: handle all on_delete
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -289,8 +290,8 @@ class Leg(models.Model):
         return f"Leg {self.leg_number} - {self.distance}"
 
 class Result(models.Model):
-    registrant = models.ForeignKey(Registration, on_delete=models.CASCADE, null=True, blank=True)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True)
+    registrant = models.ForeignKey(Registration, on_delete=models.SET_NULL, null=True, blank=True)
+    team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, blank=True)
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     time = models.DurationField()
     leg_order = models.PositiveIntegerField(null=True, blank=True)

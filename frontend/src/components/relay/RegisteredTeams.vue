@@ -104,8 +104,9 @@ export default {
                 <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
                 </v-btn>
             </v-card-actions>
-            <v-card-subtitle>
-                Each team member must register for their name to appear for their leg
+            <!-- TODO: improve -->
+            <v-card-subtitle class="need-overflow-class">
+                Each team member must register for their name to appear for their leg.
             </v-card-subtitle>
             </v-card>
         </v-col>
@@ -164,6 +165,11 @@ export default {
 </template>
 
 <style scoped>
+  .need-overflow-class{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: initial;
+  }
   .event-name {
     font-size: 2.5rem;
     word-wrap: break-word;

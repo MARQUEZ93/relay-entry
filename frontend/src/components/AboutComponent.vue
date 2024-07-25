@@ -19,14 +19,14 @@ export default {
                     <v-row>
                         <v-col cols="12">
                             <h2>Our Story</h2>
-                            <p>Race day is the best day. With a vision to simplify race management, RelayEntry was created to make it easier for anyone to start their own race.</p>
+                            <p>Race day is our favorite day! RelayEntry was created to make it easier for anyone to start their own race.</p>
                         </v-col>
                     </v-row>
                     <v-divider class="my-5"></v-divider>
                     <v-row>
                         <v-col cols="12">
                             <h2>Our Mission</h2>
-                            <p>Our mission is to provide the best racing software that meets the needs of race directors, racers, spectators & volunteers.</p>
+                            <p>Our mission is to provide the best racing software. We want to meet the needs of race directors, racers, spectators & volunteers.</p>
                             <p>We are offering our product to races in the state of Texas. We go nationwide in Q4 2024.</p>
                         </v-col>
                     </v-row>

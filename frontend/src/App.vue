@@ -66,7 +66,7 @@ export default {
     <v-footer app color="primary" dark>
       <v-row class="text-center">
         <v-col class="text-center" cols="12" md="6">
-          <v-card-subtitle>&copy; 2024 RelayEntry - Alpha 1.0.1 (Early Access)</v-card-subtitle>
+          <v-card-subtitle>&copy; 2024 RelayEntry - Alpha 1.0.2 (Early Access)</v-card-subtitle>
         </v-col>
         <v-col class="text-center" cols="12" md="6">
           <v-card-subtitle>For all inquiries, email <a href="mailto:relayentry@gmail.com" style="color: white; text-decoration: underline;">relayentry@gmail.com</a></v-card-subtitle>

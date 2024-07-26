@@ -20,8 +20,8 @@ export default {
                         <v-col cols="12">
                             <h2>Our Mission</h2>
                             <p>RelayEntry was created to make it easier for anyone to start their own race.</p>
-                            <p>We want to make the best software in order to meet the needs of race directors, racers, spectators & volunteers.</p>
-                            <p>Our product is available for team relay races. We will offer other race types in Q4 2024.</p>
+                            <p>We are committed to providing the best racing platform that caters to the needs of race organizers, racers, vendors, spectators, fundraisers and volunteers alike.</p>
+                            <p>Currently, our product supports team relay races, with plans to expand to other race types in Q4 2024.</p>
                         </v-col>
                     </v-row>
                 </v-sheet>

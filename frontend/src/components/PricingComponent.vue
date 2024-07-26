@@ -10,7 +10,7 @@
                   <h2>Simple Pricing</h2>
                   <p class="texas-transaction d-flex align-center justify-center">
                     <strong>
-                      3.6% + $1 per Transaction 
+                      3.9% + $1 per Transaction
                     </strong>
                     <v-icon size="x-small" class="ml-2" color="primary" v-tooltip.top="texasDescription">
                           mdi-information

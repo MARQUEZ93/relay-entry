@@ -25,7 +25,7 @@ export default {
   computed: {
     dynamicHeaders() {
       const baseHeaders = [
-        { title: 'Team Name', value: 'name', key: 'name' },
+        { title: 'Team', value: 'name', key: 'name' },
         { title: 'Captain', value: 'captain_name', key: 'captain' },
         { title: 'Time', value: 'time', key: 'time' },
       ];
@@ -68,10 +68,9 @@ export default {
     },
   },
   methods: {
-    formatMinuteResult(time) {
-      const minutes = Math.floor(time / 60);
-      const seconds = time % 60;
-      return `${minutes}m ${seconds}s`;
+    getLegTime(legResults, legOrder) {
+      const legResult = legResults.find(leg => leg.leg_order === legOrder);
+      return legResult?.time ? this.formatMinute(legResult.time) : '';
     },
     customSameDistance,
     formattedRaceDate,
@@ -158,6 +157,9 @@ export default {
           </template>
           <template v-slot:[`item.time`]="{ item }">
             {{ item.team_result ? formatMinute(item.team_result.time) : '' }}
+          </template>
+          <template v-for="leg in numRunners" #[`item.leg_times[${leg}]`]="{ item }">
+            {{ getLegTime(item.leg_results, leg) }}
           </template>
           <template v-slot:no-data>
             <v-alert :value="true" color="error" icon="mdi-alert">

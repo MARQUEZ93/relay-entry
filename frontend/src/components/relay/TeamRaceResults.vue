@@ -102,7 +102,6 @@ export default {
           const timeB = b.team_result ? b.team_result.time : Number.MAX_VALUE;
           return timeA - timeB;
         });
-        console.log(this.raceResults);
         this.loading = false;
     } catch (error) {
         this.error = 'Error fetching race results details.';

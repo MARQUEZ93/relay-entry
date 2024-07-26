@@ -100,7 +100,7 @@ export default {
           </v-card-actions>
           <!-- TODO: v-if results -->
           <v-card-actions class="d-flex flex-column align-center">
-            <router-link :to="`/events/${event.url_alias}/teamResults`">
+            <router-link :to="`/events/${event.url_alias}/results`">
               <v-btn color="primary">Results</v-btn>
             </router-link>
           </v-card-actions>

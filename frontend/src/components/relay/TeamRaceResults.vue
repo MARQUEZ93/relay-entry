@@ -11,9 +11,31 @@ export default {
       error: null,
       eventSlug: '',
       raceId: '',
+      raceResults: [],
+      itemsPerPage: 50, // Default items per page
+      headers: [
+        { title: 'Team Name', value: 'name', key: 'name' },
+        { title: 'Captain', value: 'captain_name', key: 'captain' },
+        { title: 'Time', value: 'time', key: 'time' },
+      ],
+      numRunners: 0,
+      raceName: '',
     };
   },
   computed: {
+    dynamicHeaders() {
+      const baseHeaders = [
+        { title: 'Team Name', value: 'name', key: 'name' },
+        { title: 'Captain', value: 'captain_name', key: 'captain' },
+        { title: 'Time', value: 'time', key: 'time' },
+      ];
+
+      for (let i = 1; i <= this.numRunners; i++) {
+        baseHeaders.push({ title: `Leg ${i} Time`, value: `leg_times[${i}]`, key: `leg_times[${i}]` });
+      }
+
+      return baseHeaders;
+    },
     formattedEventDate() {
       if (this.event.date) {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -46,6 +68,11 @@ export default {
     },
   },
   methods: {
+    formatMinuteResult(time) {
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      return `${minutes}m ${seconds}s`;
+    },
     customSameDistance,
     formattedRaceDate,
     formatDateToUTC,
@@ -53,20 +80,34 @@ export default {
     formatPrice(price) {
       return Number(price).toFixed(2);
     },
-    goToEventPage() {
+    goToResultsPage() {
       // this.eventSlug vs this.event.url_alias
-      this.$router.push({ name: 'Event', params: { eventUrlAlias: this.eventSlug } });
+      this.$router.push({ name: 'TeamResultsParent', params: { eventUrlAlias: this.eventSlug } });
     },
   },
   async created() {
     this.eventSlug = this.$route.params.eventUrlAlias;
+    this.raceId = this.$route.params.raceId;
     try {
-      const response = await api.getEvent(this.eventSlug);
-      this.event = response.data;
-      this.loading = false;
+        // TODO: props then IF NOT API call + 1 api call
+        const eventResponse = await api.getEvent(this.eventSlug);
+        this.event = eventResponse.data;
+        const response = await api.getRaceResults(this.raceId);
+        if (response.data.length > 0) {
+          this.raceName = response.data[0].race_name;
+          this.numRunners = response.data[0].num_runners;
+        }
+        // Sort teams, using a large value for teams without a team_result
+        this.raceResults = response.data.sort((a, b) => {
+          const timeA = a.team_result ? a.team_result.time : Number.MAX_VALUE;
+          const timeB = b.team_result ? b.team_result.time : Number.MAX_VALUE;
+          return timeA - timeB;
+        });
+        console.log(this.raceResults);
+        this.loading = false;
     } catch (error) {
-      this.error = 'Error fetching race results details.';
-      this.loading = false;
+        this.error = 'Error fetching race results details.';
+        this.loading = false;
     }
   },
 };
@@ -74,14 +115,6 @@ export default {
 
 <template>
   <v-container>
-    <v-row justify="center">
-      <v-col cols="12" md="8">
-        <v-btn color="primary" @click="goToEventPage">
-          <v-icon left>mdi-arrow-left</v-icon>
-          Back to Event Page
-        </v-btn>
-      </v-col>
-    </v-row>
     <v-row>
         <v-col>
             <v-card class="mx-auto my-5 pa-5">
@@ -101,16 +134,48 @@ export default {
             </v-card>
         </v-col>
     </v-row>
-    <v-row v-if="!loading && event.races">
-        <v-col v-for="race in event.races" :key="race.id" cols="12" md="6">
-            <v-card class="race-card">
-                <v-card-title>
-                    <router-link :to="{ name: 'TeamRaceResults', params: { eventUrlAlias: this.eventSlug, raceId: race.id } }">
-                        {{ race.name }} Results
-                    </router-link>
-                </v-card-title>
-            </v-card>
-        </v-col>
+    <v-row justify="center">
+      <v-col cols="12" md="8">
+        <v-btn color="primary" @click="goToResultsPage">
+          <v-icon left>mdi-arrow-left</v-icon>
+          Back to Results Page
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row v-if="!loading && raceResults.length > 0">
+      <v-col cols="12">
+        <v-card-title>{{ raceName }} Results</v-card-title>
+        <v-data-table
+          :items="raceResults"
+          :headers="dynamicHeaders"
+          :items-per-page="itemsPerPage"
+        >
+          <template v-slot:[`item.name`]="{ item }">
+            {{ item.name }}
+          </template>
+          <template v-slot:[`item.captain_name`]="{ item }">
+            {{ item.captain_name }}
+          </template>
+          <template v-slot:[`item.time`]="{ item }">
+            {{ item.team_result ? formatMinute(item.team_result.time) : '' }}
+          </template>
+          <template v-slot:no-data>
+            <v-alert :value="true" color="error" icon="mdi-alert">
+              No results found for this race.
+            </v-alert>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
+    <v-row v-if="!loading && raceResults.length === 0">
+      <v-col cols="12">
+        <v-card>
+          <v-card-title>No Results</v-card-title>
+          <v-card-text>
+            No results available for this race.
+          </v-card-text>
+        </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>

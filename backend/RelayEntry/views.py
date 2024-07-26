@@ -211,6 +211,7 @@ def team_register(request):
 
 @require_POST
 def event_register(request, url_alias):
+    # TODO: url_alias vs event_id
     try:
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
@@ -311,36 +312,24 @@ def create_payment_intent(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=403)
 
-# class RaceResultsView(generics.RetrieveAPIView):
-#     queryset = Race.objects.all()
-#     lookup_field = 'id'
-
-#     def get(self, request, *args, **kwargs):
-#         race = self.get_object()
-#         results = Result.objects.filter(race=race).order_by('team_id', 'leg_order')
-#         teams = {}
-
-#         for result in results:
-#             if result.team_id not in teams:
-#                 teams[result.team_id] = {
-#                     'team_result': None,
-#                     'leg_results': []
-#                 }
-#             if result.is_team_total:
-#                 teams[result.team_id]['team_result'] = result
-#             else:
-#                 teams[result.team_id]['leg_results'].append(result)
-
-#         # Serialize the data
-#         serialized_teams = []
-#         for team_id, result_data in teams.items():
-#             team = Team.objects.get(id=team_id)
-#             team_serializer = TeamResultSerializer({
-#                 'id': team.id,
-#                 'name': team.name,
-#                 'team_result': result_data['team_result'],
-#                 'leg_results': result_data['leg_results']
-#             })
-#             serialized_teams.append(team_serializer.data)
-
-#         return Response(serialized_teams)
+@require_GET
+def race_results(request, race_id):
+    try:
+        # Get the race or return 404 if not found
+        try:
+            race = Race.objects.get(id=race_id)
+        except Race.DoesNotExist:
+            logger.error("Race not found.")
+            return JsonResponse({'error': "Race not found."}, status=404)
+        
+        # Get all teams for the race
+        teams = Team.objects.filter(race=race).select_related('captain')
+        
+        # Serialize the data
+        serializer = TeamResultSerializer(teams, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    # TODO: consider error handling w/ detail api drf
+    except Exception as e:
+        print(e)
+        return JsonResponse({'error': str(e)}, status=403)
+    

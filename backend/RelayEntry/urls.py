@@ -8,10 +8,12 @@ from .views import EventDetailView, RaceDetailView
 urlpatterns = [
     path('', views.index, name='index'), 
     # path('signup/', views.signup, name='signup'),
-    # path('api/races/<int:id>/results/', RaceResultsView.as_view(), name='race-results'),
+    # TODO: handle diff result formats
     path('api/events/<slug:url_alias>/races/<int:id>/', RaceDetailView.as_view(), name='race-detail'),
     path('api/events/<slug:url_alias>/', EventDetailView.as_view(), name='event-detail'),
     path('api/get-csrf/', views.get_csrf_token, name='get_csrf_token'),
+    # TODO: race_id not good
+    path('api/races/<int:race_id>/results/', views.race_results, name='race-results'),
     path('api/events/<slug:url_alias>/register/', views.event_register, name='event_register'),
     # TODO: turned off
     # path('api/teams/register/', views.team_register, name='team_register'),

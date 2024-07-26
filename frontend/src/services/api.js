@@ -48,6 +48,9 @@ export default {
   getRace(eventSlug, raceId) {
     return apiClient.get(`/events/${eventSlug}/races/${raceId}/`);
   },
+  getRaceResults(raceId) {
+    return apiClient.get(`/races/${raceId}/results/`);
+  },
   // TODO: revert
   // registerTeam(data) {
   //   return apiClient.post('/teams/register/', data);

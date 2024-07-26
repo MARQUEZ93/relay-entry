@@ -22,6 +22,7 @@ export default {
       const baseHeaders = [
         { title: 'Place', value: 'place', key: 'place', sortable: false },
         { title: 'Team', value: 'name', key: 'name', sortable: false },
+        { title: 'Captain', value: 'captain_name', key: 'captain_name', sortable: false },
         { title: 'Time', value: 'time', key: 'time', sortable: false },
       ];
 
@@ -148,6 +149,9 @@ export default {
           </template>
           <template v-slot:[`item.name`]="{ item }">
             {{ item.name }}
+          </template>
+          <template v-slot:[`item.captain_name`]="{ item }">
+            {{ item.captain_name ? item.captain_name : '' }}
           </template>
           <template v-slot:[`item.time`]="{ item }">
             {{ item.team_result ? formatMinute(item.team_result.time) : '' }}

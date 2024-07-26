@@ -22,7 +22,6 @@ export default {
       const baseHeaders = [
         { title: 'Place', value: 'place', key: 'place', sortable: false },
         { title: 'Team', value: 'name', key: 'name', sortable: false },
-        { title: 'Captain', value: 'captain_name', key: 'captain', sortable: false },
         { title: 'Time', value: 'time', key: 'time', sortable: false },
       ];
 
@@ -93,11 +92,11 @@ export default {
           this.numRunners = response.data[0].num_runners;
         }
         // Sort teams by team_result.place
-      this.raceResults = response.data.sort((a, b) => {
-        const placeA = a.team_result ? a.team_result.place : Number.MAX_VALUE;
-        const placeB = b.team_result ? b.team_result.place : Number.MAX_VALUE;
-        return placeA - placeB;
-      });
+        this.raceResults = response.data.sort((a, b) => {
+          const placeA = a.team_result ? a.team_result.place : Number.MAX_VALUE;
+          const placeB = b.team_result ? b.team_result.place : Number.MAX_VALUE;
+          return placeA - placeB;
+        });
         this.loading = false;
     } catch (error) {
         this.error = 'Error fetching race results details.';
@@ -144,11 +143,11 @@ export default {
           :headers="dynamicHeaders"
           :items-per-page="itemsPerPage"
         >
+          <template v-slot:[`item.place`]="{ item }">
+            {{ item.team_result ? item.team_result.place : '' }}
+          </template>
           <template v-slot:[`item.name`]="{ item }">
             {{ item.name }}
-          </template>
-          <template v-slot:[`item.captain_name`]="{ item }">
-            {{ item.captain_name }}
           </template>
           <template v-slot:[`item.time`]="{ item }">
             {{ item.team_result ? formatMinute(item.team_result.time) : '' }}

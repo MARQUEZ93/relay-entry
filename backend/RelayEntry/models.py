@@ -290,6 +290,7 @@ class Leg(models.Model):
         return f"Leg {self.leg_number} - {self.distance}"
 
 class Result(models.Model):
+    place = models.PositiveIntegerField(null=True, blank=True)
     registrant = models.ForeignKey(Registration, on_delete=models.SET_NULL, null=True, blank=True)
     team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, blank=True)
     race = models.ForeignKey(Race, on_delete=models.CASCADE)

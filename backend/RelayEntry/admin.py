@@ -93,13 +93,13 @@ class TeamMemberAdmin(admin.ModelAdmin):
 
 @admin.register(Result)
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ('race', 'team', 'registrant', 'time', 'leg_order', 'is_team_total')
-    list_filter = ('race', 'team', 'registrant', 'is_team_total')
+    list_display = ('race', 'team', 'registrant', 'time', 'leg_order', 'is_team_total', 'place')
+    list_filter = ('race', 'team', 'registrant', 'is_team_total', 'place')
     search_fields = ('race__name', 'team__name', 'registrant__name')
-    ordering = ('race', 'team', 'leg_order', 'time')
+    ordering = ('race', 'team', 'leg_order', 'time', 'place')
     fieldsets = (
         (None, {
-            'fields': ('race', 'team', 'registrant', 'time', 'leg_order', 'is_team_total')
+            'fields': ('race', 'team', 'registrant', 'time', 'leg_order', 'is_team_total', 'place')
         }),
     )
     readonly_fields = ('is_team_total',)

@@ -13,11 +13,6 @@ export default {
       raceId: '',
       raceResults: [],
       itemsPerPage: 50, // Default items per page
-      headers: [
-        { title: 'Team Name', value: 'name', key: 'name' },
-        { title: 'Captain', value: 'captain_name', key: 'captain' },
-        { title: 'Time', value: 'time', key: 'time' },
-      ],
       numRunners: 0,
       raceName: '',
     };
@@ -25,13 +20,14 @@ export default {
   computed: {
     dynamicHeaders() {
       const baseHeaders = [
-        { title: 'Team', value: 'name', key: 'name' },
-        { title: 'Captain', value: 'captain_name', key: 'captain' },
-        { title: 'Time', value: 'time', key: 'time' },
+        { title: 'Place', value: 'place', key: 'place', sortable: false },
+        { title: 'Team', value: 'name', key: 'name', sortable: false },
+        { title: 'Captain', value: 'captain_name', key: 'captain', sortable: false },
+        { title: 'Time', value: 'time', key: 'time', sortable: false },
       ];
 
       for (let i = 1; i <= this.numRunners; i++) {
-        baseHeaders.push({ title: `Leg ${i} Time`, value: `leg_times[${i}]`, key: `leg_times[${i}]` });
+        baseHeaders.push({ title: `Leg ${i} Time`, value: `leg_times[${i}]`, key: `leg_times[${i}]`, sortable: false });
       }
 
       return baseHeaders;
@@ -96,12 +92,12 @@ export default {
           this.raceName = response.data[0].race_name;
           this.numRunners = response.data[0].num_runners;
         }
-        // Sort teams, using a large value for teams without a team_result
-        this.raceResults = response.data.sort((a, b) => {
-          const timeA = a.team_result ? a.team_result.time : Number.MAX_VALUE;
-          const timeB = b.team_result ? b.team_result.time : Number.MAX_VALUE;
-          return timeA - timeB;
-        });
+        // Sort teams by team_result.place
+      this.raceResults = response.data.sort((a, b) => {
+        const placeA = a.team_result ? a.team_result.place : Number.MAX_VALUE;
+        const placeB = b.team_result ? b.team_result.place : Number.MAX_VALUE;
+        return placeA - placeB;
+      });
         this.loading = false;
     } catch (error) {
         this.error = 'Error fetching race results details.';

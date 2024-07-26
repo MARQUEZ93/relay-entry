@@ -41,7 +41,7 @@ class EventWithRacesSerializer(serializers.ModelSerializer):
 class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result
-        fields = ['time', 'leg_order', 'is_team_total']
+        fields = ['time', 'leg_order', 'is_team_total', 'place']
 
 class TeamResultSerializer(serializers.ModelSerializer):
     team_result = serializers.SerializerMethodField()
@@ -74,3 +74,4 @@ class TeamResultSerializer(serializers.ModelSerializer):
 
     def get_race_name(self, obj):
         return obj.race.name
+    

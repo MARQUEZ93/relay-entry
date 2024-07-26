@@ -23,8 +23,25 @@ class Command(BaseCommand):
             self.run_dangerous_action()
         else:
             self.run_main_function()
-    
-    def send_mailjet_email(recipient_email):
+
+    def run_test(self):
+        print('Running test action')
+        send_mailjet_email("marqueza@utexas.edu")
+
+    def run_dangerous_action(self):
+        print('Running dangerous action')
+        registrations = Registration.objects.all()
+        for registration in registrations:
+            try:
+                send_mailjet_email(registration.email)
+                print(f"Email sent to {registration.email}")
+            except Exception as e:
+                print(f"Failed to send email to {registration.email}: {e}")
+
+    def run_main_function(self):
+        print('Main function does nothing')
+
+def send_mailjet_email(recipient_email):
         html_part = f"""
                 <h3>Sunrise Track Club Sunset Relays Results!</h3>
                 <p>https://www.relayentry.com/events/sunrise-track-club-sunset-relays/results/</p>
@@ -53,20 +70,3 @@ class Command(BaseCommand):
             print(result.status_code)
         except Exception as e:
             print(f"Failed to send email to {recipient_email}: {e}")
-
-    def run_test(self):
-        print('Running test action')
-        send_mailjet_email("marqueza@utexas.edu")
-
-    def run_dangerous_action(self):
-        print('Running dangerous action')
-        registrations = Registration.objects.all()
-        for registration in registrations:
-            try:
-                send_mailjet_email(registration.email)
-                print(f"Email sent to {registration.email}")
-            except Exception as e:
-                print(f"Failed to send email to {registration.email}: {e}")
-
-    def run_main_function(self):
-        print('Main function does nothing')

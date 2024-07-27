@@ -20,15 +20,15 @@ export default {
   computed: {
     dynamicHeaders() {
       const baseHeaders = [
-        { title: 'Place', value: 'place', key: 'place', sortable: false },
-        { title: 'Team', value: 'name', key: 'name', sortable: false },
-        { title: 'Captain', value: 'captain_name', key: 'captain_name', sortable: false },
-        { title: 'Time', value: 'time', key: 'time', sortable: false },
+        { title: 'Place', value: 'place', key: 'place', sortable: false, align: 'center' },
+        { title: 'Team', value: 'name', key: 'name', sortable: false, align: 'center' },
+        { title: 'Captain', value: 'captain_name', key: 'captain_name', sortable: false, align: 'center' },
+        { title: 'Time', value: 'time', key: 'time', sortable: false, align: 'center' },
       ];
 
-      for (let i = 1; i <= this.numRunners; i++) {
-        baseHeaders.push({ title: `Leg ${i} Time`, value: `leg_times[${i}]`, key: `leg_times[${i}]`, sortable: false });
-      }
+      // for (let i = 1; i <= this.numRunners; i++) {
+      //   baseHeaders.push({ title: `Leg ${i} Time`, value: `leg_times[${i}]`, key: `leg_times[${i}]`, sortable: false });
+      // }
 
       return baseHeaders;
     },
@@ -64,10 +64,6 @@ export default {
     },
   },
   methods: {
-    getLegTime(legResults, legOrder) {
-      const legResult = legResults.find(leg => leg.leg_order === legOrder);
-      return legResult?.time ? this.formatMinute(legResult.time) : '';
-    },
     customSameDistance,
     formattedRaceDate,
     formatDateToUTC,
@@ -155,9 +151,6 @@ export default {
           </template>
           <template v-slot:[`item.time`]="{ item }">
             {{ item.team_result ? formatMinute(item.team_result.time) : '' }}
-          </template>
-          <template v-for="leg in numRunners" #[`item.leg_times[${leg}]`]="{ item }">
-            {{ getLegTime(item.leg_results, leg) }}
           </template>
           <template v-slot:no-data>
             <v-alert :value="true" color="error" icon="mdi-alert">

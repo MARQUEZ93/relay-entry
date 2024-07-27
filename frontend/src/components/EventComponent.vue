@@ -100,21 +100,22 @@ export default {
           </v-card-actions>
           <!-- TODO: v-if results -->
           <v-card-actions class="d-flex flex-column align-center">
-            <router-link :to="`/events/${event.url_alias}/results`">
-              <v-btn color="primary">Results</v-btn>
-            </router-link>
-          </v-card-actions>
-          <v-card-actions class="d-flex flex-column align-center">
             <router-link :to="`/events/${event.url_alias}/teams`">
               <v-btn color="primary">Registered Teams</v-btn>
             </router-link>
           </v-card-actions>
           <v-card-actions class="d-flex flex-column align-center">
+            <router-link :to="`/events/${event.url_alias}/results`">
+              <v-btn color="primary">Results</v-btn>
+            </router-link>
+          </v-card-actions>
+          <!-- TODO: revert -->
+          <!-- <v-card-actions class="d-flex flex-column align-center">
             <router-link :to="`/events/${event.url_alias}/register`">
               <v-btn color="primary">Register & Sign Waiver</v-btn>
             </router-link>
             <div class="help-text mt-2 text-center"><strong>Team Members: </strong>Register & sign the waiver above. <strong>Team Captains:</strong> Register your team & yourself below.</div>
-          </v-card-actions>
+          </v-card-actions> -->
         </v-card>
         <v-row>
           <v-col

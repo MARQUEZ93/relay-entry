@@ -7,6 +7,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.urls import reverse
 from django.utils.html import format_html
 from .forms import RaceAdminForm
+from .utils import export_to_csv
 
 # Customize the admin site header
 admin.site.site_header = "RelayEntry Administration"
@@ -54,23 +55,39 @@ class RaceAdmin(admin.ModelAdmin):
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('race', 'first_name', 'last_name', 'email', 'amount_paid', 'created_at', 'updated_at', 'ip_address', 'parent_guardian_name', 'minor')
+    list_display = ('race', 'first_name', 'last_name', 'email', 'amount_paid', 'created_at', 'updated_at', 'ip_address', 'parent_guardian_name', 'minor', 'dob', 'gender')
     search_fields = ('email', 'race__name')
-    
+    actions = [export_to_csv]
+
 class TeamMemberInline(admin.TabularInline):
     model = TeamMember
     extra = 1  # Number of extra forms to display
     
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'race_name', 'projected_team_time',)
+    list_display = ('name', 'race_name', 'projected_team_time', 'captain_name', 'team_members_info')
     search_fields = ('name', 'race__name',)
     list_filter = ('race',)
     inlines = [TeamMemberInline]
+    actions = [export_to_csv]
 
     def race_name(self, obj):
         return obj.race.name
+    
+    def team_members_info(self, obj):
+        members_info = []
+        for member in obj.members.all():
+            registration = Registration.objects.filter(member=member, race=obj.race).first()
+            if registration:
+                members_info.append(registration.full_name())
+            else:
+                members_info.append(member.email)
+        return ", ".join(members_info)
 
+    team_members_info.short_description = 'Team Members Info'
+    
+    def captain_name(self, obj):
+        return obj.captain.full_name()
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(admin.ModelAdmin):

@@ -225,6 +225,9 @@ class Registration(models.Model):
     parent_guardian_signature = models.TextField(blank=True, null=True)  # Assuming signature can be stored as text
     minor = models.BooleanField(default=False, help_text="Parent/Guardian for Minors (Under 18 years old)")
 
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
+ 
     def clean(self):
         # Check if a registration with the same email and race already exists
         # if Registration.objects.filter(race=self.race, email=self.email).exists():

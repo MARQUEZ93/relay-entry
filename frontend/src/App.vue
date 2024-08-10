@@ -1,5 +1,5 @@
 <script>
-import brandLogo from '@/assets/brand.svg';
+import brandLogo from '@/assets/horizontal_logo.svg';
 import api from '@/services/api';
 export default {
   name: 'App',
@@ -84,12 +84,18 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+@media only screen and (max-width: 600px) {
+  .logo-image {
+    width: 100px; /* Adjust to fit mobile screen */
+    height: 100px;
+  }
+}
 .white--text {
   color: white !important;
 }
 .logo-image {
-  height: 130px; /* Adjust height as needed */
-  width: 130px;
+  height: 200px; /* Adjust height as needed */
+  width: 200px;
   max-width: 100%;
   display: block !important; /* Ensure the logo is displayed */
 }

@@ -1,5 +1,5 @@
 # Stage 1: Build the Vue.js application
-FROM node:14 as build
+FROM node:14-alpine as build
 
 # Install Python and pip, then create a virtual environment
 RUN apk add --no-cache python3 py3-pip

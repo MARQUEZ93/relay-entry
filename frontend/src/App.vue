@@ -86,16 +86,16 @@ export default {
 }
 @media only screen and (max-width: 600px) {
   .logo-image {
-    width: 100px; /* Adjust to fit mobile screen */
-    height: 100px;
+    width: 130px; /* Adjust to fit mobile screen */
+    height: 130px;
   }
 }
 .white--text {
   color: white !important;
 }
 .logo-image {
-  height: 200px; /* Adjust height as needed */
-  width: 200px;
+  height: 230px; /* Adjust height as needed */
+  width: 230px;
   max-width: 100%;
   display: block !important; /* Ensure the logo is displayed */
 }

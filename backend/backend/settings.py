@@ -210,6 +210,12 @@ LOGGING = {
             'style': '{',
         },
     },
+    'filters': {
+        'ignore_disallowed_host': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: not isinstance(record.exc_info[1], django.core.exceptions.DisallowedHost),
+        },
+    },
     'handlers': {
         'console': {
             'level': 'DEBUG',
@@ -227,6 +233,7 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'production.log'),
             'formatter': 'verbose',
+            'filters': ['ignore_disallowed_host'],  # Add this line
         },
         # 'mail_admins': {
         #     'level': 'ERROR',

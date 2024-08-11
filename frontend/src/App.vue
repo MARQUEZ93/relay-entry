@@ -64,10 +64,10 @@ export default {
     </v-main>
     <v-footer app color="primary" dark>
       <v-row>
-        <v-col cols="12" md="6">
+        <v-col cols="6">
           <v-typography variant="subtitle-1">&copy; 2024 RelayEntry. All rights reserved.</v-typography>
         </v-col>
-        <v-col cols="12" md="6">
+        <v-col cols="6">
           <v-typography variant="subtitle-1">Alpha 1.0.3 (Early Access)</v-typography>
         </v-col>
       </v-row>

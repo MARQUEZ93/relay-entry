@@ -229,11 +229,11 @@ LOGGING = {
             'formatter': 'verbose',
         },
         'production_file': {
-            'level': 'WARNING',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'production.log'),
             'formatter': 'verbose',
-            'filters': ['ignore_disallowed_host'],  # Add this line
+            'filters': ['ignore_disallowed_host'],
         },
         # 'mail_admins': {
         #     'level': 'ERROR',
@@ -249,7 +249,7 @@ LOGGING = {
         },
         'RelayEntry': {
             'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
-            'level': 'DEBUG' if ENVIRONMENT == 'development' else 'WARNING',
+            'level': 'DEBUG' if ENVIRONMENT == 'development' else 'INFO',
             'propagate': False,
         },
         'django.db.backends': {

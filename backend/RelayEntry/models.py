@@ -70,6 +70,12 @@ class Event(models.Model):
             self.email = self.email.lower()
         if not self.url_alias:
             self.url_alias = slugify(self.name)
+        if self.pk is not None:  # Check if the event is being updated
+            old_event = Event.objects.get(pk=self.pk)
+            if old_event.registration_closed != self.registration_closed and self.registration_closed:
+                for race in self.race_set.all():
+                    race.registration_closed = True
+                    race.save()
         super().save(*args, **kwargs)
 
 class PhotoPackage(models.Model):

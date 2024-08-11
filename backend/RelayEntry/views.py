@@ -79,8 +79,6 @@ def index(request):
 
 @require_POST
 def team_register(request):
-    # TODO: turned off
-    return
     try:
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
@@ -90,6 +88,8 @@ def team_register(request):
         # Calculate the amount based on the race price
         try:
             race = Race.objects.get(id=race_id)
+            if race.registration_closed:
+                return JsonResponse({'error': "Race registration is closed"}, status=403)
             race_name = race.name
             amount = race.price
         except Race.DoesNotExist:
@@ -223,12 +223,16 @@ def event_register(request, url_alias):
         try:
             event = Event.objects.get(id=event_id)
             event_name = event.name
+            if event.registration_closed:
+                return JsonResponse({'error': "Event registration is closed"}, status=403)
         except Event.DoesNotExist:
             logger.error("Event not found.")
             return JsonResponse({'error': "Event not found."}, status=404)
         
         try:
             race = Race.objects.get(id=race_id)
+            if race.registration_closed:
+                return JsonResponse({'error': "Race registration is closed"}, status=403)
             race_name = race.name
         except Race.DoesNotExist:
             logger.error("Race not found.")
@@ -297,6 +301,8 @@ def create_payment_intent(request):
         # Calculate the amount based on the race price
         try:
             race = Race.objects.get(id=race_id)
+            if race.registration_closed:
+                return JsonResponse({'error': "Race registration is closed"}, status=403)
         except Race.DoesNotExist:
             logger.error("Race not found.")
             return JsonResponse({'error': "Race not found."}, status=404)

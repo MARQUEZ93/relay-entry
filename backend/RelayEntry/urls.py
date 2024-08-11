@@ -15,7 +15,6 @@ urlpatterns = [
     # TODO: race_id not good
     path('api/races/<int:race_id>/results/', views.race_results, name='race-results'),
     path('api/events/<slug:url_alias>/register/', views.event_register, name='event_register'),
-    # TODO: turned off
-    # path('api/teams/register/', views.team_register, name='team_register'),
-    # path('api/create-payment-intent/', views.create_payment_intent, name='create_payment_intent'),
+    path('api/teams/register/', views.team_register, name='team_register'),
+    path('api/create-payment-intent/', views.create_payment_intent, name='create_payment_intent'),
 ]

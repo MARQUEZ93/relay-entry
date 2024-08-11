@@ -96,6 +96,7 @@ export default {
       try {
         const response = await api.getRace(eventSlug, raceId);
         this.race = response.data;
+        // TODO: redirect on falsey registration_closed
         this.loading = false;
       } catch (error) {
         this.error = 'Error fetching race details.';

@@ -107,7 +107,7 @@ export default {
               <v-btn color="primary">Results</v-btn>
             </router-link>
           </v-card-actions>
-          <v-card-actions class="d-flex flex-column align-center" v-if="event.registration_closed">
+          <v-card-actions class="d-flex flex-column align-center" v-if="!event.registration_closed">
             <router-link :to="`/events/${event.url_alias}/register`">
               <v-btn color="primary">Register & Sign Waiver</v-btn>
             </router-link>

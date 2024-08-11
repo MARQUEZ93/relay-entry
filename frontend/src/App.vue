@@ -77,7 +77,7 @@ export default {
 </template>
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -86,16 +86,16 @@ export default {
 }
 @media only screen and (max-width: 600px) {
   .logo-image {
-    width: 130px; /* Adjust to fit mobile screen */
-    height: 130px;
+    width: 105px;
+    height: 105px;
   }
 }
 .white--text {
   color: white !important;
 }
 .logo-image {
-  height: 230px; /* Adjust height as needed */
-  width: 230px;
+  height: 210px; /* Adjust height as needed */
+  width: 210px;
   max-width: 100%;
   display: block !important; /* Ensure the logo is displayed */
 }

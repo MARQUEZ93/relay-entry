@@ -194,6 +194,7 @@ def team_register(request):
                 }
                 # Convert response data keys to camelCase
                 response_data = convert_keys_to_camel_case(response_data)
+                transaction.on_commit(lambda: logger.info(f'Team created: {team.id} for race: {race.id}'))
                 return JsonResponse(response_data)
             except Exception as e:
                 logger.error(f"Error during transaction: {str(e)}")
@@ -267,6 +268,7 @@ def event_register(request, url_alias):
                 }
                 # Convert response data keys to camelCase
                 response_data = convert_keys_to_camel_case(response_data)
+                transaction.on_commit(lambda: logger.info(f'Registration : {registration.id} for race: {race.id}'))
                 return JsonResponse(response_data)
             except Exception as e:
                 logger.error(f"Error during transaction: {str(e)}")

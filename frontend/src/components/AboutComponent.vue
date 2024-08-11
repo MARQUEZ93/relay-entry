@@ -14,7 +14,7 @@ export default {
     <v-container>
         <v-row>
             <v-col cols="12">
-                <h1>About</h1>
+                <h1>About Us</h1>
                 <p>Our 2024 plans</p>
                 <v-row>
                     <v-col cols="12">

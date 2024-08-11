@@ -133,6 +133,7 @@ class Race(models.Model):
     )
 
     projected_team_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
+    registration_closed = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.name} - {self.event.name}'
@@ -224,6 +225,13 @@ class Registration(models.Model):
     parent_guardian_name = models.CharField(max_length=255, blank=True, null=True)
     parent_guardian_signature = models.TextField(blank=True, null=True)  # Assuming signature can be stored as text
     minor = models.BooleanField(default=False, help_text="Parent/Guardian for Minors (Under 18 years old)")
+
+    bib_number = models.CharField(max_length=10, unique=True, null=True, blank=True)  # Bib number
+    bib_type = models.CharField(max_length=50, choices=[
+        ('Standard', 'Standard'),
+        ('VIP', 'VIP'),
+        ('Elite', 'Elite'),
+    ], default='Standard')  # Type of bib
 
     def full_name(self):
         return f"{self.first_name} {self.last_name}"

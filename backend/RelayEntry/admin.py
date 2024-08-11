@@ -65,7 +65,7 @@ class EventFilter(admin.SimpleListFilter):
 @admin.register(Race)
 class RaceAdmin(admin.ModelAdmin):
     form = RaceAdminForm
-    list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator','projected_team_time_choices',)
+    list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator','projected_team_time_choices', 'registration_closed',)
     search_fields = ('name', 'event__name', 'distance',)
 
 class RegistrationEventFilter(admin.SimpleListFilter):
@@ -85,7 +85,7 @@ class RegistrationEventFilter(admin.SimpleListFilter):
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('race', 'first_name', 'last_name', 'email', 'amount_paid', 'created_at', 'updated_at', 'ip_address', 'parent_guardian_name', 'minor', 'dob', 'gender')
+    list_display = ('race', 'first_name', 'last_name', 'email', 'amount_paid', 'created_at', 'updated_at', 'ip_address', 'parent_guardian_name', 'minor', 'dob', 'gender', 'bib_type', 'bib_number')
     search_fields = ('email', 'race__name')
     list_filter = (RegistrationEventFilter,)
     actions = [export_to_csv]

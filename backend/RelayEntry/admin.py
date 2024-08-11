@@ -47,16 +47,47 @@ class EventAdmin(admin.ModelAdmin):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
+class EventFilter(admin.SimpleListFilter):
+    title = 'event'  # Human-readable name for the filter
+    parameter_name = 'event'  # URL query parameter name
+
+    def lookups(self, request, model_admin):
+        # Return a list of tuples (value, label) for the dropdown filter
+        events = Event.objects.all()
+        return [(event.id, event.name) for event in events]
+
+    def queryset(self, request, queryset):
+        # Filter the queryset based on the selected value
+        if self.value():
+            return queryset.filter(race__event__id=self.value())
+        return queryset
+
 @admin.register(Race)
 class RaceAdmin(admin.ModelAdmin):
     form = RaceAdminForm
     list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator','projected_team_time_choices',)
     search_fields = ('name', 'event__name', 'distance',)
 
+class RegistrationEventFilter(admin.SimpleListFilter):
+    title = 'event'  # Human-readable name for the filter
+    parameter_name = 'event'  # URL query parameter name
+
+    def lookups(self, request, model_admin):
+        # Return a list of tuples (value, label) for the dropdown filter
+        events = Event.objects.all()
+        return [(event.id, event.name) for event in events]
+
+    def queryset(self, request, queryset):
+        # Filter the queryset based on the selected value
+        if self.value():
+            return queryset.filter(race__event__id=self.value())
+        return queryset
+
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
     list_display = ('race', 'first_name', 'last_name', 'email', 'amount_paid', 'created_at', 'updated_at', 'ip_address', 'parent_guardian_name', 'minor', 'dob', 'gender')
     search_fields = ('email', 'race__name')
+    list_filter = (RegistrationEventFilter,)
     actions = [export_to_csv]
 
 class TeamMemberInline(admin.TabularInline):
@@ -67,7 +98,7 @@ class TeamMemberInline(admin.TabularInline):
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('name', 'race_name', 'projected_team_time', 'captain_name', 'team_members_info')
     search_fields = ('name', 'race__name',)
-    list_filter = ('race',)
+    list_filter = ('race', EventFilter,)
     inlines = [TeamMemberInline]
     actions = [export_to_csv]
 

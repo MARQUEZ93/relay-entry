@@ -121,8 +121,7 @@ export default {
           <v-col
             v-for="race in event.races"
             :key="race.id"
-            cols="12"
-            xs="6"
+            cols="6"
             md="4"
             class="d-flex align-center justify-center"
           >

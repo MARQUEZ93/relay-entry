@@ -21,7 +21,7 @@ class TeamSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ['id', 'name', 'date', 'url_alias', 'waiver_text', 'logo']
+        fields = ['id', 'name', 'date', 'url_alias', 'waiver_text', 'logo', 'registration_closed']
 
 class RaceSerializer(serializers.ModelSerializer):
     event = EventSerializer(read_only=True)

@@ -56,6 +56,7 @@ class Event(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     url_alias = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+    registration_closed = models.BooleanField(default=False)
 
     def get_event_url(self):
         ui_base_url = settings.WWW_HOST

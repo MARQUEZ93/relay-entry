@@ -49,9 +49,7 @@ export default {
     formatDateToUTC,
     formatMinute,
     getRegisterButtonText(race) {
-      // TODO: revert
-      return race.is_relay ? 'Closed' : 'Register';
-      // return race.is_relay ? 'Register Team' : 'Register';
+      return race.registration_closed ? 'Closed' : (race.is_relay ? 'Register Team' : 'Register');
     },
     formatPrice(price) {
       return Number(price).toFixed(2);
@@ -109,13 +107,12 @@ export default {
               <v-btn color="primary">Results</v-btn>
             </router-link>
           </v-card-actions>
-          <!-- TODO: revert -->
-          <!-- <v-card-actions class="d-flex flex-column align-center">
+          <v-card-actions class="d-flex flex-column align-center" v-if="event.registration_closed">
             <router-link :to="`/events/${event.url_alias}/register`">
               <v-btn color="primary">Register & Sign Waiver</v-btn>
             </router-link>
             <div class="help-text mt-2 text-center"><strong>Team Members: </strong>Register & sign the waiver above. <strong>Team Captains:</strong> Register your team & yourself below.</div>
-          </v-card-actions> -->
+          </v-card-actions>
         </v-card>
         <v-row>
           <v-col

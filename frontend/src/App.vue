@@ -1,5 +1,5 @@
 <script>
-import brandLogo from '@/assets/horizontal_logo.svg';
+import brandLogo from '@/assets/logo.svg';
 import api from '@/services/api';
 export default {
   name: 'App',
@@ -9,7 +9,7 @@ export default {
   data() {
     return {
       drawer: false,
-      brandLogo
+      brandLogo,
     };
   },
 };
@@ -62,14 +62,13 @@ export default {
     <v-main>
       <router-view></router-view>
     </v-main>
-
     <v-footer app color="primary" dark>
-      <v-row class="text-center">
-        <v-col class="text-center" cols="12" md="6">
-          <v-card-subtitle>&copy; 2024 RelayEntry - Alpha 1.0.2 (Early Access)</v-card-subtitle>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-typography variant="subtitle-1">&copy; 2024 RelayEntry. All rights reserved.</v-typography>
         </v-col>
-        <v-col class="text-center" cols="12" md="6">
-          <v-card-subtitle>For all inquiries, email <a href="mailto:relayentry@gmail.com" style="color: white; text-decoration: underline;">relayentry@gmail.com</a></v-card-subtitle>
+        <v-col cols="12" md="6">
+          <v-typography variant="subtitle-1">Alpha 1.0.3 (Early Access)</v-typography>
         </v-col>
       </v-row>
     </v-footer>
@@ -83,9 +82,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  margin-bottom: 0;
 }
 @media only screen and (max-width: 600px) {
-  .logo-image {
+  .logo-image, .footer-logo {
     width: 110px;
     height: 110px;
   }
@@ -93,8 +93,12 @@ export default {
 .white--text {
   color: white !important;
 }
+.footer-logo{
+  height: 220px;
+  width: 220px;
+}
 .logo-image {
-  height: 220px; /* Adjust height as needed */
+  height: 220px;
   width: 220px;
   max-width: 100%;
   display: block !important; /* Ensure the logo is displayed */

@@ -15,13 +15,12 @@ export default {
         <v-row>
             <v-col cols="12">
                 <h1>About Us</h1>
-                <p>A platform created by a runner in Texas</p>
+                <p>The best running platform for race directors, runners & spectators alike!</p>
                 <v-row>
                     <v-col cols="12">
                         <v-sheet class="my-5 pa-5" elevation="2">
                             <h2>Our Mission</h2>
                             <p>RelayEntry was created to make it easier for anyone to start their own race. </p>
-                            <p>We are committed to providing the best racing platform that caters to the needs of race organizers, racers and spectators alike. </p>
                             <p>Currently, our product supports team relay races, with plans to expand to other race types before Q4 2024.</p>
                         </v-sheet>
                     </v-col>

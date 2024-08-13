@@ -68,7 +68,7 @@ export default {
           <v-typography variant="subtitle-1">&copy; 2024 RelayEntry. All rights reserved.</v-typography>
         </v-col>
         <v-col cols="6">
-          <v-typography variant="subtitle-1">Alpha 1.0.3 (Early Access)</v-typography>
+          <v-typography variant="subtitle-1">Alpha 1.0.4 (Early Access)</v-typography>
         </v-col>
       </v-row>
     </v-footer>

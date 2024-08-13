@@ -205,10 +205,6 @@ LOGGING = {
             'format': '{levelname} {asctime} {module} {message}',
             'style': '{',
         },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
     },
     'filters': {
         'ignore_disallowed_host': {
@@ -220,12 +216,6 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'django_debug.log'),
             'formatter': 'verbose',
         },
         'production_file': {
@@ -235,51 +225,41 @@ LOGGING = {
             'formatter': 'verbose',
             'filters': ['ignore_disallowed_host'],
         },
-        # 'mail_admins': {
-        #     'level': 'ERROR',
-        #     'class': 'django.utils.log.AdminEmailHandler',
-        #     'formatter': 'verbose',
-        # },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
+            'handlers': ['console', 'production_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
             'level': 'WARNING',
             'propagate': True,
         },
         'RelayEntry': {
-            'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
+            'handlers': ['console', 'production_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
             'level': 'DEBUG' if ENVIRONMENT == 'development' else 'INFO',
             'propagate': False,
         },
         'django.db.backends': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'production_file'],
             'level': 'WARNING',
             'propagate': False,
         },
         'rest_framework': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'production_file'],
             'level': 'WARNING',
             'propagate': False,
         },
         'PIL': {  # Adding PIL logger for Pillow image library
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'production_file'],
             'level': 'WARNING',
             'propagate': False,
         },
         'django.request': {
-            'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
+            'handlers': ['console', 'production_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
             'level': 'DEBUG' if ENVIRONMENT == 'development' else 'WARNING',
             'propagate': False,
         },
     },
      'root': {
-        'handlers': ['console', 'file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
+        'handlers': ['console', 'production_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
         'level': 'WARNING',
     },
 }
-
-# Log to console in development and to a file in production
-if ENVIRONMENT == 'production':
-    LOGGING['handlers']['console']['level'] = 'ERROR'
-    LOGGING['handlers']['file']['level'] = 'ERROR'

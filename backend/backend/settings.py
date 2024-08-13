@@ -230,7 +230,7 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'production.log'),
             'formatter': 'verbose',
-            'filters': [],
+            'filters': ['ignore_disallowed_host'],
         },
     },
     'loggers': {},

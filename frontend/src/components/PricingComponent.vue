@@ -24,7 +24,7 @@
                   <ul class="pricing-list">
                       <li>
                         <v-icon left>mdi-currency-usd</v-icon>
-                        &nbsp;The lowest transaction fees
+                        &nbsp;The absolute lowest transaction fees
                       </li>
                       <li>
                         <v-icon left>mdi-map-marker</v-icon>

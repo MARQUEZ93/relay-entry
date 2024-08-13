@@ -73,9 +73,11 @@ class Event(models.Model):
         if self.pk is not None:  # Check if the event is being updated
             old_event = Event.objects.get(pk=self.pk)
             if old_event.registration_closed != self.registration_closed and self.registration_closed:
-                for race in self.races.all():
+                # TODO: revert this testing bug
+                for race in self.race_set.all():
                     race.registration_closed = True
                     race.save()
+        self.full_clean()  # Ensure all validations are checked
         super().save(*args, **kwargs)
 
 class PhotoPackage(models.Model):
@@ -146,6 +148,10 @@ class Race(models.Model):
         return f'{self.name} - {self.event.name}'
 
     def save(self, *args, **kwargs):
+        if self.pk is not None:  # Check if the race is being updated
+            old_race = Race.objects.get(pk=self.pk)
+            if old_race.registration_closed != self.registration_closed and not self.registration_closed and self.event.registration_closed:
+                raise ValidationError('Parent event registration is closed.')
         self.full_clean()  # Ensure all validations are checked
         super().save(*args, **kwargs)
 

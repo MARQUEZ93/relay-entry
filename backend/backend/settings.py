@@ -209,7 +209,7 @@ LOGGING = {
     'filters': {
         'ignore_disallowed_host': {
             '()': 'django.utils.log.CallbackFilter',
-            'callback': lambda record: not isinstance(record.exc_info[1], django.core.exceptions.DisallowedHost),
+            'callback': lambda record: not (record.exc_info and isinstance(record.exc_info[1], django.core.exceptions.DisallowedHost)),
         },
     },
     'handlers': {

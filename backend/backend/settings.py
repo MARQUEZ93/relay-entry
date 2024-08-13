@@ -213,6 +213,13 @@ LOGGING = {
         },
     },
     'handlers': {
+        'development_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'development_file.log'),
+            'formatter': 'verbose',
+            'filters': [],
+        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -226,40 +233,9 @@ LOGGING = {
             'filters': ['ignore_disallowed_host'],
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'production_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
-            'level': 'WARNING',
-            'propagate': True,
-        },
-        'RelayEntry': {
-            'handlers': ['console', 'production_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
-            'level': 'DEBUG' if ENVIRONMENT == 'development' else 'INFO',
-            'propagate': False,
-        },
-        'django.db.backends': {
-            'handlers': ['console', 'production_file'],
-            'level': 'WARNING',
-            'propagate': False,
-        },
-        'rest_framework': {
-            'handlers': ['console', 'production_file'],
-            'level': 'WARNING',
-            'propagate': False,
-        },
-        'PIL': {  # Adding PIL logger for Pillow image library
-            'handlers': ['console', 'production_file'],
-            'level': 'WARNING',
-            'propagate': False,
-        },
-        'django.request': {
-            'handlers': ['console', 'production_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
-            'level': 'DEBUG' if ENVIRONMENT == 'development' else 'WARNING',
-            'propagate': False,
-        },
-    },
+    'loggers': {},
      'root': {
-        'handlers': ['console', 'production_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
+        'handlers': ['console', 'development_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
         'level': 'WARNING',
     },
 }

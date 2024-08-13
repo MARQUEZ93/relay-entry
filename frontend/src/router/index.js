@@ -12,6 +12,7 @@ import TeamRaceResults from '../components/relay/TeamRaceResults.vue';
 
 import ConfirmationComponent from '../components/registration/ConfirmationComponent.vue';
 import AboutComponent from '../components/AboutComponent.vue';
+import ContactComponent from '../components/ContactComponent.vue';
 import store from '@/store'; // Import the store
 const routes = [
   {
@@ -23,6 +24,11 @@ const routes = [
     path: '/about',
     name: 'AboutComponent',
     component: AboutComponent,
+  },
+  {
+    path: '/contact',
+    name: 'ContactComponent',
+    component: ContactComponent,
   },
   {
     path: '/pricing',

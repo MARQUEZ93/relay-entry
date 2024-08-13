@@ -31,7 +31,9 @@ export default {
       <router-link to="/pricing" class="white--text" v-if="$vuetify.display.mdAndUp">
         <v-btn text class="white--text">Pricing</v-btn>
       </router-link>
-      <v-btn text href="mailto:relayentry@gmail.com" class="white--text" v-if="$vuetify.display.mdAndUp">Contact</v-btn>
+      <router-link to="/contact" class="white--text" v-if="$vuetify.display.mdAndUp">
+        <v-btn text class="white--text">Contact</v-btn>
+      </router-link>
     </v-app-bar>
 
     <v-navigation-drawer app v-model="drawer" color="primary" dark v-if="!$vuetify.display.mdAndUp">
@@ -51,11 +53,11 @@ export default {
             <v-list-item-title>Pricing</v-list-item-title>
           </v-list-item>
         </router-link>
-        <a href="mailto:relayentry@gmail.com" @click="drawer = false">
+        <router-link to="/contact" @click="drawer = false">
           <v-list-item>
             <v-list-item-title>Contact</v-list-item-title>
           </v-list-item>
-        </a>
+        </router-link>
       </v-list>
     </v-navigation-drawer>
 

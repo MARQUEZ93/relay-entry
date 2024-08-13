@@ -73,7 +73,7 @@ class Event(models.Model):
         if self.pk is not None:  # Check if the event is being updated
             old_event = Event.objects.get(pk=self.pk)
             if old_event.registration_closed != self.registration_closed and self.registration_closed:
-                for race in self.race_set.all():
+                for race in self.races.all():
                     race.registration_closed = True
                     race.save()
         self.full_clean()  # Ensure all validations are checked

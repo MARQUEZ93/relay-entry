@@ -60,7 +60,7 @@ export default {
                             <h2>Start your own event!</h2>
                             <v-form ref="form" v-model="valid">
                                 <v-row>
-                                    <v-col cols="6">
+                                    <v-col cols="6" md="4">
                                         <v-text-field
                                             v-model="form.name"
                                             :rules="nameRules"
@@ -68,7 +68,7 @@ export default {
                                             required
                                         ></v-text-field>
                                     </v-col>
-                                    <v-col cols="6">
+                                    <v-col cols="6" md="4">
                                         <v-text-field
                                             v-model="form.email"
                                             :rules="emailRules"
@@ -76,9 +76,7 @@ export default {
                                             required
                                         ></v-text-field>
                                     </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col>
+                                    <v-col cols="12" md="4">
                                         <v-select
                                             v-model="form.role"
                                             :items="['Event Director', 'Participant', 'Timer', 'Charity', 'Other']"

@@ -7,6 +7,9 @@ export default {
     name: 'ContactComponent',
     mounted() {
         this.getUserIp();
+        if (process.env.NODE_ENV === 'development'){
+            this.fillForm();
+        }
     },
     data() {
         return {
@@ -14,7 +17,6 @@ export default {
                 name: '',
                 email: '',
                 role: '',
-                website: '',
                 message: '',
                 ip: '',
                 honey: '',
@@ -25,9 +27,6 @@ export default {
             errorMessage: '',
             nameRules: [
                 v => !!v || 'Name is required',
-            ],
-            websiteRules: [
-                v => !!v || 'Website is required',
             ],
             emailRules: [
                 v => !!v || 'E-mail is required',
@@ -47,9 +46,17 @@ export default {
     computed: {
         showConfirmationNumber() {
             return this.form.role === 'Registrant';
-        }
+        },
+        isDevelopment(){
+            return process.env.NODE_ENV === 'development';
+        },
     },
     methods: {
+        fillForm(){
+            this.form.name = 'First LastName';
+            this.form.email = 'example@example.com';
+            this.form.message = 'This is a test message. How are you? My race site is https://marathon.com/';
+        },
         async getUserIp() {
             const response = await axios.get('https://api.ipify.org?format=json');
             this.form.ip = response.data.ip;
@@ -60,7 +67,6 @@ export default {
                     const response = await api.sendContact({
                         name: this.form.name,
                         email: this.form.email,
-                        website: this.form.website,
                         role: this.form.role,
                         message: this.form.message,
                         ip: this.form.ip,
@@ -71,11 +77,11 @@ export default {
                         this.successMessage = 'Your message has been sent successfully!';
                         this.errorMessage = ''; // Clear any previous error message
                     } else {
-                        this.errorMessage = 'Failed to send your message. Please try again later.';
+                        this.errorMessage = response?.data?.message || 'An error occurred while sending your message. Please try again later.';
                         this.successMessage = ''; // Clear any previous success message
                     }
                 } catch (error) {
-                    this.errorMessage = 'An error occurred while sending your message. Please try again later.';
+                    this.errorMessage = error.response?.data?.message || 'An error occurred while sending your message. Please try again later.';
                     this.successMessage = ''; // Clear any previous success message
                 } finally {
                     this.$refs.form.reset(); // Reset the form regardless of the outcome
@@ -115,15 +121,7 @@ export default {
                                     </v-col>
                                 </v-row>
                                 <v-row>
-                                    <v-col cols="6">
-                                        <v-text-field
-                                            v-model="form.website"
-                                            :rules="websiteRules"
-                                            label="Event website"
-                                            required
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="6">
+                                    <v-col cols="12">
                                         <v-select
                                             v-model="form.role"
                                             :items="['Event Director', 'Registrant', 'Timer', 'Charity', 'Other']"
@@ -132,10 +130,8 @@ export default {
                                             required
                                         ></v-select>
                                     </v-col>
-                                </v-row>
-                                 <!-- Confirmation Number Field (Only shows if role is 'Registrant') -->
-                                <v-row v-if="showConfirmationNumber">
-                                    <v-col cols="12">
+                                    <!-- Confirmation Number Field (Only shows if role is 'Registrant') -->
+                                    <v-col cols="6" v-if="showConfirmationNumber">
                                         <v-text-field
                                             v-model="form.confirmation"
                                             :rules="confirmationRules"
@@ -159,15 +155,24 @@ export default {
                                         ></v-textarea>
                                     </v-col>
                                 </v-row>
-                                 <!-- Success Message -->
-                                <v-alert type="success" v-if="successMessage">{{ successMessage }}</v-alert>
-                                <!-- Error Message -->
-                                <v-alert type="error" v-if="errorMessage">{{ errorMessage }}</v-alert>
+                                <v-row v-if="successMessage || errorMessage" class="mb-2">
+                                    <v-col cols="12">
+                                        <v-alert type="success" v-if="successMessage">{{ successMessage }}</v-alert>
+                                        <v-alert type="error" v-if="errorMessage">{{ errorMessage }}</v-alert>
+                                    </v-col>
+                                </v-row>
                                 <v-btn
                                     color="primary"
                                     @click="submitForm"
                                 >
                                     Let's talk
+                                </v-btn>
+                                <v-btn
+                                    v-if="isDevelopment"
+                                    color="secondary"
+                                    @click="fillForm"
+                                >
+                                    Demo
                                 </v-btn>
                             </v-form>
                         </v-sheet>

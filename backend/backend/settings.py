@@ -182,6 +182,7 @@ else:
     MJ_APIKEY_PUBLIC = os.environ.get('MJ_APIKEY_PUBLIC', '')
     MJ_APIKEY_PRIVATE = os.environ.get('MJ_APIKEY_PRIVATE', '') 
 DEFAULT_FROM_EMAIL = 'no-reply@relayentry.com'
+CONTACT_EMAIL = 'relayentry@gmail.com'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

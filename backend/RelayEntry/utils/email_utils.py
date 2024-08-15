@@ -1,6 +1,8 @@
 from django.core.mail import send_mail
 from django.conf import settings
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 def send_email(recipient_email, recipient_name, subject, text_part, html_part):
     """
@@ -56,10 +58,9 @@ def send_mailhog_email(recipient_email, recipient_name, subject, text_part, html
     try:
         send_mail(
             subject,
-            message,
+            html_part,
             settings.DEFAULT_FROM_EMAIL,
             [recipient_email],
-            html_message=html_part,
             fail_silently=False,
         )
         return True

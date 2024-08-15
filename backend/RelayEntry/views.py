@@ -26,6 +26,8 @@ from decimal import Decimal
 from django.utils.html import escape
 from django.core.validators import validate_email, URLValidator
 from .utils.email_utils import send_email
+from django.core.cache import cache
+from django.core.exceptions import ValidationError
 
 @ensure_csrf_cookie
 def get_csrf_token(request):
@@ -292,8 +294,6 @@ def event_register(request, url_alias):
 
 @require_POST
 def create_payment_intent(request):
-    # TODO: revert
-    return
     try:
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
@@ -343,61 +343,75 @@ def race_results(request, race_id):
         print(e)
         return JsonResponse({'error': str(e)}, status=403)
 
+@require_POST
 def contact(request):
-    # TODO: swap this w/ mailhog for development
-    if request.method == 'POST':
-        name = escape(request.POST.get('name', '').strip())
-        email = request.POST.get('email', '').strip()
-        website = request.POST.get('website', '').strip()
-        role = escape(request.POST.get('role', '').strip())
-        message = escape(request.POST.get('message', '').strip())
-        ip = escape(request.POST.get('ip', '').strip())
-        honey = escape(request.POST.get('honey', '').strip())
-        confirmation = escape(request.POST.get('confirmation', '').strip())
+    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    # List of required fields
+    required_fields = ['name', 'email', 'role', 'message', 'ip']
+    missing_fields = [field for field in required_fields if not data.get(field)]
+    if missing_fields:
+        return JsonResponse({'status': 'error', 'message': f'Missing fields: {", ".join(missing_fields)}'}, status=400)
 
-        if not ip:
-            return JsonResponse({'status': 'error', 'message': 'Could not determine your IP address.'}, status=400)
+    name = escape(str(data.get('name', '')).strip())
+    email = str(data.get('email', '')).strip()
+    role = escape(str(data.get('role', '')).strip())
+    message = escape(str(data.get('message', '')).strip())
+    ip = escape(str(data.get('ip', '')).strip())
+    confirmation = escape(str(data.get('confirmation', '')).strip())
+    honey = str(data.get('honey', '')).strip()
 
-        # Simple honeypot check
-        if honey:  # If honeypot is filled, likely a bot
-            return JsonResponse({'status': 'error', 'message': 'Spam detected'}, status=400)
-        
-        request_count = cache.get(ip, 0)
+    if not ip:
+        return JsonResponse({'status': 'error', 'message': 'Could not determine your IP address.'}, status=400)
 
-        # Limit to 3 requests per 24hrs per IP address
-        if request_count >= 3:
-            return JsonResponse({'status': 'error', 'message': 'Too many requests.'}, status=429)
-        
-        # Increment the request count
-        cache.set(ip, request_count + 1, timeout=86400)  # 86400 seconds = 24 hours
-
-         # Validate that confirmation number is provided if role is 'Registrant'
-        if role == 'Registrant' and not confirmation:
-            return JsonResponse({'status': 'error', 'message': 'Confirmation number is required for Registrants.'}, status=400)
-
-         # Validate email
-        try:
-            validate_email(email)
-        except ValidationError:
-            return JsonResponse({'status': 'error', 'message': 'Invalid email address'}, status=400)
-
-        # Validate website URL if provided
-        if website:
-            url_validator = URLValidator()
-            try:
-                url_validator(website)
-            except ValidationError:
-                return JsonResponse({'status': 'error', 'message': 'Invalid website URL'}, status=400)
-        try:
-            # fix the try catch here
-            send_email()
-        except Exception as e:
-            logger.error(f"Failed to send email from {email}: {e}")
-            return JsonResponse({'status': 'error', 'message': 'An error occurred while sending contact form email.'}, status=500)
-        if result.status_code == 200:
-            return JsonResponse({'status': 'success', 'message': 'Email sent successfully!'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'Failed to send email.'}, status=500)
-
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+    if honey:  # If honeypot is filled, likely a bot
+        return JsonResponse({'status': 'error', 'message': 'Spam detected'}, status=400)
     
+    request_count = cache.get(ip, 0)
+    # Limit to 3 requests per 24hrs per IP address
+    if request_count >= 3:
+        return JsonResponse({'status': 'error', 'message': 'Too many requests.'}, status=429)
+    
+    # Increment the request count
+    cache.set(ip, request_count + 1, timeout=86400)  # 86400 seconds = 24 hours
+        # Validate that confirmation number is provided if role is 'Registrant'
+    if role == 'Registrant' and not confirmation:
+        return JsonResponse({'status': 'error', 'message': 'Confirmation number is required for Registrants.'}, status=400)
+
+    try:
+        validate_email(email)
+    except ValidationError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid email address'}, status=400)
+
+    # Compose the email content
+    subject = f"New Contact Form Submission from {name}"
+    text_part = f"""
+    Name: {name}
+    Email: {email}
+    Role: {role}
+    Message: {message}
+    IP: {ip}
+    Confirmation: {confirmation}
+    """
+    html_part = f"""
+    <h3>New Contact Form Submission</h3>
+    <p><strong>Name:</strong> {name}</p>
+    <p><strong>Email:</strong> {email}</p>
+    <p><strong>Role:</strong> {role}</p>
+    <p><strong>Message:</strong> {message}</p>
+    <p><strong>IP:</strong> {ip}</p>
+    <p><strong>Confirmation:</strong> {confirmation}</p>
+    """
+    if send_email(
+        recipient_email=settings.CONTACT_EMAIL,
+        recipient_name="RelayEntry",
+        subject=subject,
+        text_part=text_part,
+        html_part=html_part
+    ):
+        return JsonResponse({'status': 'success', 'message': 'Your message has been sent successfully!'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Failed to send your message. Please try again later.'}, status=500)

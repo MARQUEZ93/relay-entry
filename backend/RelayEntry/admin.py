@@ -7,7 +7,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.urls import reverse
 from django.utils.html import format_html
 from .forms import RaceAdminForm
-from .utils import export_to_csv
+from .utils.admin_utils import export_to_csv
 
 # Customize the admin site header
 admin.site.site_header = "RelayEntry Administration"

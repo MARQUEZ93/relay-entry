@@ -41,7 +41,7 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                         f'A new team has been created by {instance.captain.email}.',
                         settings.DEFAULT_FROM_EMAIL,
                         [race_director_email],
-                        fail_silently=True,
+                        fail_silently=False,
                     )
                     captain_email = instance.captain.email
 
@@ -64,7 +64,7 @@ def send_team_member_creation_email(sender, instance, created, **kwargs):
                     'You have been added to a team.',
                     settings.DEFAULT_FROM_EMAIL,
                     [instance.email],
-                    fail_silently=True,
+                    fail_silently=False,
                 )
             except Exception as e:
                 logger.error(f"Failed to send team member creation email to {instance.email}: {e}")

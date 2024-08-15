@@ -51,15 +51,16 @@ export default {
   getRaceResults(raceId) {
     return apiClient.get(`/races/${raceId}/results/`);
   },
-  // TODO: revert
-  // registerTeam(data) {
-  //   return apiClient.post('/teams/register/', data);
-  // },
+  registerTeam(data) {
+    return apiClient.post('/teams/register/', data);
+  },
   registerForEvent(eventSlug, data) {
     return apiClient.post(`/events/${eventSlug}/register/`, data);
   },
-  // TODO: revert
-  // createPaymentIntent(data){
-  //   return apiClient.post(`/create-payment-intent/`, data);
-  // }
+  createPaymentIntent(data){
+    return apiClient.post(`/create-payment-intent/`, data);
+  },
+  sendContact(data){
+    return apiClient.post(`/contact/`, data);
+  }
 };

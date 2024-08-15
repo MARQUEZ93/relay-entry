@@ -1,19 +1,33 @@
 
   
 <script>
+import axios from 'axios';
+import api from '@/services/api';  // Adjust the path according to your project structure
 export default {
     name: 'ContactComponent',
+    mounted() {
+        this.getUserIp();
+    },
     data() {
         return {
             form: {
                 name: '',
                 email: '',
                 role: '',
+                website: '',
                 message: '',
+                ip: '',
+                honey: '',
+                confirmation: '',
             },
             valid: true,
+            successMessage: '',
+            errorMessage: '',
             nameRules: [
                 v => !!v || 'Name is required',
+            ],
+            websiteRules: [
+                v => !!v || 'Website is required',
             ],
             emailRules: [
                 v => !!v || 'E-mail is required',
@@ -25,27 +39,50 @@ export default {
             messageRules: [
                 v => !!v || 'Message is required',
             ],
+            confirmationRules: [
+                v => !!v || 'Confirmation number is required',
+            ],
         };
     },
-    methods: {
-        submitForm() {
-            if (this.$refs.form.validate()) {
-                // Here you'd typically make an API call to submit the form data
-                // For example:
-                // this.$http.post('/api/contact', this.form)
-                //     .then(response => {
-                //         // Handle success
-                //     })
-                //     .catch(error => {
-                //         // Handle error
-                //     });
-
-                console.log('Form submitted:', this.form);
-                this.$refs.form.reset();
-                // You can also show a success message here
-            }
+    computed: {
+        showConfirmationNumber() {
+            return this.form.role === 'Registrant';
         }
-    }
+    },
+    methods: {
+        async getUserIp() {
+            const response = await axios.get('https://api.ipify.org?format=json');
+            this.form.ip = response.data.ip;
+        },
+        async submitForm() {
+            if (this.$refs.form.validate()) {
+                try {
+                    const response = await api.sendContact({
+                        name: this.form.name,
+                        email: this.form.email,
+                        website: this.form.website,
+                        role: this.form.role,
+                        message: this.form.message,
+                        ip: this.form.ip,
+                        honey: this.form.honey,
+                        confirmation: this.form.confirmation,
+                    });
+                    if (response.status === 200) {
+                        this.successMessage = 'Your message has been sent successfully!';
+                        this.errorMessage = ''; // Clear any previous error message
+                    } else {
+                        this.errorMessage = 'Failed to send your message. Please try again later.';
+                        this.successMessage = ''; // Clear any previous success message
+                    }
+                } catch (error) {
+                    this.errorMessage = 'An error occurred while sending your message. Please try again later.';
+                    this.successMessage = ''; // Clear any previous success message
+                } finally {
+                    this.$refs.form.reset(); // Reset the form regardless of the outcome
+                }
+            }
+        },
+    },
 };
 </script>
 <template>
@@ -60,7 +97,7 @@ export default {
                             <h2>Start your own event!</h2>
                             <v-form ref="form" v-model="valid">
                                 <v-row>
-                                    <v-col cols="6" md="4">
+                                    <v-col cols="6">
                                         <v-text-field
                                             v-model="form.name"
                                             :rules="nameRules"
@@ -68,7 +105,7 @@ export default {
                                             required
                                         ></v-text-field>
                                     </v-col>
-                                    <v-col cols="6" md="4">
+                                    <v-col cols="6">
                                         <v-text-field
                                             v-model="form.email"
                                             :rules="emailRules"
@@ -76,18 +113,44 @@ export default {
                                             required
                                         ></v-text-field>
                                     </v-col>
-                                    <v-col cols="12" md="4">
+                                </v-row>
+                                <v-row>
+                                    <v-col cols="6">
+                                        <v-text-field
+                                            v-model="form.website"
+                                            :rules="websiteRules"
+                                            label="Event website"
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="6">
                                         <v-select
                                             v-model="form.role"
-                                            :items="['Event Director', 'Participant', 'Timer', 'Charity', 'Other']"
+                                            :items="['Event Director', 'Registrant', 'Timer', 'Charity', 'Other']"
                                             :rules="roleRules"
                                             label="Who are you?"
                                             required
                                         ></v-select>
                                     </v-col>
                                 </v-row>
+                                 <!-- Confirmation Number Field (Only shows if role is 'Registrant') -->
+                                <v-row v-if="showConfirmationNumber">
+                                    <v-col cols="12">
+                                        <v-text-field
+                                            v-model="form.confirmation"
+                                            :rules="confirmationRules"
+                                            label="Confirmation Number"
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
                                 <v-row>
                                     <v-col cols="12">
+                                        <v-text-field
+                                            v-model="form.honey"
+                                            label="Honey"
+                                            style="display: none;"
+                                        ></v-text-field>
                                         <v-textarea
                                             v-model="form.message"
                                             :rules="messageRules"
@@ -96,11 +159,15 @@ export default {
                                         ></v-textarea>
                                     </v-col>
                                 </v-row>
+                                 <!-- Success Message -->
+                                <v-alert type="success" v-if="successMessage">{{ successMessage }}</v-alert>
+                                <!-- Error Message -->
+                                <v-alert type="error" v-if="errorMessage">{{ errorMessage }}</v-alert>
                                 <v-btn
                                     color="primary"
                                     @click="submitForm"
                                 >
-                                    Submit
+                                    Let's talk
                                 </v-btn>
                             </v-form>
                         </v-sheet>

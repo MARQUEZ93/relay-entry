@@ -177,11 +177,11 @@ if ENVIRONMENT == 'development':
     EMAIL_USE_TLS = False
     EMAIL_HOST_USER = 'no-reply@relayentry.com'
     EMAIL_HOST_PASSWORD = 'your_password'
-    DEFAULT_FROM_EMAIL = 'no-reply@relayentry.com'
 else:
     # Get your environment Mailjet keys
     MJ_APIKEY_PUBLIC = os.environ.get('MJ_APIKEY_PUBLIC', '')
     MJ_APIKEY_PRIVATE = os.environ.get('MJ_APIKEY_PRIVATE', '') 
+DEFAULT_FROM_EMAIL = 'no-reply@relayentry.com'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -238,4 +238,11 @@ LOGGING = {
         'handlers': ['console', 'development_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
         'level': 'WARNING',
     },
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
 }

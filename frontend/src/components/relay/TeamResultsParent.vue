@@ -101,7 +101,7 @@ export default {
         </v-col>
     </v-row>
     <v-row v-if="!loading && event.races">
-        <v-col v-for="race in event.races" :key="race.id" cols="6">
+        <v-col v-for="race in event.races" :key="'teamResults-' + race.id" cols="6">
             <v-card class="race-card">
                 <v-card-title>
                     <router-link :to="{ name: 'TeamRaceResults', params: { eventUrlAlias: this.eventSlug, raceId: race.id } }">

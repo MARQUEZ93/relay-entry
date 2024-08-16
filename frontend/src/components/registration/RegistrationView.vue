@@ -193,15 +193,15 @@ export default {
     <v-row justify="center" v-if="race">
       <v-col cols="12">
         <v-tabs v-model="activeTab">
-          <v-tab :key="0" @click="selectTab(0)" class="tab-text">
+          <v-tab key="participantLabel-0-view" @click="selectTab(0)" class="tab-text">
             <v-icon left>mdi-account</v-icon>
             {{ participantLabel }}
           </v-tab>
-          <v-tab :key="1" :disabled="!racerDataComplete" @click="selectTab(1)" class="tab-text">
+          <v-tab key="waiver-1-view" :disabled="!racerDataComplete" @click="selectTab(1)" class="tab-text">
             <v-icon left>mdi-file-document</v-icon>
             Waiver
           </v-tab>
-          <v-tab :key="2" :disabled="!racerDataComplete || !waiverAccepted" @click="selectTab(2)" class="tab-text">
+          <v-tab key="checkout-2-view" :disabled="!racerDataComplete || !waiverAccepted" @click="selectTab(2)" class="tab-text">
             <v-icon left>mdi-credit-card</v-icon>
             Checkout
           </v-tab>

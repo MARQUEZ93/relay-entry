@@ -114,7 +114,7 @@ export default {
     <v-row v-if="!loading && event.races">
         <v-col
             v-for="race in event.races"
-            :key="race.id"
+            :key="'registeredTeams-race-' + race.id"
             cols="12"
             sm="6"
             md="4"

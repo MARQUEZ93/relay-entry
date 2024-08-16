@@ -118,7 +118,7 @@ export default {
         <v-row>
           <v-col
             v-for="race in event.races"
-            :key="race.id"
+            :key="'race-' + race.id"
             cols="6"
             md="4"
             class="d-flex align-center justify-center"

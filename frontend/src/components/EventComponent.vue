@@ -64,6 +64,7 @@ export default {
     } catch (error) {
       this.error = 'Error fetching event details.';
       this.loading = false;
+      this.$router.push({ path: '/' });
     }
   },
 };

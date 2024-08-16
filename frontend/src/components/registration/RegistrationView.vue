@@ -101,6 +101,7 @@ export default {
       } catch (error) {
         this.error = 'Error fetching race details.';
         this.loading = false;
+        this.$router.push({ path: '/' });
       }
     },
     formatPrice(price) {

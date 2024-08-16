@@ -23,7 +23,7 @@ def send_email(recipient_email, recipient_name, subject, text_part, html_part):
         return send_mailhog_email(recipient_email, recipient_name, subject, text_part, html_part)
 
 def send_mailjet_email(recipient_email, recipient_name, subject, text_part, html_part):
-    mailjet = Client(auth=(settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET), version='v3.1')
+    mailjet = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version='v3.1')
     data = {
         'Messages': [
             {

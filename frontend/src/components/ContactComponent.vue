@@ -140,7 +140,7 @@ export default {
                                         ></v-select>
                                     </v-col>
                                     <!-- Confirmation Number Field (Only shows if role is 'Registrant') -->
-                                    <v-col cols="6" v-if="showConfirmationNumber">
+                                    <v-col cols="12" v-if="showConfirmationNumber">
                                         <v-text-field
                                             v-model="form.confirmation"
                                             :rules="confirmationRules"

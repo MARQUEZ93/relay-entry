@@ -1,3 +1,17 @@
+<script>
+  import homeImage from '@/assets/homeImage.jpg';
+  export default {
+    name: 'HomeComponent',
+    data() {
+      return {
+        homeImage,
+        client: "Sunrise Track Club",
+        review: "RelayEntry was a game changer for race signup! It was easy for teams to use to register and for me to have the data I needed prior to the race! The post race results were posted quickly and emailed out to participants, saving me another step. So glad I found this one stop shop for race sign up!"
+      };
+    },
+  };
+</script>
+
 <template>
   <v-container>
     <v-row>
@@ -16,14 +30,24 @@
         </v-sheet>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-sheet class="my-5 pa-0" elevation="2">
+          <div class="curved-image-container">
+            <v-img
+              :src="homeImage"
+              width="100%"
+              alt="Race Image"
+              height="400px"
+              class="curved-image"
+            >
+            </v-img>
+          </div>
+        </v-sheet>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
-
-<script>
-export default {
-  name: 'HomeComponent',
-};
-</script>
 
 <style scoped>
   h1 {
@@ -56,6 +80,14 @@ export default {
   .features-list li v-icon {
     margin-right: 8px;
     color: #4caf50;
+  }
+  .curved-image-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .curved-image {
+    clip-path: ellipse(100% 90% at 50% 100%);
   }
 
   @media (max-width: 600px) {

@@ -6,43 +6,12 @@ from django.db import transaction
 import logging
 
 from .models import UserProfile, Registration, Team, TeamMember, Event, Race
+from .utils.email_utils import send_email
 
-# import the mailjet wrapper
-from mailjet_rest import Client
 import os
 
-# Get your environment Mailjet keys
-# Initialize MailJet client
-mailjet = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version='v3.1')
 # Set up logging
 logger = logging.getLogger(__name__)
-
-def send_mailjet_email(recipient_email, recipient_name, subject, text_part, html_part):
-    data = {
-        'Messages': [
-            {
-                "From": {
-                    "Email": "no-reply@relayentry.com",
-                    "Name": "RelayEntry"
-                },
-                "To": [
-                    {
-                        "Email": recipient_email,
-                        "Name": recipient_name
-                    }
-                ],
-                "Subject": subject,
-                "TextPart": text_part,
-                "HTMLPart": html_part
-            }
-        ]
-    }
-    try:
-        result = mailjet.send.create(data=data)
-        print(result.status_code)
-        print(result.json())
-    except Exception as e:
-        logger.error(f"Failed to send email to {recipient_email}: {e}")
 
 @receiver(post_save, sender=Registration)
 def send_registration_email(sender, instance, created, **kwargs):
@@ -67,7 +36,7 @@ def send_registration_email(sender, instance, created, **kwargs):
             <p>Please email {contact} if help is needed with your registration. Include your confirmation code!</p>
             """
 
-            send_mailjet_email(
+            send_email(
                 recipient_email=instance.email,
                 recipient_name=instance.first_name,
                 subject=f'You are registered for {event_name}',
@@ -97,7 +66,7 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                 <br />
                 <p>Please email relayentry@gmail.com if you need help!</p>
                 """
-                send_mailjet_email(
+                send_email(
                     recipient_email=race_director_email,
                     recipient_name="Race Director",
                     subject=f'A new team registered for {race_name} in {event_name}',
@@ -122,7 +91,7 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                 <p>Your confirmation code: {confirmation_code}.</p>
                 <p>Please email relayentry@gmail.com if help is needed with your team registration. Include your confirmation code!</p>
                 """
-                send_mailjet_email(
+                send_email(
                     recipient_email=captain_email,
                     recipient_name=captain_first_name,
                     subject=f'Your registered team for {event_name}',
@@ -144,7 +113,7 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                         <p>For more information, see: https://www.instagram.com/sunrise_track_club/</p>
                         """
 
-                        send_mailjet_email(
+                        send_email(
                             recipient_email=member.email,
                             recipient_name="Team Member",
                             subject=f'Please register for {event_name}',

@@ -56,6 +56,7 @@ export default {
             this.form.name = 'First LastName';
             this.form.email = 'example@example.com';
             this.form.message = 'This is a test message. How are you? My race site is https://marathon.com/';
+            this.form.role = 'Other';
         },
         async getUserIp() {
             const response = await axios.get('https://api.ipify.org?format=json');

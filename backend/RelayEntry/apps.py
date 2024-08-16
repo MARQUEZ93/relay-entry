@@ -5,7 +5,4 @@ class BackendConfig(AppConfig):
 
     def ready(self):
         environment = os.getenv('ENVIRONMENT', 'development')
-        if environment == 'production':
-            import RelayEntry.signals as signals
-        else:
-            import RelayEntry.signals_dev as signals
+        import RelayEntry.signals as signals

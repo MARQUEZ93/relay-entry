@@ -72,14 +72,14 @@
   
   <style scoped>
   h1 {
-    color: #2c3e50;
+    color: black;
     margin-top: 20px;
     text-align: center;
   }
   
   p {
     font-size: 1.2em;
-    color: #2c3e50;
+    color: black;
     text-align: center;
   }
   

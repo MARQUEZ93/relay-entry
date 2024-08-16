@@ -35,8 +35,9 @@
 
 <style scoped>
   h1 {
-    color: #2c3e50;
-    margin-top: 20px;
+    color: black;
+    margin-top: -200px;
+    font-weight: 700;
   }
 
   h2 {
@@ -46,7 +47,7 @@
 
   p {
     font-size: 1.2em;
-    color: #2c3e50;
+    color: black;
   }
 
   .curved-image-container {
@@ -55,15 +56,13 @@
   }
 
   .home-background-image {
-    background-image: url('@/assets/homeImage.jpg'); /* Use the image as background */
+    background-image: url('@/assets/homeImage.jpg');
     background-size: cover;
     background-position: center;
-    height: 400px; /* Match the height of your image */
+    height: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Make the text stand out */
     clip-path: ellipse(100% 90% at 50% 100%);
   }
 

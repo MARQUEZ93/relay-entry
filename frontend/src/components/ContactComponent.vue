@@ -194,7 +194,7 @@ export default {
 
 <style scoped>
     h1 {
-        color: #2c3e50;
+        color: black;
         margin-top: 20px;
         text-align: center;
         margin-bottom: 10px;
@@ -202,7 +202,7 @@ export default {
 
     p {
         font-size: 1.2em;
-        color: #2c3e50;
+        color: black;
         text-align: center;
     }
     h2 {

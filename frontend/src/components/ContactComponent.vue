@@ -22,7 +22,7 @@ export default {
                 honey: '',
                 confirmation: '',
             },
-            valid: true,
+            valid: false,
             successMessage: '',
             errorMessage: '',
             nameRules: [
@@ -33,7 +33,7 @@ export default {
                 v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
             ],
             roleRules: [
-                v => !!v || 'Role is required',
+                v => (v !== '' && v !== null && v !== undefined) || 'Role is required',
             ],
             messageRules: [
                 v => !!v || 'Message is required',
@@ -63,6 +63,10 @@ export default {
         },
         async submitForm() {
             if (this.$refs.form.validate()) {
+                if (!this.form.role){
+                    this.errorMessage = 'Role is required';
+                    return;
+                }
                 try {
                     const response = await api.sendContact({
                         name: this.form.name,
@@ -76,6 +80,10 @@ export default {
                     if (response.status === 200) {
                         this.successMessage = 'Your message has been sent successfully!';
                         this.errorMessage = ''; // Clear any previous error message
+                        // Redirect to the home page after 3 seconds
+                        setTimeout(() => {
+                            this.$router.push({ path: '/' });
+                        }, 3000);
                     } else {
                         this.errorMessage = response?.data?.message || 'An error occurred while sending your message. Please try again later.';
                         this.successMessage = ''; // Clear any previous success message

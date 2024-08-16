@@ -366,13 +366,12 @@ def contact(request):
 
     if not ip:
         return JsonResponse({'status': 'error', 'message': 'Could not determine your IP address.'}, status=400)
-
     if honey:  # If honeypot is filled, likely a bot
         return JsonResponse({'status': 'error', 'message': 'Spam detected'}, status=400)
     
     request_count = cache.get(ip, 0)
-    # Limit to 3 requests per 24hrs per IP address
-    if request_count >= 3:
+    # Limit to 2 requests per 24hrs per IP address
+    if request_count >= 2:
         return JsonResponse({'status': 'error', 'message': 'Too many requests.'}, status=429)
     
     # Increment the request count

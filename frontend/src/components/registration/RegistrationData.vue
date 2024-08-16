@@ -152,7 +152,7 @@ export default {
         </v-col>
       </v-row>
       <v-row>
-        <v-col v-for="(member, index) in localRegistrationData.teamData.emails" :key="index" cols="6">
+        <v-col v-for="(member, index) in localRegistrationData.teamData.emails" :key="'leg-emails' + index" cols="6">
           <v-text-field
             v-model="member.email"
             :rules="emailRules"

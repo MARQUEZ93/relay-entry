@@ -153,11 +153,11 @@ export default {
     <v-row justify="center" v-if="event">
       <v-col cols="12" md="8">
         <v-tabs v-model="activeTab">
-          <v-tab :key="0" @click="selectTab(0)" class="tab-text">
+          <v-tab key="participantLabel-0" @click="selectTab(0)" class="tab-text">
             <v-icon left>mdi-account</v-icon>
             {{ participantLabel }}
           </v-tab>
-          <v-tab :key="1" :disabled="!racerDataComplete" @click="selectTab(1)" class="tab-text">
+          <v-tab key="waiverLabel-1" :disabled="!racerDataComplete" @click="selectTab(1)" class="tab-text">
             <v-icon left>mdi-file-document</v-icon>
             Waiver
           </v-tab>

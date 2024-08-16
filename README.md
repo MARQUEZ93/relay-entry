@@ -64,3 +64,18 @@ Insufficient funds:
 Card number: 4000 0000 0000 9995
 Any future expiration date
 Any CVC
+
+## Production Commands
+
+### 1. SCP Files to Production EC2 Server
+
+To securely copy files from your local machine to the production EC2 server, use the following command:
+
+```bash
+scp -i /path/to/your/key.pem /path/to/local/file ec2-user@ec2-instance-public-dns:/path/to/remote/directory
+```
+
+### 2. SCP Files from Production EC2 Server to Local Machine
+```bash
+scp -i /path/to/your/key.pem ec2-user@ec2-instance-public-dns:/path/to/remote/file /path/to/local/directory
+```

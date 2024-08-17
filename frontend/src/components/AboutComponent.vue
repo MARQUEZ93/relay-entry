@@ -5,10 +5,12 @@ export default {
     name: 'AboutComponent',
     data() {
         return {
+            client: "Sunrise Track Club",
+            review: "RelayEntry was a game changer for race signup! It was easy for teams to use to register and for me to have the data I needed prior to the race! The post race results were posted quickly and emailed out to participants, saving me another step. So glad I found this one stop shop for race sign up!",
             texasDescription: "Texas races are eligible for lower rates because RelayEntry is a Texas small business. Contact us for more details!"
         };
     }
-    };
+};
 </script>
 <template>
     <v-container>
@@ -22,6 +24,16 @@ export default {
                             <h2>Our Mission</h2>
                             <p>RelayEntry was created to make it easier for anyone to start their own race. </p>
                             <p>Currently, our product supports team relay races, with plans to expand to other race types before Q4 2024.</p>
+                        </v-sheet>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-sheet class="my-5 pa-5" elevation="2">
+                            <h2>Testimonial</h2>
+                            <blockquote class="testimonial-quote">{{ review }}</blockquote>
+                            <p class="testimonial-client">
+                                — <a class="client-link" href="https://sunrisetrackclub.com/">{{ client }}</a>, <a href="/events/sunrise-track-club-sunset-relays" class="event-link">Sunrise Relays 2024</a>
+                            </p>
+                            <p class="race-director">Race Director: Bex Wells</p>
                         </v-sheet>
                     </v-col>
                 </v-row>
@@ -71,6 +83,40 @@ export default {
         color: #4caf50;
     }
 
+    .testimonial-quote {
+        font-style: italic;
+        font-size: 1.3em;
+        text-align: center;
+        margin-bottom: 15px;
+        color: #2c3e50;
+    }
+
+  .testimonial-client {
+    font-weight: bold;
+    text-align: center;
+    color: #4caf50;
+  }
+
+  .event-link {
+    color: #1867c0; 
+    text-decoration: none;
+  }
+  .client-link {
+    color: #4caf50; 
+    text-decoration: none;
+  }
+
+  .event-link:hover, .client-link:hover {
+    text-decoration: underline;
+  }
+
+  .race-director {
+    text-align: center;
+    font-size: 1em;
+    color: #757575;
+    margin-top: 5px;
+  }
+
     @media (max-width: 600px) {
         h1, h2 {
             font-size: 1.5em;
@@ -82,6 +128,13 @@ export default {
 
         .features-list li {
             font-size: 1em;
+        }
+        .testimonial-quote {
+            font-size: 1.2em;
+        }
+
+        .testimonial-client {
+            font-size: 1.1em;
         }
     }
 </style>

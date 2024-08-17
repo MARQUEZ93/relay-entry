@@ -78,7 +78,7 @@ export default {
 </template>
 <style>
   .v-main {
-    --v-layout-top: 32px !important;  /* Reduce the top offset globally */
+    --v-layout-top: 8px !important;  /* Reduce the top offset globally */
   }
   #app {
     font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;

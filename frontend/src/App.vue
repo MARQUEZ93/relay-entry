@@ -66,11 +66,8 @@ export default {
     </v-main>
     <v-footer app color="primary" dark>
       <v-row>
-        <v-col cols="6">
-          <v-typography variant="subtitle-1">&copy; 2024 RelayEntry</v-typography>
-        </v-col>
-        <v-col cols="6">
-          <v-typography variant="subtitle-1">Alpha 1.1.1</v-typography>
+        <v-col cols="12">
+          <v-typography variant="subtitle-1">&copy; 2024 RelayEntry - Alpha 1.1.1 (Early Access)</v-typography>
         </v-col>
       </v-row>
     </v-footer>

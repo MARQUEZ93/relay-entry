@@ -28,7 +28,7 @@
                       </li>
                       <li>
                         <v-icon left>mdi-wallet</v-icon>
-                        &nbsp;Receive Payments Twice Weekly
+                        &nbsp;Receive payments twice weekly
                       </li>
                       <li>
                         <v-icon left>mdi-map-marker</v-icon>

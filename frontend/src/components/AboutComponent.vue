@@ -5,9 +5,8 @@ export default {
     name: 'AboutComponent',
     data() {
         return {
-            client: "Sunrise Track Club",
+            client: "Bex Wells - Sunrise Track Club",
             review: "RelayEntry was a game changer for race signup! It was easy for teams to use to register and for me to have the data I needed prior to the race! The post race results were posted quickly and emailed out to participants, saving me another step. So glad I found this one stop shop for race sign up!",
-            texasDescription: "Texas races are eligible for lower rates because RelayEntry is a Texas small business. Contact us for more details!"
         };
     }
 };
@@ -33,7 +32,6 @@ export default {
                             <p class="testimonial-client">
                                 — <a class="client-link" href="https://sunrisetrackclub.com/">{{ client }}</a>, <a href="/events/sunrise-track-club-sunset-relays" class="event-link">Sunrise Relays 2024</a>
                             </p>
-                            <p class="race-director">Race Director: Bex Wells</p>
                         </v-sheet>
                     </v-col>
                 </v-row>
@@ -108,13 +106,6 @@ export default {
 
   .event-link:hover, .client-link:hover {
     text-decoration: underline;
-  }
-
-  .race-director {
-    text-align: center;
-    font-size: 1em;
-    color: #757575;
-    margin-top: 5px;
   }
 
     @media (max-width: 600px) {

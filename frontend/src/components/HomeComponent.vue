@@ -34,7 +34,7 @@
 <style scoped>
   h1 {
     color: black;
-    margin-top: -192px;
+    margin-top: -182px;
     font-weight: 700;
   }
 
@@ -57,7 +57,7 @@
     background-image: url('@/assets/homeImage.jpg');
     background-size: cover;
     background-position: center;
-    height: 600px;
+    height: 500px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -87,8 +87,15 @@
   }
 
   @media (max-width: 600px) {
+    .home-background-image {
+      height: 400px;
+    }
     h1, h2 {
       font-size: 1.5em;
+    }
+
+    h1{
+      margin-top: -132px;
     }
 
     p {

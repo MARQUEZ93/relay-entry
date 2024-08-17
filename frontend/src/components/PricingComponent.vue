@@ -36,7 +36,7 @@
                       </li>
                       <li>
                         <v-icon left>mdi-access-point</v-icon>
-                        &nbsp;Accessibility Compliant
+                        &nbsp;Accessibility compliant
                       </li>
                       <li>
                         <v-icon left>mdi-run-fast</v-icon>

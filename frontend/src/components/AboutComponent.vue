@@ -16,7 +16,7 @@ export default {
         <v-row>
             <v-col cols="12">
                 <h1>About Us</h1>
-                <p>The best running platform for race directors, runners & spectators alike!</p>
+                <p>The soon-to-be best running platform for race directors, runners & spectators alike!</p>
                 <v-row>
                     <v-col cols="12">
                         <v-sheet class="my-5 pa-5" elevation="2">

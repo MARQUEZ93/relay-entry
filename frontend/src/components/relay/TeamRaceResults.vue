@@ -135,7 +135,7 @@ export default {
     <v-row v-if="!loading && raceResults.length > 0">
       <v-col cols="12">
         <v-card-title>{{ raceName }} Results</v-card-title>
-        <v-card-subtitle>
+        <v-card-subtitle class="need-overflow-class">
           Results displayed exactly as provided by the event or timer.
         </v-card-subtitle>
         <v-data-table

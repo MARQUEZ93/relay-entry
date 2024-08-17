@@ -34,7 +34,7 @@
 <style scoped>
   h1 {
     color: black;
-    margin-top: -200px;
+    margin-top: -168px;
     font-weight: 700;
   }
 

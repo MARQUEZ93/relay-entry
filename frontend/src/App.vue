@@ -77,46 +77,49 @@ export default {
   </v-app>
 </template>
 <style>
-#app {
-  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: black;
-  margin-top: 60px;
-  margin-bottom: 0;
-}
-@media only screen and (max-width: 600px) {
-  .logo-image, .footer-logo {
-    width: 110px;
-    height: 110px;
+  .v-main {
+    --v-layout-top: 32px !important;  /* Reduce the top offset globally */
   }
-}
-.white--text {
-  color: white !important;
-}
-.footer-logo{
-  height: 220px;
-  width: 220px;
-}
-.logo-image {
-  height: 220px;
-  width: 220px;
-  max-width: 100%;
-  display: block !important; /* Ensure the logo is displayed */
-}
-.v-navigation-drawer .v-list-item-title {
-  font-weight: 500; /* Make the text bolder */
-  text-transform: uppercase; /* Make the text all caps */
-  color: white; /* Ensure the text color matches the header */
-}
-/* Remove underline from links */
-.v-navigation-drawer a {
-  text-decoration: none;
-  color: inherit; /* Ensure the text color is inherited */
-}
+  #app {
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: black;
+    margin-top: 60px;
+    margin-bottom: 0;
+  }
+  @media only screen and (max-width: 600px) {
+    .logo-image, .footer-logo {
+      width: 110px;
+      height: 110px;
+    }
+  }
+  .white--text {
+    color: white !important;
+  }
+  .footer-logo{
+    height: 220px;
+    width: 220px;
+  }
+  .logo-image {
+    height: 220px;
+    width: 220px;
+    max-width: 100%;
+    display: block !important; /* Ensure the logo is displayed */
+  }
+  .v-navigation-drawer .v-list-item-title {
+    font-weight: 500; /* Make the text bolder */
+    text-transform: uppercase; /* Make the text all caps */
+    color: white; /* Ensure the text color matches the header */
+  }
+  /* Remove underline from links */
+  .v-navigation-drawer a {
+    text-decoration: none;
+    color: inherit; /* Ensure the text color is inherited */
+  }
 
-.v-navigation-drawer a:hover {
-  text-decoration: underline;
-}
+  .v-navigation-drawer a:hover {
+    text-decoration: underline;
+  }
 </style>

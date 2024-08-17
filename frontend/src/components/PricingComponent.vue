@@ -27,6 +27,10 @@
                         &nbsp;The absolute lowest transaction fees
                       </li>
                       <li>
+                        <v-icon left>mdi-wallet</v-icon>
+                        &nbsp;Receive Payments Twice Weekly
+                      </li>
+                      <li>
                         <v-icon left>mdi-map-marker</v-icon>
                         &nbsp;Perfect for races across the USA
                       </li>
@@ -49,6 +53,10 @@
                       <li>
                         <v-icon left>mdi-web</v-icon>
                         &nbsp;Your event page can be your race site
+                      </li>
+                      <li>
+                        <v-icon left>mdi-mail</v-icon>
+                        &nbsp;Customizable email system
                       </li>
                   </ul>
                 </v-col>

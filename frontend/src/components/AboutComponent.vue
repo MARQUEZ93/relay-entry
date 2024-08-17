@@ -83,7 +83,7 @@ export default {
 
     .testimonial-quote {
         font-style: italic;
-        font-size: 1.3em;
+        font-size: 1.2em;
         text-align: center;
         margin-bottom: 15px;
         color: #2c3e50;
@@ -113,20 +113,10 @@ export default {
             font-size: 1.5em;
         }
 
-        p {
+        .testimonial-quote, .features-list li, p, .testimonial-client {
             font-size: 1em;
         }
 
-        .features-list li {
-            font-size: 1em;
-        }
-        .testimonial-quote {
-            font-size: 1.2em;
-        }
-
-        .testimonial-client {
-            font-size: 1.1em;
-        }
     }
 </style>
   

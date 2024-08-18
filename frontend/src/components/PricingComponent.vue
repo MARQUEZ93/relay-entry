@@ -82,7 +82,7 @@
   };
   </script>
   
-  <style scoped>
+<style scoped>
   h1 {
     color: black;
     margin-top: 20px;
@@ -103,18 +103,12 @@
   .v-divider {
     margin-top: 20px;
   }
-  .massive {
-    font-size: 1000px;
-    color: red;
-  }
-  
   .pricing-list {
     list-style-type: disc;
     padding-left: 20px;
   }
   
   .pricing-list li {
-    textAlign: left;
     display: flex;
     align-items: center;
     margin-bottom: 10px;

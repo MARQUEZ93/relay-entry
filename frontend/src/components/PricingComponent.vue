@@ -31,6 +31,10 @@
                         &nbsp;Receive payments twice weekly
                       </li>
                       <li>
+                        <v-icon left>mdi-file-document-edit</v-icon>
+                        &nbsp;No contracts
+                      </li>
+                      <li>
                         <v-icon left>mdi-map-marker</v-icon>
                         &nbsp;Perfect for races across the USA
                       </li>

@@ -5,7 +5,7 @@ export default {
     name: 'AboutComponent',
     data() {
         return {
-            client: "Bex Wells - Sunrise Track Club",
+            client: "Bex Wells (Sunrise Track Club)",
             review: "RelayEntry was a game changer for race signup! It was easy for teams to use to register and for me to have the data I needed prior to the race! The post race results were posted quickly and emailed out to participants, saving me another step. So glad I found this one stop shop for race sign up!",
         };
     }

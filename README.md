@@ -2,7 +2,7 @@
 
 Build Docker Images:
 
-docker-compose -f docker-compose.dev.yml build
+docker-compose -f docker-compose.dev.yml up --build
 Start Services:
 
 docker-compose -f docker-compose.dev.yml up -d

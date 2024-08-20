@@ -29,6 +29,9 @@ from .utils.email_utils import send_email
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 
+# Set up logging for Stripe
+stripe_logger = logging.getLogger('stripe')
+
 @ensure_csrf_cookie
 def get_csrf_token(request):
     return JsonResponse({'csrfToken': get_token(request)})
@@ -414,3 +417,36 @@ def contact(request):
         return JsonResponse({'status': 'success', 'message': 'Your message has been sent successfully!'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Failed to send your message. Please try again later.'}, status=500)
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    # TODO: set the prod / local endpoint secret
+    endpoint_secret = settings.STRIPE_ENDPOINT_SECRET
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        stripe_logger.error(f"Invalid payload: {e}")
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        stripe_logger.error(f"Invalid signature: {e}")
+        return HttpResponse(status=400)
+
+    # Handle the event
+    if event['type'] == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']  # contains a stripe.PaymentIntent
+        # registration confirm? add field?
+    # elif event['type'] == 'payment_method.attached':
+    #     payment_method = event['data']['object']  # contains a stripe.PaymentMethod
+        # Handle the payment method attached event
+    # Handle other event types
+    else:
+        stripe_logger.error(f"Unhandled event type {event['type']}")
+
+    return HttpResponse(status=200)

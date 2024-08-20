@@ -18,4 +18,5 @@ urlpatterns = [
     path('api/teams/register/', views.team_register, name='team_register'),
     path('api/create-payment-intent/', views.create_payment_intent, name='create_payment_intent'),
     path('api/contact/', views.contact, name='contact'),
+    path('api/stripe/webhook', views.stripe_webhook, name='stripe_webhook'),
 ]

@@ -208,6 +208,11 @@ LOGGING = {
         },
     },
     'handlers': {
+        'stripe_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'stripe.log'),
+        },
         'development_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
@@ -228,7 +233,13 @@ LOGGING = {
             'filters': [],
         },
     },
-    'loggers': {},
+    'loggers': {
+       'stripe': {
+            'handlers': ['stripe_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
      'root': {
         'handlers': ['console', 'development_file'] if ENVIRONMENT == 'development' else ['console', 'production_file'],
         'level': 'WARNING',
@@ -241,3 +252,5 @@ CACHES = {
         'LOCATION': 'unique-snowflake',
     }
 }
+
+STRIPE_ENDPOINT_SECRET = os.getenv('STRIPE_ENDPOINT_SECRET')

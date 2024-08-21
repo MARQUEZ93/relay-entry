@@ -85,9 +85,9 @@ class RegistrationEventFilter(admin.SimpleListFilter):
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('race', 'first_name', 'last_name', 'email', 'amount_paid', 'created_at', 'updated_at', 'ip_address', 'parent_guardian_name', 'minor', 'dob', 'gender', 'bib_type', 'bib_number')
+    list_display = ('race', 'first_name', 'last_name', 'email', 'amount_paid', 'paid', 'created_at', 'updated_at', 'ip_address', 'parent_guardian_name', 'minor', 'dob', 'gender', 'bib_type', 'bib_number')
     search_fields = ('email', 'race__name')
-    list_filter = (RegistrationEventFilter,)
+    list_filter = (RegistrationEventFilter, 'paid', 'race',)
     actions = [export_to_csv]
 
 class TeamMemberInline(admin.TabularInline):

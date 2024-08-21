@@ -20,7 +20,7 @@ from .conversion import convert_keys_to_snake_case, convert_keys_to_camel_case
 stripe.api_key = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
 
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.middleware.csrf import get_token
 from decimal import Decimal
 from django.utils.html import escape
@@ -441,7 +441,25 @@ def stripe_webhook(request):
     # Handle the event
     if event['type'] == 'payment_intent.succeeded':
         payment_intent = event['data']['object']  # contains a stripe.PaymentIntent
-        # registration confirm? add field?
+        # Find the corresponding registration
+        try:
+            with transaction.atomic():
+                # Find the corresponding registration
+                registration = Registration.objects.get(intent_id=payment_intent['id'])
+                registration.paid = True
+                registration.save()
+
+                # Log the successful payment and registration update
+                stripe_logger.info(f"Payment Successful: PaymentIntent ID: {payment_intent['id']}, Amount: {payment_intent['amount']}, Customer: {payment_intent['customer']}")
+                stripe_logger.info(f"Registration Paid: Registration ID: {registration.id}, User: {registration.user}, Event: {registration.event}")
+        except ObjectDoesNotExist:
+            stripe_logger.error(f"Registration with intent_id {payment_intent['id']} does not exist.")
+        except Exception as e:
+            stripe_logger.error(f"An error occurred while processing payment intent {payment_intent['id']}: {e}")
+    elif event['type'] == 'payment_intent.payment_failed':
+        payment_intent = event['data']['object']
+        stripe_logger.error(f"Payment Failed: {payment_intent}")
+        # Handle the payment method attached event
     # elif event['type'] == 'payment_method.attached':
     #     payment_method = event['data']['object']  # contains a stripe.PaymentMethod
         # Handle the payment method attached event

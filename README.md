@@ -79,3 +79,8 @@ scp -i /path/to/your/key.pem /path/to/local/file ec2-user@ec2-instance-public-dn
 ```bash
 scp -i /path/to/your/key.pem ec2-user@ec2-instance-public-dns:/path/to/remote/file /path/to/local/directory
 ```
+
+### 3. View the logger
+```bash
+tail -n 150 production.log
+```

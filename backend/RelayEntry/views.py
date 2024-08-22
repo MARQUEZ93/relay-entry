@@ -27,7 +27,7 @@ from django.utils.html import escape
 from django.core.validators import validate_email, URLValidator
 from .utils.email_utils import send_email
 from django.core.cache import cache
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 # Set up logging for Stripe
 stripe_logger = logging.getLogger('stripe')
@@ -422,8 +422,8 @@ def contact(request):
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-    # TODO: set the prod / local endpoint secret
     endpoint_secret = settings.STRIPE_ENDPOINT_SECRET
+    expected_events = ['payment_intent.succeeded', 'payment_intent.failed']
 
     try:
         event = stripe.Webhook.construct_event(
@@ -432,12 +432,11 @@ def stripe_webhook(request):
     except ValueError as e:
         # Invalid payload
         stripe_logger.error(f"Invalid payload: {e}")
-        return HttpResponse(status=400)
+        return JsonResponse({'error': 'Invalid request'}, status=400)
     except stripe.error.SignatureVerificationError as e:
         # Invalid signature
         stripe_logger.error(f"Invalid signature: {e}")
-        return HttpResponse(status=400)
-
+        return JsonResponse({'error': 'Invalid request'}, status=400)
     # Handle the event
     if event['type'] == 'payment_intent.succeeded':
         payment_intent = event['data']['object']  # contains a stripe.PaymentIntent
@@ -445,9 +444,10 @@ def stripe_webhook(request):
         try:
             with transaction.atomic():
                 # Find the corresponding registration
-                registration = Registration.objects.get(intent_id=payment_intent['id'])
-                registration.paid = True
-                registration.save()
+                registration = Registration.objects.get(payment_intent_id=payment_intent['id'])
+                if not registration.paid:
+                    registration.paid = True
+                    registration.save()
 
                 # Log the successful payment and registration update
                 stripe_logger.info(f"Payment Successful: PaymentIntent ID: {payment_intent['id']}, Amount: {payment_intent['amount']}, Customer: {payment_intent['customer']}")
@@ -458,7 +458,7 @@ def stripe_webhook(request):
             stripe_logger.error(f"An error occurred while processing payment intent {payment_intent['id']}: {e}")
     elif event['type'] == 'payment_intent.payment_failed':
         payment_intent = event['data']['object']
-        stripe_logger.error(f"Payment Failed: {payment_intent}")
+        stripe_logger.error(f"Payment Failed: {payment_intent['id']}")
         # Handle the payment method attached event
     # elif event['type'] == 'payment_method.attached':
     #     payment_method = event['data']['object']  # contains a stripe.PaymentMethod
@@ -466,5 +466,5 @@ def stripe_webhook(request):
     # Handle other event types
     else:
         stripe_logger.error(f"Unhandled event type {event['type']}")
-
-    return HttpResponse(status=200)
+    return JsonResponse({'status': 'success'}, status=200)
+    

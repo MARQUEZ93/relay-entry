@@ -40,14 +40,13 @@ const routes = [
     name: 'Event',
     component: EventComponent,
   },
-  // TODO: null check this for non relay races
   {
-    path: '/events/:eventUrlAlias/results',
+    path: '/events/:eventUrlAlias/teamResults',
     name: 'TeamResultsParent',
     component: TeamResultsParent,
   },
   {
-    path: '/events/:eventUrlAlias/results/:raceId',
+    path: '/events/:eventUrlAlias/teamResults/:raceId',
     name: 'TeamRaceResults',
     component: TeamRaceResults,
   },

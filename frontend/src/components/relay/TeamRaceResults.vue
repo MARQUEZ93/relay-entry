@@ -83,7 +83,7 @@ export default {
         // TODO: props then IF NOT API call + 1 api call
         const eventResponse = await api.getEvent(this.eventSlug);
         this.event = eventResponse.data;
-        const response = await api.getRaceResults(this.raceId);
+        const response = await api.getTeamRaceResults(this.raceId);
         if (response.data.length > 0) {
           this.raceName = response.data[0].race_name;
           this.numRunners = response.data[0].num_runners;

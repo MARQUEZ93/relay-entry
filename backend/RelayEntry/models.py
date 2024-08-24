@@ -12,7 +12,6 @@ from django.utils.text import slugify
 
 UNIT_CHOICES = UNIT_CHOICES_CONSTANT
 TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES
-# TODO: handle all on_delete
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -140,6 +139,14 @@ class Race(models.Model):
     projected_team_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
     registration_closed = models.BooleanField(default=False)
 
+    def delete(self, *args, **kwargs):
+        # Check if this author has any associated registraitons
+        if self.registrations.exists():
+            raise ValidationError("This race has associated registrations. Deleting this race will delete all related registrations.")
+
+        if self.teams.exists():
+            raise ValidationError("This race has associated teams. Deleting this race will delete all related teams.")
+
     def __str__(self):
         return f'{self.name} - {self.event.name}'
 
@@ -179,6 +186,7 @@ class CouponCode(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=255)
     captain = models.ForeignKey('Registration', null=True, blank=True, on_delete=models.SET_NULL, related_name='captained_teams')
+    # deleting a race will delete all associated teams
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
     projected_team_time = models.CharField(max_length=50, null=True, blank=True)
     

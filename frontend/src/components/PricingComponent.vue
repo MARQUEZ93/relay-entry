@@ -1,3 +1,16 @@
+<script>
+  export default {
+    name: 'PricingComponent',
+    data(){
+      return {
+        texasDescription: "Texas races are eligible for lower rates because RelayEntry is a Texas small business. Contact us!",
+      }
+    },
+    async mounted() {
+      window.scrollTo(0, 0);
+    },
+  };
+</script>
 <template>
     <v-container>
         <v-row>
@@ -70,17 +83,6 @@
         </v-row>
     </v-container>
   </template>
-  
-  <script>
-  export default {
-    name: 'PricingComponent',
-    data(){
-      return {
-        texasDescription: "Texas races are eligible for lower rates because RelayEntry is a Texas small business. Contact us!",
-      }
-    },
-  };
-  </script>
   
 <style scoped>
   h1 {

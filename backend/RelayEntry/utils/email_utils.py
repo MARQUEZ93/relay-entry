@@ -4,6 +4,26 @@ from mailjet_rest import Client
 import os
 import logging
 logger = logging.getLogger(__name__)
+from django.core import signing
+from datetime import timedelta
+from django.utils import timezone
+
+def generate_token(team_id, captain_email):
+    data = {'team_id': team_id, 'email': captain_email}
+    token = signing.dumps(data)
+    return token
+
+def send_team_edit_link(team):
+    token = generate_token(team.id, team.captain.email)
+    edit_link = f"{WWW_HOST}/{team.race.event.url_name}/edit-team/{token}"
+
+    send_email(
+        recipient_email=team.captain.email,
+        recipient_name=team.captain.full_name(),
+        subject='Edit Your Team',
+        text_part="Greetings from RelayEntry!",
+        html_part=f'Please click the link to edit your team: {edit_link}',
+    )
 
 def send_email(recipient_email, recipient_name, subject, text_part, html_part):
     """

@@ -42,6 +42,12 @@ export default {
   fetchCsrfToken() {
     return apiClient.get(`/get-csrf/`);
   },
+  updateTeam(token, teamData) {
+    return apiClient.put(`/api/edit-team/${token}/`, teamData);
+  },
+  requestEditLink(eventId, email) {
+    return apiClient.post(`/api/events/${eventId}/request-edit-link/`, { email });
+  },
   getEvent(eventSlug) {
     return apiClient.get(`/events/${eventSlug}/`);
   },

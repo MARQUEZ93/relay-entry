@@ -25,7 +25,7 @@ from django.middleware.csrf import get_token
 from decimal import Decimal
 from django.utils.html import escape
 from django.core.validators import validate_email, URLValidator
-from .utils.email_utils import send_email
+from .utils.email_utils import send_email, generate_token, send_team_edit_link
 from django.core.cache import cache
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
@@ -466,5 +466,44 @@ def stripe_webhook(request):
         stripe_logger.error(f"Unhandled event type {event['type']}")
     return JsonResponse({'status': 'success'}, status=200)
 
-# API_DRF FOR ANY NEW VIEWS
+@require_POST
+def request_edit_link(request, event_id):
+    email = request.POST.get('email')
+
+    try:
+        # Filter teams by event and captain's email
+        team = Team.objects.get(event_id=event_id, captain__email=email)
+        token = generate_token(team.id, team.captain.email)
+        send_team_edit_link(team)
+    except Team.DoesNotExist:
+        pass  # Do nothing, continue to return the generic response
+
+    # Always return the same generic response
+    return JsonResponse({'message': 'If your email is associated with a team, an email has been sent with the link to edit your team.'})
+
+@require_http_methods(["PUT"])
+def verify_token_and_update_team(request, token):
+    try:
+        data = signing.loads(token, max_age=timedelta(minutes=30))  # Token expires in 30 minutes
+        team_id = data['team_id']
+        email = data['email']
+
+        team = Team.objects.get(id=team_id, captain__email=email)
+
+        # Updating the team name
+        team.name = request.POST.get('name', team.name)
+        team.save()
+
+        # Updating team members
+        members_data = request.POST.get('members', [])
+        for member_data in members_data:
+            member, created = TeamMember.objects.get_or_create(
+                team=team, email=member_data['email']
+            )
+            member.leg_order = member_data['leg_order']
+            member.save()
+
+        return JsonResponse({'message': 'Team updated successfully'})
     
+    except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):
+        return HttpResponseBadRequest("Invalid or expired token")   

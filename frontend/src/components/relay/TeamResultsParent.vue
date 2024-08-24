@@ -94,7 +94,7 @@ export default {
             </v-card-subtitle>
             <v-card-actions class="social-icons">
                 <v-btn v-for="icon in socialIcons" :key="icon.name" :href="icon.url" target="_blank" icon>
-                <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
+                  <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
                 </v-btn>
             </v-card-actions>
             </v-card>

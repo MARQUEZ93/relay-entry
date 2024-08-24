@@ -325,7 +325,7 @@ def create_payment_intent(request):
         return JsonResponse({'error': str(e)}, status=403)
 
 @require_GET
-def race_results(request, race_id):
+def team_race_results(request, race_id):
     try:
         # Get the race or return 404 if not found
         try:

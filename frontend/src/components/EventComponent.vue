@@ -141,13 +141,9 @@ export default {
               <v-card-subtitle>
                 {{ race.hour }}:{{ formatMinute(race.minute) }} {{ race.time_indicator }}
               </v-card-subtitle>
-              <!-- <v-card-subtitle>
-                {{ formattedRaceDate(race.date) }}
-              </v-card-subtitle> -->
               <v-card-subtitle>
                 ${{ formatPrice(race.price) }}
               </v-card-subtitle>
-              <!-- TODO: revert -->
               <v-card-actions class="justify-center">
                 <router-link :to="`/events/${event.url_alias}/`">
                   <v-btn disabled color="red">{{ getRegisterButtonText(race) }}</v-btn>

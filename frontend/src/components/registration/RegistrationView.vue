@@ -14,6 +14,7 @@ export default {
   },
   async mounted() {
     window.scrollTo(0, 0);
+    console.log("this is mounted");
   },
   data() {
     return {
@@ -96,7 +97,9 @@ export default {
       try {
         const response = await api.getRace(eventSlug, raceId);
         this.race = response.data;
-        // TODO: redirect on falsey registration_closed
+        if ((this.race && this.race.registration_closed) || (this.race && this.race.event && this.race.event.registration_closed)){
+          this.$router.push({ path: '/' });
+        }
         this.loading = false;
       } catch (error) {
         this.error = 'Error fetching race details.';
@@ -141,10 +144,10 @@ export default {
   async created() {
     const eventSlug = this.$route.params.url_alias;
     const raceId = this.$route.params.id;
+    console.log("this is created");
     await this.fetchRace(eventSlug, raceId);
-    // TODO: revert
-    // await this.createPaymentIntentOnMount();
-    // await this.initStripe();
+    await this.createPaymentIntentOnMount();
+    await this.initStripe();
   },
 };
 </script>

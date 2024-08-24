@@ -36,11 +36,17 @@ export function customSameDistance(race) {
   let value = race.custom_distance_value;
 
   if (race.custom_distance_unit === 'm') {
-    // Strip .00 decimal
-    // TODO: test this shit
-    value = parseFloat(value).toFixed(2);
-    if (value.endsWith('.00')) {
-      value = value.slice(0, -3);
+    // Convert the value to a floating point number
+    value = parseFloat(value);
+     // Check if the value is an integer (i.e., no decimal places)
+    if (Number.isInteger(value)) {
+      value = value.toString();  // Convert it back to a string without decimals
+    } else {
+      // Otherwise, format it to 2 decimal places, then strip any trailing .00
+      value = value.toFixed(2);
+      if (value.endsWith('.00')) {
+          value = value.slice(0, -3);  // Remove the .00 part
+      }
     }
   }
 

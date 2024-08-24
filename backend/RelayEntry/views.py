@@ -219,7 +219,6 @@ def team_register(request):
 
 @require_POST
 def event_register(request, url_alias):
-    # TODO: url_alias vs event_id
     try:
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
@@ -341,7 +340,6 @@ def race_results(request, race_id):
         # Serialize the data
         serializer = TeamResultSerializer(teams, many=True)
         return JsonResponse(serializer.data, safe=False)
-    # TODO: consider error handling w/ detail api drf
     except Exception as e:
         print(e)
         return JsonResponse({'error': str(e)}, status=403)
@@ -467,4 +465,6 @@ def stripe_webhook(request):
     else:
         stripe_logger.error(f"Unhandled event type {event['type']}")
     return JsonResponse({'status': 'success'}, status=200)
+
+# API_DRF FOR ANY NEW VIEWS
     

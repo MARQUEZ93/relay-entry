@@ -104,7 +104,6 @@ export default {
                 <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
                 </v-btn>
             </v-card-actions>
-            <!-- TODO: improve -->
             <v-card-subtitle class="need-overflow-class">
                 Each team member must register for their name to appear for their leg!
             </v-card-subtitle>

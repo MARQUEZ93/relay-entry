@@ -65,7 +65,7 @@ class TeamResultSerializer(serializers.ModelSerializer):
 
     def get_captain_name(self, obj):
         return f'{obj.captain.first_name} {obj.captain.last_name}'
-    # TODO: think of lookup performance
+
     def get_num_runners(self, obj):
         return obj.race.num_runners
 

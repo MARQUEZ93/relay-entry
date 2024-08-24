@@ -104,7 +104,7 @@ export default {
                 <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
                 </v-btn>
             </v-card-actions>
-            <v-card-subtitle class="need-overflow-class">
+            <v-card-subtitle class="prevent-overflow">
                 Each team member must register for their name to appear for their leg!
             </v-card-subtitle>
             </v-card>
@@ -130,7 +130,7 @@ export default {
                     @click="toggleTeam(team.id)"
                 >
                     <div>
-                        <v-list-item-title class="d-flex align-center justify-center">{{ team.name }} <v-icon small class="ml-3 mdi mdi-chevron-down"></v-icon></v-list-item-title>
+                        <v-list-item-title class="d-flex align-center justify-center prevent-overflow">{{ team.name }} <v-icon small class="ml-3 mdi mdi-chevron-down"></v-icon></v-list-item-title>
                         <v-list-item-subtitle><strong>Captain:</strong> {{ team.captain.first_name }} {{ team.captain.last_name }}</v-list-item-subtitle>
                         <v-list-item-subtitle><strong>Projected Time:</strong> {{ team.projected_team_time }}</v-list-item-subtitle>
                     </div>
@@ -164,11 +164,6 @@ export default {
 </template>
 
 <style scoped>
-  .need-overflow-class{
-    white-space: normal;
-    overflow: visible;
-    text-overflow: initial;
-  }
   .event-name {
     font-size: 2.5rem;
     word-wrap: break-word;

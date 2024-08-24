@@ -119,4 +119,9 @@ export default {
   .v-navigation-drawer a:hover {
     text-decoration: underline;
   }
+  .prevent-overflow{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: initial;
+  }
 </style>

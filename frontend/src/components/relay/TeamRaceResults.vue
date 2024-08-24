@@ -135,7 +135,7 @@ export default {
     <v-row v-if="!loading && raceResults.length > 0">
       <v-col cols="12">
         <v-card-title>{{ raceName }} Results</v-card-title>
-        <v-card-subtitle class="need-overflow-class">
+        <v-card-subtitle class="prevent-overflow">
           Results displayed exactly as provided by the event or timer.
         </v-card-subtitle>
         <v-data-table
@@ -177,11 +177,6 @@ export default {
 </template>
 
 <style scoped>
-  .need-overflow-class{
-    white-space: normal;
-    overflow: visible;
-    text-overflow: initial;
-  }
   .event-name {
     font-size: 2.5rem;
     word-wrap: break-word;

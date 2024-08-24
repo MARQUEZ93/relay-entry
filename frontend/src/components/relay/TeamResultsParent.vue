@@ -115,11 +115,6 @@ export default {
 </template>
 
 <style scoped>
-  .need-overflow-class{
-    white-space: normal;
-    overflow: visible;
-    text-overflow: initial;
-  }
   .event-name {
     font-size: 2.5rem;
     word-wrap: break-word;

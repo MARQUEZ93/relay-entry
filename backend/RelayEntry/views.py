@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from .decorators import anonymous_required
 from django.core.mail import send_mail
+from django.core import signing
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -17,6 +18,7 @@ from django.db import transaction
 from .utils.stripe_utils import retrieve_payment_intent 
 import stripe
 from .conversion import convert_keys_to_snake_case, convert_keys_to_camel_case
+from datetime import timedelta
 stripe.api_key = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
 
@@ -489,32 +491,61 @@ def request_edit_link(request, url_alias):
     # Always return the same generic response
     return JsonResponse({'message': 'If your email is associated with a team, an email has been sent with the link to edit your team.'})
 
-@require_http_methods(["PUT"])
-def verify_token_and_update_team(request, token):
+@require_GET
+def get_team_data(request, token):
     try:
-        data = json.loads(request.body)
-        print(data)
-        data = convert_keys_to_snake_case(data)
+        # Validate the token and extract the data
         data = signing.loads(token, max_age=timedelta(minutes=30))  # Token expires in 30 minutes
         team_id = data['team_id']
         email = data['email']
 
+        # Retrieve the team and its members
         team = Team.objects.get(id=team_id, captain__email=email)
-        # TODO: this is fucked
-        # Updating the team name
-        team.name = request.POST.get('name', team.name)
+        team_data = {
+            'name': team.name,
+            'projected_team_time_choices': team.race.projected_team_time_choices,
+            'projected_team_time': team.projected_team_time,
+            'members': list(team.members.values('email', 'leg_order')),
+            'event_url_alias': team.race.event.url_alias,
+        }
+
+        return JsonResponse({'team': team_data})
+
+    except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):
+        return HttpResponseBadRequest("Invalid or expired token")
+
+@require_http_methods(["PUT"])
+def verify_token_and_update_team(request, token):
+    try:
+        # Validate the token and extract data
+        token_data = signing.loads(token, max_age=timedelta(minutes=30))  # Token expires in 30 minutes
+        team_id = token_data['team_id']
+        email = token_data['email']
+
+        # Get the team
+        team = Team.objects.get(id=team_id, captain__email=email)
+
+        # Parse the request body
+        data = json.loads(request.body)
+        data = convert_keys_to_snake_case(data)
+
+        # Update the team name and projected team time
+        team.name = data.get('name', team.name)
+        team.projected_team_time = data.get('projected_team_time', team.projected_team_time)
         team.save()
 
-        # Updating team members
-        members_data = request.POST.get('members', [])
+        # Update team members
+        members_data = data.get('members', [])
         for member_data in members_data:
             member, created = TeamMember.objects.get_or_create(
                 team=team, email=member_data['email']
             )
-            member.leg_order = member_data['leg_order']
+            member.leg_order = member_data.get('leg_order', member.leg_order)
             member.save()
 
         return JsonResponse({'message': 'Team updated successfully'})
-    
+
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):
-        return HttpResponseBadRequest("Invalid or expired token")   
+        return HttpResponseBadRequest("Invalid or expired token")
+    except Exception as e:
+        return HttpResponseBadRequest(f"An error occurred: {str(e)}")   

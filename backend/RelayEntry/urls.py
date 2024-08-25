@@ -7,7 +7,6 @@ from .views import EventDetailView, RaceDetailView
 urlpatterns = [
     path('', views.index, name='index'), 
     # path('signup/', views.signup, name='signup'),
-    path('api/events/<slug:url_alias>/request-edit-link/', views.request_edit_link, name='request-edit-link'),
     path('api/events/<slug:url_alias>/races/<int:id>/', RaceDetailView.as_view(), name='race-detail'),
     path('api/events/<slug:url_alias>/', EventDetailView.as_view(), name='event-detail'),
     path('api/get-csrf/', views.get_csrf_token, name='get_csrf_token'),
@@ -17,5 +16,7 @@ urlpatterns = [
     path('api/create-payment-intent/', views.create_payment_intent, name='create_payment_intent'),
     path('api/contact/', views.contact, name='contact'),
     path('api/stripe/webhook', views.stripe_webhook, name='stripe_webhook'),
+    path('api/events/<slug:url_alias>/request-edit-link/', views.request_edit_link, name='request-edit-link'),
     path('api/edit-team/<str:token>/', views.verify_token_and_update_team, name='edit-team'),
+    path('api/teams/get-team/<str:token>/', views.get_team_data, name='get-team-data'),
 ]

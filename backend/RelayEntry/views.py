@@ -12,7 +12,7 @@ import json
 from .models import UserProfile, Event, Race, Registration, Team, TeamMember
 from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer
 from rest_framework import generics
-from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.db import transaction
 from .utils.stripe_utils import retrieve_payment_intent 
 import stripe

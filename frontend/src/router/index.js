@@ -9,8 +9,7 @@ import RegisterAndWaiver from '../components/registration/RegisterAndWaiver.vue'
 import RegisteredTeams from '../components/relay/RegisteredTeams.vue';
 import TeamResultsParent from '../components/relay/TeamResultsParent.vue';
 import TeamRaceResults from '../components/relay/TeamRaceResults.vue';
-import RequestEditTeamLink from './components/relay/RequestEditTeamLink.vue';
-import EditTeam from './components/relay/EditTeam.vue';
+import EditTeam from '../components/relay/EditTeam.vue';
 
 import ConfirmationComponent from '../components/registration/ConfirmationComponent.vue';
 import AboutComponent from '../components/AboutComponent.vue';
@@ -43,12 +42,12 @@ const routes = [
     component: EventComponent,
   },
   {
-    path: '/events/:eventUrlAlias/teamResults',
+    path: '/events/:eventUrlAlias/team-results',
     name: 'TeamResultsParent',
     component: TeamResultsParent,
   },
   {
-    path: '/events/:eventUrlAlias/teamResults/:raceId',
+    path: '/events/:eventUrlAlias/team-results/:raceId',
     name: 'TeamRaceResults',
     component: TeamRaceResults,
   },
@@ -62,11 +61,6 @@ const routes = [
     name: 'RegistrationView',
     component: RegistrationView,
     props: true
-  },
-  {
-    path: '/events/:event_id/request-edit-link',
-    name: 'RequestEditLink',
-    component: RequestEditTeamLink
   },
   {
     path: '/edit-team/:token',

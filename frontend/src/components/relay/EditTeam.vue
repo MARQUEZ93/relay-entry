@@ -1,6 +1,4 @@
 <script>
-  import axios from 'axios';
-  
   export default {
     data() {
       return {
@@ -13,20 +11,23 @@
       };
     },
     created() {
-      const token = this.$route.params.token;
+        // TODO: fix this shit
+    //   const token = this.$route.params.token;
       // Optionally, you could fetch the current team data here if needed
     },
     methods: {
       updateTeam() {
-        const token = this.$route.params.token;
-        axios.put(`/api/edit-team/${token}/`, this.team)
-          .then(response => {
-            this.$emit('show-snackbar', response.data.message);
-          })
-          .catch(error => {
-            console.error('There was an error updating the team:', error);
-            this.$emit('show-snackbar', 'An error occurred while updating the team.');
-          });
+        console.log("updateTeam");
+        // const token = this.$route.params.token;
+
+        // axios.put(`/api/edit-team/${token}/`, this.team)
+        //   .then(response => {
+        //     this.$emit('show-snackbar', response.data.message);
+        //   })
+        //   .catch(error => {
+        //     console.error('There was an error updating the team:', error);
+        //     this.$emit('show-snackbar', 'An error occurred while updating the team.');
+        //   });
       }
     }
   };

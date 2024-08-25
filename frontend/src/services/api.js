@@ -43,10 +43,10 @@ export default {
     return apiClient.get(`/get-csrf/`);
   },
   updateTeam(token, teamData) {
-    return apiClient.put(`/api/edit-team/${token}/`, teamData);
+    return apiClient.put(`/edit-team/${token}/`, teamData);
   },
-  requestEditLink(eventId, email) {
-    return apiClient.post(`/api/events/${eventId}/request-edit-link/`, { email });
+  requestEditLink(url_alias, email) {
+    return apiClient.post(`/events/${url_alias}/request-edit-link/`, { email });
   },
   getEvent(eventSlug) {
     return apiClient.get(`/events/${eventSlug}/`);
@@ -55,7 +55,7 @@ export default {
     return apiClient.get(`/events/${eventSlug}/races/${raceId}/`);
   },
   getTeamRaceResults(raceId) {
-    return apiClient.get(`/races/${raceId}/teamResults/`);
+    return apiClient.get(`/races/${raceId}/team-results/`);
   },
   registerTeam(data) {
     return apiClient.post('/teams/register/', data);

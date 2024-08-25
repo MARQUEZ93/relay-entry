@@ -9,6 +9,13 @@ export default {
       event: {},
       loading: true,
       error: null,
+      manageTeam: false,
+      manageTeamEmail: '',
+      snackbar: {
+        show: false,
+        message: '',
+        timeout: 8000
+      },
     };
   },
   computed: {
@@ -50,15 +57,40 @@ export default {
     },
   },
   methods: {
+    showError(message) {
+      this.snackbar.message = message;
+      this.snackbar.show = true;
+      this.manageTeamEmail = '';
+    },
     customSameDistance,
     formattedRaceDate,
     formatDateToUTC,
     formatMinute,
+    sendManageTeamLink() {
+      if (!this.manageTeamEmail || !this.eventHasRelayRace || !this.event){
+        this.showError('An error occurred while sending the link.');
+        return;
+      }
+      api.requestEditLink(this.event.url_alias, this.manageTeamEmail)
+        .then(response => {
+          this.showError(response.data.message);
+          // Wait 8 seconds, then toggle back to the previous state
+          setTimeout(() => {
+            this.toggleManageTeam();
+          }, 8000);
+        })
+        .catch( () => {
+          this.showError('An error occurred while sending the link.');
+        });
+    },
     getRegisterButtonText(race) {
       return race.registration_closed ? 'Closed' : (race.is_relay ? 'Register Team' : 'Register');
     },
     formatPrice(price) {
       return Number(price).toFixed(2);
+    },
+    toggleManageTeam() {
+      this.manageTeam = !this.manageTeam;
     },
   },
   async created() {
@@ -109,9 +141,12 @@ export default {
             </router-link>
           </v-card-actions>
           <v-card-actions class="d-flex flex-column align-center" v-if="eventHasRelayRace">
-            <router-link :to="`/events/${event.url_alias}/teamResults`">
+            <router-link :to="`/events/${event.url_alias}/team-results`">
               <v-btn color="primary">Results</v-btn>
             </router-link>
+          </v-card-actions>
+          <v-card-actions class="d-flex flex-column align-center" v-if="eventHasRelayRace">
+            <v-btn :disabled="manageTeam" @click="toggleManageTeam" color="primary">Manage My Team</v-btn>
           </v-card-actions>
           <v-card-actions class="d-flex flex-column align-center" v-if="!event.registration_closed">
             <router-link :to="`/events/${event.url_alias}/register`">
@@ -120,7 +155,40 @@ export default {
             <div class="help-text mt-2 text-center"><strong>Team Members: </strong>Register & sign the waiver above. <strong>Team Captains:</strong> Register your team & yourself below.</div>
           </v-card-actions>
         </v-card>
-        <v-row>
+        <v-container class="mt-5" v-if="manageTeam">
+          <v-row class="justify-center mb-5">
+            <v-col cols="12" md="8">
+              <v-btn color="primary" @click="toggleManageTeam">
+                <v-icon left>mdi-arrow-left</v-icon>
+                Go Back
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-alert type="info" class="mt-5 mb-5">
+            Please enter the email associated with the team captain who registered. 
+            This email will be used to send a link for managing your team.
+          </v-alert>
+          <v-row class="justify-center mb-5">
+            <v-col cols="6">
+              <v-form @submit.prevent="sendManageTeamLink">
+                <v-text-field
+                  v-model="manageTeamEmail"
+                  label="Team captain email"
+                  type="email"
+                  :rules="[v => !!v || 'Email is required', v => /.+@.+\..+/.test(v) || 'Email must be valid']"
+                  required
+                ></v-text-field>
+                <v-btn type="submit" color="primary">Send Link</v-btn>
+                <!-- Snackbar for error messages -->
+                <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout">
+                  {{ snackbar.message }}
+                  <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
+                </v-snackbar>
+              </v-form>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-row v-if="!manageTeam">
           <v-col
             v-for="race in event.races"
             :key="'race-' + race.id"

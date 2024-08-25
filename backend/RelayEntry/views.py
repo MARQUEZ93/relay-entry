@@ -467,12 +467,20 @@ def stripe_webhook(request):
     return JsonResponse({'status': 'success'}, status=200)
 
 @require_POST
-def request_edit_link(request, event_id):
-    email = request.POST.get('email')
-
+def request_edit_link(request, url_alias):
     try:
+        data = json.loads(request.body)
+        data = convert_keys_to_snake_case(data)
+        print(data)
+        print(url_alias)
+        event_id = data['event_id']
+        email = data['email']
         # Filter teams by event and captain's email
-        team = Team.objects.get(event_id=event_id, captain__email=email)
+        team = Team.objects.filter(
+            race__event__url_alias=url_alias,
+            race__event__id=event_id,
+            captain__email=email
+        ).first()
         token = generate_token(team.id, team.captain.email)
         send_team_edit_link(team)
     except Team.DoesNotExist:
@@ -484,12 +492,15 @@ def request_edit_link(request, event_id):
 @require_http_methods(["PUT"])
 def verify_token_and_update_team(request, token):
     try:
+        data = json.loads(request.body)
+        print(data)
+        data = convert_keys_to_snake_case(data)
         data = signing.loads(token, max_age=timedelta(minutes=30))  # Token expires in 30 minutes
         team_id = data['team_id']
         email = data['email']
 
         team = Team.objects.get(id=team_id, captain__email=email)
-
+        # TODO: this is fucked
         # Updating the team name
         team.name = request.POST.get('name', team.name)
         team.save()

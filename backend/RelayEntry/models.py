@@ -192,8 +192,17 @@ class Team(models.Model):
     
     def __str__(self):
         return f'{self.name} - {self.race.name}'
-    
+
+    def clean(self):
+        # Ensure the captain is only a captain for one team in the same event
+        if self.captain:
+            # Check for other teams in the same event with the same captain
+            if Team.objects.filter(race__event=self.race.event, captain=self.captain).exclude(pk=self.pk).exists():
+                raise ValidationError("This captain is already assigned to another team in this event.")
+
     def save(self, *args, **kwargs):
+        # Run the clean method to validate before saving
+        self.clean()
         base_name = self.name
         counter = 1
 

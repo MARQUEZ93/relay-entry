@@ -45,8 +45,8 @@ export default {
   updateTeam(token, teamData) {
     return apiClient.put(`/edit-team/${token}/`, teamData);
   },
-  requestEditLink(url_alias, email) {
-    return apiClient.post(`/events/${url_alias}/request-edit-link/`, { email });
+  requestEditLink(url_alias, data) {
+    return apiClient.post(`/events/${url_alias}/request-edit-link/`, data);
   },
   getEvent(eventSlug) {
     return apiClient.get(`/events/${eventSlug}/`);

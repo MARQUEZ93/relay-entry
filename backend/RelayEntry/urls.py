@@ -7,7 +7,7 @@ from .views import EventDetailView, RaceDetailView
 urlpatterns = [
     path('', views.index, name='index'), 
     # path('signup/', views.signup, name='signup'),
-    path('api/events/<int:event_id>/request-edit-link/', views.request_edit_link, name='request-edit-link'),
+    path('api/events/<slug:url_alias>/request-edit-link/', views.request_edit_link, name='request-edit-link'),
     path('api/events/<slug:url_alias>/races/<int:id>/', RaceDetailView.as_view(), name='race-detail'),
     path('api/events/<slug:url_alias>/', EventDetailView.as_view(), name='event-detail'),
     path('api/get-csrf/', views.get_csrf_token, name='get_csrf_token'),

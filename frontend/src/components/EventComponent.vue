@@ -71,17 +71,16 @@ export default {
         this.showError('An error occurred while sending the link.');
         return;
       }
-      api.requestEditLink(this.event.url_alias, this.manageTeamEmail)
-        .then(response => {
-          this.showError(response.data.message);
-          // Wait 8 seconds, then toggle back to the previous state
-          setTimeout(() => {
-            this.toggleManageTeam();
-          }, 8000);
-        })
-        .catch( () => {
-          this.showError('An error occurred while sending the link.');
-        });
+      api.requestEditLink(this.event.url_alias, {
+        eventId: this.event.id,
+        email: this.manageTeamEmail
+      }).then(response => {
+        this.showError(response.data.message);
+        this.toggleManageTeam();
+      })
+      .catch( () => {
+        this.showError('An error occurred while sending the link.');
+      });
     },
     getRegisterButtonText(race) {
       return race.registration_closed ? 'Closed' : (race.is_relay ? 'Register Team' : 'Register');
@@ -179,15 +178,14 @@ export default {
                   required
                 ></v-text-field>
                 <v-btn type="submit" color="primary">Send Link</v-btn>
-                <!-- Snackbar for error messages -->
-                <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout">
-                  {{ snackbar.message }}
-                  <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
-                </v-snackbar>
               </v-form>
             </v-col>
           </v-row>
         </v-container>
+        <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout">
+          {{ snackbar.message }}
+          <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
+        </v-snackbar>
         <v-row v-if="!manageTeam">
           <v-col
             v-for="race in event.races"

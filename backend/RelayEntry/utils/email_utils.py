@@ -7,15 +7,18 @@ logger = logging.getLogger(__name__)
 from django.core import signing
 from datetime import timedelta
 from django.utils import timezone
+from django.conf import settings
+from ..models import Team
+from typing import Any
 
 def generate_token(team_id, captain_email):
     data = {'team_id': team_id, 'email': captain_email}
     token = signing.dumps(data)
     return token
 
-def send_team_edit_link(team):
+def send_team_edit_link(team: Team) -> Any:
     token = generate_token(team.id, team.captain.email)
-    edit_link = f"{WWW_HOST}/{team.race.event.url_name}/edit-team/{token}"
+    edit_link = f"{settings.WWW_HOST}/edit-team/{token}"
 
     send_email(
         recipient_email=team.captain.email,

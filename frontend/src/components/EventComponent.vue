@@ -212,7 +212,7 @@ export default {
               </v-card-subtitle>
               <v-card-actions class="justify-center">
                 <router-link :to="`/events/${event.url_alias}/`">
-                  <v-btn disabled color="red">{{ getRegisterButtonText(race) }}</v-btn>
+                  <v-btn :disabled="race.registration_closed" :color="race.registration_closed ? 'red' : 'primary'">{{ getRegisterButtonText(race) }}</v-btn>
                 </router-link>
               </v-card-actions>
             </v-card>

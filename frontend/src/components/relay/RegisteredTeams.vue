@@ -186,49 +186,6 @@ export default {
     margin: 0 5px;
   }
 
-  .social-icons {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-  }
-
-  .social-icons .v-btn {
-    margin: 0 10px;
-  }
-
-  .social-icons .v-icon {
-    font-size: 30px;
-  }
-
-  .facebook-icon {
-    color: #3b5998;
-    background-color: #e9ebee;
-    border-radius: 50%;
-  }
-
-  .instagram-icon {
-    color: #e1306c;
-    background-color: #f7f7f7;
-    border-radius: 50%;
-  }
-
-  .twitter-icon {
-    color: #1da1f2;
-    background-color: #e8f5fd;
-    border-radius: 50%;
-  }
-
-  .email-icon {
-    color: #ea4335;
-    background-color: #fce8e6;
-    border-radius: 50%;
-  }
-
-  .website-icon {
-    color: #4285f4;
-    background-color: #e8f0fe;
-    border-radius: 50%;
-  }
   .race-card {
     transition: transform 0.3s, box-shadow 0.3s;
   }

@@ -1,5 +1,6 @@
 <script>
 import api from '@/services/api';
+import { formattedRaceDate, customSameDistance, formatDateToUTC, formatMinute } from '@/utils/methods';
 
 export default {
   data() {
@@ -9,26 +10,60 @@ export default {
         show: false,
         message: '',
         timeout: 5000
-      }
+      },
+      event: null,
     };
   },
   created() {
     const token = this.$route.params.token;
     this.fetchTeamData(token);
   },
-  methods: {
-    goBack() {
-      const urlAlias = this.team.race.event.url_alias;  // Assuming the URL alias is nested like this
-      this.$router.push(`/events/${urlAlias}`);
+  computed: {
+    formattedEventDate() {
+      if (this.event.date) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const start = this.formatDateToUTC(this.event.date, options);
+        if (this.event.end_date) {
+          const end = this.formatDateToUTC(this.event.end_date, options);
+          return `${start} - ${end}`;
+        }
+        return start;
+      }
+      return null;
     },
+    formattedEventLocation() {
+      const parts = [
+        this.event.address,
+        this.event.city,
+        this.event.state,
+        this.event.postal_code,
+      ].filter(Boolean);
+      return parts.join(', ');
+    },
+    socialIcons() {
+      return [
+        { name: 'facebook', icon: 'mdi-facebook', iconClass: 'facebook-icon', url: this.event.facebook_url },
+        { name: 'instagram', icon: 'mdi-instagram', iconClass: 'instagram-icon', url: this.event.instagram_url },
+        { name: 'twitter', icon: 'mdi-twitter', iconClass: 'twitter-icon', url: this.event.twitter_url },
+        { name: 'email', icon: 'mdi-email', iconClass: 'email-icon', url: `mailto:${this.event.email}` },
+        { name: 'website', icon: 'mdi-web', iconClass: 'website-icon', url: this.event.website_url },
+      ].filter(icon => icon.url);
+    },
+  },
+  methods: {
+    goToEventPage() {
+      this.$router.push({ name: 'Event', params: { eventUrlAlias: this.event.url_alias } });
+    },
+    formattedRaceDate, customSameDistance, formatDateToUTC, formatMinute,
     fetchTeamData(token) {
       api.getTeamData(token)
         .then(response => {
           this.team = response.data.team;
+          this.event = response.data.event;
         })
         .catch(error => {
           console.error('Error fetching team data:', error);
-          this.showError('An error occurred while fetching the team data.');
+          this.showError('An error occurred while fetching data.');
         });
     },
     updateTeam() {
@@ -36,7 +71,6 @@ export default {
       api.updateTeam(token, this.team)
         .then(response => {
           this.showError(response.data.message);
-
           // Wait 5 seconds, then toggle back to the previous state
           setTimeout(() => {
             this.goBack();
@@ -56,15 +90,33 @@ export default {
 </script>
 <template>
   <v-container class="mt-5">
-    <v-row justify="center mb-5">
+    <v-row justify="center">
       <v-col cols="12" md="8">
-        <v-btn color="primary" @click="goBack">
+        <v-btn color="primary" @click="goToEventPage">
           <v-icon left>mdi-arrow-left</v-icon>
-          Go Back
+          Back to Event Page
         </v-btn>
       </v-col>
     </v-row>
-
+    <v-row>
+        <v-col v-if="event">
+            <v-card class="mx-auto my-5 pa-5">
+            <v-card-title class="event-name">{{ event.name }}</v-card-title>
+            <v-card-subtitle v-if="formattedEventDate">
+                <strong>Date:</strong> {{ formattedEventDate }}
+            </v-card-subtitle>
+            <v-card-subtitle v-if="formattedEventLocation">
+                <strong>Location:</strong> {{ formattedEventLocation }}
+            </v-card-subtitle>
+            <v-card-actions class="social-icons">
+                <v-btn v-for="icon in socialIcons" :key="icon.name" :href="icon.url" target="_blank" icon>
+                <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
+                </v-btn>
+            </v-card-actions>
+            </v-card>
+        </v-col>
+    </v-row>
+    <v-card-title>Manage My Team</v-card-title>
     <v-row justify="center mb-5" v-if="team">
       <v-col cols="12" md="6">
         <v-form @submit.prevent="updateTeam">
@@ -89,7 +141,7 @@ export default {
 
           <v-divider class="my-4"></v-divider>
 
-          <v-subheader>Team Members</v-subheader>
+          <v-subheader class="mb-2">Team Members</v-subheader>
           <v-row v-for="index in Math.ceil(team.members.length / 2)" :key="index">
             <!-- First text field for the current pair -->
             <v-col cols="6">

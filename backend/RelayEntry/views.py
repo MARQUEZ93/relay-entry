@@ -495,30 +495,43 @@ def request_edit_link(request, url_alias):
 def get_team_data(request, token):
     try:
         # Validate the token and extract the data
-        data = signing.loads(token, max_age=timedelta(minutes=30))  # Token expires in 30 minutes
+        data = signing.loads(token, max_age=timedelta(minutes=20))
         team_id = data['team_id']
         email = data['email']
 
         # Retrieve the team and its members
         team = Team.objects.get(id=team_id, captain__email=email)
+        event = team.race.event
         team_data = {
             'name': team.name,
             'projected_team_time_choices': team.race.projected_team_time_choices,
             'projected_team_time': team.projected_team_time,
             'members': list(team.members.values('email', 'leg_order')),
-            'event_url_alias': team.race.event.url_alias,
+        }
+        event_data = {
+            'name': event.name,
+            'date': event.date,
+            'end_date': event.end_date,
+            'url_alias': event.url_alias,
+            'address': event.address,
+            'city': event.city,
+            'state': event.state,
+            'postal_code': event.postal_code,
+            'facebook_url': event.facebook_url,
+            'twitter_url': event.twitter_url,
+            'email': event.email,
+            'website_url': event.website_url,
         }
 
-        return JsonResponse({'team': team_data})
+        return JsonResponse({'team': team_data, 'event': event_data})
 
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):
-        return HttpResponseBadRequest("Invalid or expired token")
-
+        return JsonResponse({'error': 'Invalid or expired token'}, status=400)
 @require_http_methods(["PUT"])
 def verify_token_and_update_team(request, token):
     try:
         # Validate the token and extract data
-        token_data = signing.loads(token, max_age=timedelta(minutes=30))  # Token expires in 30 minutes
+        token_data = signing.loads(token, max_age=timedelta(minutes=20))  # Token expires in 20 minutes
         team_id = token_data['team_id']
         email = token_data['email']
 
@@ -546,6 +559,6 @@ def verify_token_and_update_team(request, token):
         return JsonResponse({'message': 'Team updated successfully'})
 
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):
-        return HttpResponseBadRequest("Invalid or expired token")
+        return JsonResponse({'error': 'Invalid or expired token'}, status=400)
     except Exception as e:
-        return HttpResponseBadRequest(f"An error occurred: {str(e)}")   
+        return JsonResponse({'error': f"An unexpected error occurred: {str(e)}"}, status=500)

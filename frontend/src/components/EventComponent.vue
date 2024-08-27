@@ -10,6 +10,7 @@ export default {
       loading: true,
       error: null,
       manageTeam: false,
+      confirmRegistration: false,
       manageTeamEmail: '',
       snackbar: {
         show: false,
@@ -90,6 +91,15 @@ export default {
     },
     toggleManageTeam() {
       this.manageTeam = !this.manageTeam;
+      if (this.manageTeam && this.confirmRegistration){
+        this.confirmRegistration = false;
+      }
+    },
+    toggleRegistration() {
+      this.confirmRegistration = !this.confirmRegistration;
+      if (this.confirmRegistration && this.manageTeam){
+        this.manageTeam = false;
+      }
     },
   },
   async created() {
@@ -134,18 +144,19 @@ export default {
               <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
             </v-btn>
           </v-card-actions>
-          <v-card-actions class="d-flex flex-column align-center">
+          <v-card-actions class="d-flex flex-row justify-center align-center" v-if="eventHasRelayRace">
             <router-link :to="`/events/${event.url_alias}/teams`">
               <v-btn color="primary">Registered Teams</v-btn>
             </router-link>
+            ·
+            <v-btn :disabled="manageTeam" @click="toggleManageTeam" color="primary">Manage My Team</v-btn>
           </v-card-actions>
-          <v-card-actions class="d-flex flex-column align-center" v-if="eventHasRelayRace">
+          <v-card-actions class="d-flex flex-row justify-center align-center" v-if="eventHasRelayRace">
             <router-link :to="`/events/${event.url_alias}/team-results`">
               <v-btn color="primary">Results</v-btn>
             </router-link>
-          </v-card-actions>
-          <v-card-actions class="d-flex flex-column align-center" v-if="eventHasRelayRace">
-            <v-btn :disabled="manageTeam" @click="toggleManageTeam" color="primary">Manage My Team</v-btn>
+            ·
+            <v-btn :disabled="confirmRegistration" @click="toggleConfirmRegistration" color="primary">Confirm Registration</v-btn>
           </v-card-actions>
           <v-card-actions class="d-flex flex-column align-center" v-if="!event.registration_closed">
             <router-link :to="`/events/${event.url_alias}/register`">

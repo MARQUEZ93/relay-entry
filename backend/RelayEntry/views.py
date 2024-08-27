@@ -554,11 +554,16 @@ def verify_token_and_update_team(request, token):
         # Update team members
         members_data = data.get('members', [])
         for member_data in members_data:
+            leg_order = member_data.get('leg_order')
+            if leg_order is None:
+                return JsonResponse({'error': 'leg_order cannot be null.'}, status=400)
+
             member, created = TeamMember.objects.get_or_create(
                 team=team, email=member_data['email']
             )
-            member.leg_order = member_data.get('leg_order', member.leg_order)
+            member.leg_order = leg_order
             member.save()
+
         logger.info(f"Team Updated: {team.id}")
         return JsonResponse({'message': 'Team updated successfully'})
 

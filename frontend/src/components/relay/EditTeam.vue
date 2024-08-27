@@ -73,7 +73,7 @@ export default {
           this.showError(response.data.message);
           // Wait 5 seconds, then toggle back to the previous state
           setTimeout(() => {
-            this.goBack();
+            this.goToEventPage();
           }, 5000);
         })
         .catch(error => {

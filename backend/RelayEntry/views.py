@@ -530,6 +530,7 @@ def get_team_data(request, token):
 @require_http_methods(["PUT"])
 def verify_token_and_update_team(request, token):
     try:
+        print ("verify_token_and_update_team")
         # Validate the token and extract data
         token_data = signing.loads(token, max_age=timedelta(minutes=20))  # Token expires in 20 minutes
         team_id = token_data['team_id']
@@ -537,10 +538,13 @@ def verify_token_and_update_team(request, token):
 
         # Get the team
         team = Team.objects.get(id=team_id, captain__email=email)
+        print (team)
 
         # Parse the request body
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
+        print("data")
+        print(data)
 
         # Update the team name and projected team time
         team.name = data.get('name', team.name)
@@ -555,7 +559,7 @@ def verify_token_and_update_team(request, token):
             )
             member.leg_order = member_data.get('leg_order', member.leg_order)
             member.save()
-
+        logger.info(f"Team Updated: {team.id}")
         return JsonResponse({'message': 'Team updated successfully'})
 
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):

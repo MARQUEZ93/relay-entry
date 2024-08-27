@@ -25,7 +25,7 @@ def send_team_edit_link(team: Team) -> Any:
         recipient_name=team.captain.full_name(),
         subject='Edit Your Team',
         text_part="Greetings from RelayEntry!",
-        html_part=f'Please click the link to edit your team: {edit_link}',
+        html_part=f'Please click the link to edit your team: {edit_link}. The link expires in 20 minutes.',
     )
 
 def send_email(recipient_email, recipient_name, subject, text_part, html_part):

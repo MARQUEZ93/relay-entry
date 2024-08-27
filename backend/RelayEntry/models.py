@@ -189,6 +189,11 @@ class Team(models.Model):
     # deleting a race will delete all associated teams
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
     projected_team_time = models.CharField(max_length=50, null=True, blank=True)
+
+    def complete(self):
+        # Check if all team members have a related Registration
+        return all(Registration.objects.filter(member=member).exists() for member in self.members.all())
+        
     
     def __str__(self):
         return f'{self.name} - {self.race.name}'

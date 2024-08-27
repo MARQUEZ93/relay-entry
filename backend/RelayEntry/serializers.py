@@ -14,9 +14,13 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 class TeamSerializer(serializers.ModelSerializer):
     members = TeamMemberSerializer(many=True, read_only=True)
     captain = RegistrationSerializer(read_only=True)
+    complete = serializers.SerializerMethodField()
     class Meta:
         model = Team
-        fields = ['id', 'name', 'captain', 'projected_team_time', 'members']
+        fields = ['id', 'name', 'captain', 'projected_team_time', 'members', 'complete']
+
+    def get_complete(self, obj):
+        return obj.complete()
 
     def validate_members(self, value):
         if not value:

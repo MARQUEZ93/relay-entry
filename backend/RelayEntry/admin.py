@@ -96,11 +96,16 @@ class TeamMemberInline(admin.TabularInline):
     
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'race_name', 'projected_team_time', 'captain_name', 'team_members_info')
+    list_display = ('name', 'race_name', 'projected_team_time', 'captain_name', 'team_members_info', 'complete',)
     search_fields = ('name', 'race__name',)
     list_filter = ('race', EventFilter,)
     inlines = [TeamMemberInline]
     actions = [export_to_csv]
+
+    def complete(self, obj):
+        return obj.complete()
+
+    complete.boolean = True  # Display as a boolean icon in the admin interface
 
     def race_name(self, obj):
         return obj.race.name

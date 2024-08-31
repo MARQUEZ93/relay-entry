@@ -116,7 +116,7 @@ export default {
             </v-card>
         </v-col>
     </v-row>
-    <v-card-title>Manage My Team</v-card-title>
+    <h1 class="mb-2">Manage My Team</h1>
     <v-row justify="center mb-5" v-if="team">
       <v-col cols="12" md="6">
         <v-form @submit.prevent="updateTeam">
@@ -140,8 +140,7 @@ export default {
           </v-row>
 
           <v-divider class="my-4"></v-divider>
-
-          <v-subheader class="mb-2">Team Members</v-subheader>
+          <div class="text-subtitle-1 mb-2">Team Members</div>
           <v-row v-for="index in Math.ceil(team.members.length / 2)" :key="index">
             <!-- First text field for the current pair -->
             <v-col cols="6">

@@ -494,10 +494,13 @@ def request_edit_link(request, url_alias):
 @require_GET
 def get_team_data(request, token):
     try:
+        print("get_team_data")
+        print(token)
         # Validate the token and extract the data
-        data = signing.loads(token, max_age=timedelta(minutes=20))
+        data = signing.loads(token, max_age=timedelta(minutes=30))
         team_id = data['team_id']
         email = data['email']
+        print(data)
 
         # Retrieve the team and its members
         team = Team.objects.get(id=team_id, captain__email=email)
@@ -532,7 +535,7 @@ def verify_token_and_update_team(request, token):
     try:
         print ("verify_token_and_update_team")
         # Validate the token and extract data
-        token_data = signing.loads(token, max_age=timedelta(minutes=20))  # Token expires in 20 minutes
+        token_data = signing.loads(token, max_age=timedelta(minutes=30))  # Token expires in 30 minutes
         team_id = token_data['team_id']
         email = token_data['email']
 

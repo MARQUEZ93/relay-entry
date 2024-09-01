@@ -4,6 +4,7 @@ import { formattedRaceDate, customSameDistance, formatDateToUTC, formatMinute } 
 
 export default {
   name: 'EventComponent',
+  inject: ['showSnackbar'],
   data() {
     return {
       event: {},
@@ -58,29 +59,27 @@ export default {
     },
   },
   methods: {
-    showError(message) {
-      this.snackbar.message = message;
-      this.snackbar.show = true;
-      this.manageTeamEmail = '';
-    },
     customSameDistance,
     formattedRaceDate,
     formatDateToUTC,
     formatMinute,
     sendManageTeamLink() {
       if (!this.manageTeamEmail || !this.eventHasRelayRace || !this.event){
-        this.showError('An error occurred while sending the link.');
+        this.showSnackbar('An error occurred while sending the link.', 'error');
+        this.manageTeamEmail = '';
         return;
       }
       api.requestEditLink(this.event.url_alias, {
         eventId: this.event.id,
         email: this.manageTeamEmail
       }).then(response => {
-        this.showError(response.data.message);
+        this.showSnackbar(response?.data?.message, 'info');
+        this.manageTeamEmail = '';
         this.toggleManageTeam();
       })
       .catch( () => {
-        this.showError('An error occurred while sending the link.');
+        this.showSnackbar('An error occurred while sending the link.', 'error');
+        this.manageTeamEmail = '';
       });
     },
     getRegisterButtonText(race) {

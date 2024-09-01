@@ -7,6 +7,7 @@ import { formattedRaceDate, customSameDistance, formatMinute } from '@/utils/met
 import { loadStripe } from '@stripe/stripe-js';
 
 export default {
+  inject: ['showSnackbar'],
   components: {
     WaiverComponent,
     RegistrationData,
@@ -47,10 +48,6 @@ export default {
     },
   },
   methods: {
-    showError(message) {
-      this.snackbar.message = message;
-      this.snackbar.show = true;
-    },
     async initStripe() {
       this.stripe = await loadStripe(process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY);
       if (this.clientSecret){
@@ -80,7 +77,7 @@ export default {
         this.amount = response.data.amount;
         this.loading = false;
       } catch (e) {
-        this.showError('Payment gateway error. Please try again later.');
+        this.showSnackbar('Payment gateway error. Please try again later.', 'error');
       }
     },
     customSameDistance,

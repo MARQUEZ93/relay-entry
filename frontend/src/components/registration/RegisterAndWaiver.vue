@@ -9,6 +9,7 @@ export default {
     WaiverComponent,
     RegistrationData,
   },
+  inject: ['showSnackbar'],
   mounted() {
     window.scrollTo(0, 0);
   },
@@ -41,10 +42,6 @@ export default {
     formatMinute,
     updateWaiverAccepted(accepted) {
       this.waiverAccepted = accepted;
-    },
-    showError(message) {
-      this.snackbar.message = message;
-      this.snackbar.show = true;
     },
     updateIpAddress(ipAddress) {
       this.ipAddress = ipAddress;
@@ -101,7 +98,7 @@ export default {
         });
         if (response.data.error) {
           this.loading = false; // Hide loader on error
-          this.showError('An error occurred while processing your registration. Please try again later.');
+          this.showSnackbar('An error occurred while processing your registration. Please try again later.', 'error');
         } else {
           const { registrationResponseData, eventData } = await response.data;
           this.$store.commit('setConfirmationData', {
@@ -113,7 +110,7 @@ export default {
         }
       } catch (error) {
         this.loading = false;
-        this.showError('An error occurred while processing your registration. Please try again later.');
+        this.showSnackbar('An error occurred while processing your registration. Please try again later.', 'error');
       }
     },
   },

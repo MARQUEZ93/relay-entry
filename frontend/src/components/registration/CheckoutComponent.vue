@@ -1,6 +1,7 @@
 <script>
 import api from '@/services/api';  // Adjust the path according to your project structure
 export default {
+  inject: ['showSnackbar'],
   props: {
     race: {
       type: Object,
@@ -59,10 +60,6 @@ export default {
       await this.$refs.paymentElementWrapper.appendChild(this.paymentElementContainer);
       this.elementsLoading = false;
     },
-    showError(message) {
-      this.snackbar.message = message;
-      this.snackbar.show = true;
-    },
     async payAndRegisterTeam() {
       this.loading = true; // Show loader
       try {
@@ -76,9 +73,9 @@ export default {
         if (cp.error) {
           const error = cp.error;
           if (error.type === "card_error" || error.type === "validation_error") {
-            this.showError(error.message);
+            this.showSnackbar(error.message, 'error');
           } else {
-            this.showError("An unexpected error occured. No payment was processed.");
+            this.showSnackbar("An unexpected error occured. No payment was processed.", 'error');
           }
           this.loading = false;
           return;
@@ -91,7 +88,7 @@ export default {
         });
         if (response.data.error) {
           this.loading = false; // Hide loader on error
-          this.showError('An error occurred while processing your registration. Please email relayentry@gmail.com');
+          this.showSnackbar('An error occurred while processing your registration. Please email relayentry@gmail.com', 'error');
           return;
         } else {
           const { registrationData, raceData, teamData, paymentData } = response.data;
@@ -106,7 +103,7 @@ export default {
         }
       } catch (e){
           this.loading = false; // Hide loader on error
-          this.showError('Something unexpected occurred while processing your registration. Please try again later.');
+          this.showSnackbar('Something unexpected occurred while processing your registration. Please try again later.', 'error');
           return;
       }
     },

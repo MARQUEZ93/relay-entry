@@ -7,6 +7,7 @@ export default {
   data() {
     return {
       event: {},
+      statusInfo: 'A team’s registration status will be complete once all team members sign the waiver for their race.',
       loading: true,
       error: null,
       eventSlug: '',
@@ -133,7 +134,7 @@ export default {
                         <v-list-item-title class="d-flex align-center justify-center prevent-overflow">{{ team.name }} <v-icon small class="ml-3 mdi mdi-chevron-down"></v-icon></v-list-item-title>
                         <v-list-item-subtitle><strong>Captain:</strong> {{ team.captain.first_name }} {{ team.captain.last_name }}</v-list-item-subtitle>
                         <v-list-item-subtitle><strong>Projected Time:</strong> {{ team.projected_team_time }}</v-list-item-subtitle>
-                        <v-list-item-subtitle class="d-flex align-center justify-center">
+                        <v-list-item-subtitle class="d-flex align-center justify-center" v-tooltip.top="statusInfo">
                           <strong class="pr-1">Registration Status:</strong> 
                           <v-icon v-if="team.complete" color="green" aria-label="Team is completely registered">
                             mdi-check-circle

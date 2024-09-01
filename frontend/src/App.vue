@@ -6,10 +6,29 @@ export default {
   mounted() {
     api.fetchCsrfToken();
   },
+  provide() {
+    return {
+      showSnackbar: this.showSnackbar,
+    };
+  },
+  methods: {
+    showSnackbar(message, color = 'success', timeout = 8000) {
+      this.snackbar.message = message;
+      this.snackbar.color = color;
+      this.snackbar.timeout = timeout;
+      this.snackbar.show = true;
+    },
+  },
   data() {
     return {
       drawer: false,
       brandLogo,
+      snackbar: {
+        show: false,
+        message: '',
+        color: 'success',
+        timeout: 8000,
+      },
     };
   },
 };
@@ -64,6 +83,13 @@ export default {
     <v-main>
       <router-view></router-view>
     </v-main>
+     <!-- Snackbar -->
+     <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="snackbar.timeout">
+      {{ snackbar.message }}
+      <template v-slot:action>
+        <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
+      </template>
+    </v-snackbar>
     <v-footer app color="primary" dark>
       <v-row>
         <v-col cols="12">

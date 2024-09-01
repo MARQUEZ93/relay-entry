@@ -167,7 +167,7 @@ def team_register(request):
                     if member['email'] and member['email'].lower() == registration.email:
                         registration.member = team_member
                         registration.save()
-                        print(f"Connected registration {registration.id} to team member {team_member.email}")
+                        logger.info(f"Connected registration {registration.id} to team member {team_member.email}")
 
                 registrant_name = f"{registration_data['first_name']} {registration_data['last_name']}"
                 response_data = {
@@ -209,11 +209,9 @@ def team_register(request):
                 logger.error(f"Error during transaction: {str(e)}")
                 raise
     except json.JSONDecodeError as e:
-        print(e)
         logger.error(f"JSON decode error: {str(e)}")
         return JsonResponse({'error': "Invalid JSON data."}, status=400)
     except Exception as e:
-        print(e)
         logger.error(f"Unexpected error: {str(e)}")
         return JsonResponse({'error': "An unexpected error occurred."}, status=400)
 
@@ -286,11 +284,9 @@ def event_register(request, url_alias):
                 logger.error(f"Error during transaction: {str(e)}")
                 raise
     except json.JSONDecodeError as e:
-        print(e)
         logger.error(f"JSON decode error: {str(e)}")
         return JsonResponse({'error': "Invalid JSON data."}, status=400)
     except Exception as e:
-        print(e)
         logger.error(f"Unexpected error: {str(e)}")
         return JsonResponse({'error': "An unexpected error occurred."}, status=400)
 
@@ -343,7 +339,6 @@ def team_race_results(request, race_id):
         serializer = TeamResultSerializer(teams, many=True)
         return JsonResponse(serializer.data, safe=False)
     except Exception as e:
-        print(e)
         return JsonResponse({'error': str(e)}, status=403)
 
 @require_POST
@@ -473,8 +468,6 @@ def request_edit_link(request, url_alias):
     try:
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
-        print(data)
-        print(url_alias)
         event_id = data['event_id']
         email = data['email']
         # Filter teams by event and captain's email
@@ -494,13 +487,10 @@ def request_edit_link(request, url_alias):
 @require_GET
 def get_team_data(request, token):
     try:
-        print("get_team_data")
-        print(token)
         # Validate the token and extract the data
         data = signing.loads(token, max_age=timedelta(minutes=30))
         team_id = data['team_id']
         email = data['email']
-        print(data)
 
         # Retrieve the team and its members
         team = Team.objects.get(id=team_id, captain__email=email)
@@ -533,7 +523,6 @@ def get_team_data(request, token):
 @require_http_methods(["PUT"])
 def verify_token_and_update_team(request, token):
     try:
-        print ("verify_token_and_update_team")
         # Validate the token and extract data
         token_data = signing.loads(token, max_age=timedelta(minutes=30))  # Token expires in 30 minutes
         team_id = token_data['team_id']
@@ -541,13 +530,10 @@ def verify_token_and_update_team(request, token):
 
         # Get the team
         team = Team.objects.get(id=team_id, captain__email=email)
-        print (team)
 
         # Parse the request body
         data = json.loads(request.body)
         data = convert_keys_to_snake_case(data)
-        print("data")
-        print(data)
 
         # Update the team name and projected team time
         team.name = data.get('name', team.name)

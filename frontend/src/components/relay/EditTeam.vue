@@ -3,14 +3,10 @@ import api from '@/services/api';
 import { formattedRaceDate, customSameDistance, formatDateToUTC, formatMinute } from '@/utils/methods';
 
 export default {
+  inject: ['showSnackbar'],
   data() {
     return {
       team: null,  // Will hold the team data
-      snackbar: {
-        show: false,
-        message: '',
-        timeout: 5000
-      },
       event: null,
     };
   },
@@ -61,30 +57,27 @@ export default {
           this.team = response.data.team;
           this.event = response.data.event;
         })
-        .catch(error => {
-          console.error('Error fetching team data:', error);
-          this.showError('An error occurred while fetching data.');
+        .catch((error) => {
+          this.showSnackbar(`An error occurred while fetching data: ${error?.response?.data?.error}`, 'error');
+          setTimeout(() => {
+            this.$router.push({ name: 'HomeComponent' });
+          }, 5000);
         });
     },
     updateTeam() {
       const token = this.$route.params.token;
       api.updateTeam(token, this.team)
-        .then(response => {
-          this.showError(response.data.message);
+        .then((response) => {
+          this.showSnackbar(response.data.message, 'info');
           // Wait 5 seconds, then toggle back to the previous state
           setTimeout(() => {
             this.goToEventPage();
           }, 5000);
         })
-        .catch(error => {
-          console.error('Error updating team:', error);
-          this.showError('An error occurred while updating the team.');
+        .catch(() => {
+          this.showSnackbar('An error occurred while updating the team.', 'error');
         });
     },
-    showError(message) {
-      this.snackbar.message = message;
-      this.snackbar.show = true;
-    }
   }
 };
 </script>
@@ -116,7 +109,7 @@ export default {
             </v-card>
         </v-col>
     </v-row>
-    <h1 class="mb-2">Manage My Team</h1>
+    <h1 class="mb-2">Update Team</h1>
     <v-row justify="center mb-5" v-if="team">
       <v-col cols="12" md="6">
         <v-form @submit.prevent="updateTeam">
@@ -169,11 +162,5 @@ export default {
         </v-form>
       </v-col>
     </v-row>
-
-    <!-- Snackbar for Notifications -->
-    <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout">
-      {{ snackbar.message }}
-      <v-btn color="red" text @click="snackbar.show = false">Close</v-btn>
-    </v-snackbar>
   </v-container>
 </template>

@@ -65,9 +65,8 @@ export default {
         this.confirmName = '';
         return;
       }
-      api.confirmRegistration(this.event.url_alias, {
-        q: this.confirmName
-      }).then(response => {
+      console.log(this.confirmName);
+      api.confirmEventRegistration(this.event.url_alias, this.confirmName).then(response => {
         console.log(response);
       })
       .catch( () => {

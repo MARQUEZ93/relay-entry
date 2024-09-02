@@ -6,6 +6,8 @@ from django.core.mail import send_mail
 from django.core import signing
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db.models import Q, Value, CharField
+from django.db.models.functions import Concat
 from django.http import JsonResponse
 import os
 import logging
@@ -567,17 +569,16 @@ def verify_token_and_update_team(request, token):
         return JsonResponse({'error': str(ve)}, status=400)
     except Exception as e:
         return JsonResponse({'error': f"An unexpected error occurred: {str(e)}"}, status=500)
-
-def confirm_registration(request, url_alias):
-    data = json.loads(request.body)
-    data = convert_keys_to_snake_case(data)
-    query = data['q'].strip()
-    if query:
+@require_GET
+def confirm_registration(request, url_alias, name):
+    name = name.strip()
+    print(name)
+    if name:
         registrations = Registration.objects.filter(
-            race__event_id=event_id  # Filter by event ID
+            race__event__url_alias=url_alias
         ).filter(
-            Q(first_name__icontains=query) |  # Match on first name
-            Q(last_name__icontains=query)  # Match on last name
+            Q(first_name__icontains=name) |  # Match on first name
+            Q(last_name__icontains=name)  # Match on last name
         ).annotate(
             full_name=Concat(
                 'first_name', 

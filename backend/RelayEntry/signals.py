@@ -25,7 +25,7 @@ def send_registration_email(sender, instance, created, **kwargs):
             elif instance.race.event.website_url:
                 url = instance.race.event.website_url
             else:
-                url = "https://default.url"  # Default URL if none provided
+                url = f"https://www.relayentry.com/events/{instance.race.event.url_alias}"  # Default URL if none provided
             contact = "relayentry@gmail.com" # email this if you have questions
 
             html_content = f"""

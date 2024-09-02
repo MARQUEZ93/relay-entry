@@ -72,5 +72,8 @@ export default {
   },
   sendContact(data){
     return apiClient.post(`/contact/`, data);
+  },
+  confirmRegistration(eventSlug, data){
+    return apiClient.get(`/search/${eventSlug}/`, data);
   }
 };

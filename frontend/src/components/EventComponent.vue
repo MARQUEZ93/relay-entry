@@ -13,11 +13,7 @@ export default {
       manageTeam: false,
       confirmRegistration: false,
       manageTeamEmail: '',
-      snackbar: {
-        show: false,
-        message: '',
-        timeout: 8000
-      },
+      confirmName: '',
     };
   },
   computed: {
@@ -63,6 +59,22 @@ export default {
     formattedRaceDate,
     formatDateToUTC,
     formatMinute,
+    confirmRegistrationQuery() {
+      if (!this.confirmName || !this.event){
+        this.showSnackbar('An error occurred while confirming registration', 'error');
+        this.confirmName = '';
+        return;
+      }
+      api.confirmRegistration(this.event.url_alias, {
+        q: this.confirmName
+      }).then(response => {
+        console.log(response);
+      })
+      .catch( () => {
+        this.showSnackbar('An error occurred while confirming registartion.', 'error');
+        this.confirmName = '';
+      });
+    },
     sendManageTeamLink() {
       if (!this.manageTeamEmail || !this.eventHasRelayRace || !this.event){
         this.showSnackbar('An error occurred while sending the link.', 'error');
@@ -94,7 +106,7 @@ export default {
         this.confirmRegistration = false;
       }
     },
-    toggleRegistration() {
+    toggleConfirmRegistration() {
       this.confirmRegistration = !this.confirmRegistration;
       if (this.confirmRegistration && this.manageTeam){
         this.manageTeam = false;
@@ -164,6 +176,31 @@ export default {
             <div class="help-text mt-2 text-center"><strong>Team Members: </strong>Register & sign the waiver above. <strong>Team Captains:</strong> Register your team & yourself below.</div>
           </v-card-actions>
         </v-card>
+        <v-container class="mt-5" v-if="confirmRegistration">
+          <v-row class="justify-center mb-5">
+            <v-col cols="12" md="8">
+              <v-btn color="primary" @click="toggleConfirmRegistration">
+                <v-icon left>mdi-arrow-left</v-icon>
+                Go Back
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-alert type="info" class="mt-5 mb-5">
+            Please enter the name to confirm registration
+          </v-alert>
+          <v-row class="justify-center mb-5">
+            <v-col cols="6">
+              <v-form @submit.prevent="confirmRegistrationQuery">
+                <v-text-field
+                  v-model="confirmName"
+                  label="Enter name"
+                  required
+                ></v-text-field>
+                <v-btn type="submit" color="primary">Confirm Registration</v-btn>
+              </v-form>
+            </v-col>
+          </v-row>
+        </v-container>
         <v-container class="mt-5" v-if="manageTeam">
           <v-row class="justify-center mb-5">
             <v-col cols="12" md="8">
@@ -192,11 +229,7 @@ export default {
             </v-col>
           </v-row>
         </v-container>
-        <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout">
-          {{ snackbar.message }}
-          <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
-        </v-snackbar>
-        <v-row v-if="!manageTeam">
+        <v-row v-if="!manageTeam && !confirmRegistration">
           <v-col
             v-for="race in event.races"
             :key="'race-' + race.id"

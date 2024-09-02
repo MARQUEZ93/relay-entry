@@ -19,4 +19,5 @@ urlpatterns = [
     path('api/events/<slug:url_alias>/request-edit-link/', views.request_edit_link, name='request-edit-link'),
     path('api/edit-team/<str:token>/', views.verify_token_and_update_team, name='edit-team'),
     path('api/teams/get-team/<str:token>/', views.get_team_data, name='get-team-data'),
+    path('api/search/<slug:url_alias>/', views.confirm_registration, name='confirm_registration'),
 ]

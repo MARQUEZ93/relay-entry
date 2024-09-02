@@ -15,11 +15,6 @@ export default {
   },
   data() {
     return {
-      snackbar: {
-        show: false,
-        message: '',
-        timeout: 8000
-      },
       event: {},
       registrationData: {},
       racerDataComplete: false,
@@ -168,11 +163,6 @@ export default {
           <v-btn @click="previousTab" color="secondary" class="mt-3 mr-3">Previous</v-btn>
           <v-btn @click="submit" color="primary" :disabled="!waiverAccepted" class="mt-3 mr-3">Submit</v-btn>
         </div>
-        <!-- Snackbar for error messages -->
-        <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout" color="error">
-          {{ snackbar.message }}
-          <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
-        </v-snackbar>
       </v-col>
     </v-row>
   </v-container>

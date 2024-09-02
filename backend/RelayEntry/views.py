@@ -567,3 +567,26 @@ def verify_token_and_update_team(request, token):
         return JsonResponse({'error': str(ve)}, status=400)
     except Exception as e:
         return JsonResponse({'error': f"An unexpected error occurred: {str(e)}"}, status=500)
+
+def confirm_registration(request, url_alias):
+    data = json.loads(request.body)
+    data = convert_keys_to_snake_case(data)
+    query = data['q'].strip()
+    if query:
+        registrations = Registration.objects.filter(
+            race__event_id=event_id  # Filter by event ID
+        ).filter(
+            Q(first_name__icontains=query) |  # Match on first name
+            Q(last_name__icontains=query)  # Match on last name
+        ).annotate(
+            full_name=Concat(
+                'first_name', 
+                Value(' '), 
+                'last_name',
+                output_field=CharField()
+            )
+        ).values('first_name', 'last_name', 'full_name')
+        
+        return JsonResponse(list(registrations), safe=False)
+    
+    return JsonResponse([], safe=False)

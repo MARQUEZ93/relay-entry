@@ -48,11 +48,6 @@ export default {
     return {
       elementsLoading: true,
       loading: false,
-      snackbar: {
-        show: false,
-        message: '',
-        timeout: 8000
-      },
     };
   },
   methods: {
@@ -131,11 +126,6 @@ export default {
               <p class="mt-3 text-center"><strong>Note:</strong> All payments are non-refundable.</p>
             </v-col>
           </v-row>
-          <!-- Snackbar for error messages -->
-          <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout" color="error">
-            {{ snackbar.message }}
-            <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
-          </v-snackbar>
         </v-form>
       </v-card-text>
       <v-card-actions class="justify-center">

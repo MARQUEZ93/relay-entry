@@ -20,11 +20,6 @@ export default {
   data() {
     return {
       paymentElementContainer: null,
-      snackbar: {
-        show: false,
-        message: '',
-        timeout: 8000
-      },
       race: {},
       clientSecret: '',
       paymentIntentId: '',
@@ -221,11 +216,6 @@ export default {
         </div>
       </v-col>
     </v-row>
-    <!-- Snackbar for error messages -->
-    <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout" color="error">
-      {{ snackbar.message }}
-      <v-btn color="white" text @click="snackbar.show = false">Close</v-btn>
-    </v-snackbar>
   </v-container>
 </template>
 

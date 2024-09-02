@@ -555,8 +555,10 @@ def verify_token_and_update_team(request, token):
             # Delete members that are no longer in the list
             for member in existing_members.values():
                 member.delete()
+            print ("got here")
             if team.members.count() != team.race.num_runners:
                 raise ValueError(f"Number of team members ({team.members.count()}) does not match the number of runners required by the race ({team.race.num_runners}).")
+            print ("got here too")
             logger.info(f"Team Updated: {team.id}")
             return JsonResponse({'message': 'Team updated successfully'})
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):

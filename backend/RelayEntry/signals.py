@@ -78,7 +78,7 @@ def send_team_creation_email(sender, instance, created, **kwargs):
 
                 # iterate team.members & provide info in the confirmation email
                 team_members_info = ""
-                for member in instance.members.all():
+                for member in instance.members.order_by('leg_order'):
                     team_members_info += f"<li>{member.email} (Leg Order: {member.leg_order})</li>"
 
                 html_content = f"""
@@ -99,13 +99,12 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                     html_part=html_content,
                 )
 
-
         transaction.on_commit(send_emails)
 
 @receiver(post_save, sender=TeamMember)
 def send_team_member_creation_email(sender, instance, created, **kwargs):
     if created:
-        def send_email():
+        def send_email_to_new_member():
             if instance.team and instance.team.race and instance.team.race.event:
                 team = instance.team
                 team_name = team.name
@@ -116,7 +115,7 @@ def send_team_member_creation_email(sender, instance, created, **kwargs):
                 captain_last_name = team.captain.last_name
                 # iterate team.members & provide info in the confirmation email
                 team_members_info = ""
-                for member in team.members.all():
+                for member in team.members.order_by('leg_order'):
                     team_members_info += f"<li>{member.email} (Leg Order: {member.leg_order})</li>"
                 html_content = f"""
                         <h3>Join your team!</h3>
@@ -128,7 +127,6 @@ def send_team_member_creation_email(sender, instance, created, **kwargs):
                         </ul>
                         <p>Your team is already paid for. You only have to register here: https://www.relayentry.com/events/{event.url_alias}/register</p>
                         """
-
                 send_email(
                     recipient_email=instance.email,
                     recipient_name="Team Member",
@@ -137,7 +135,7 @@ def send_team_member_creation_email(sender, instance, created, **kwargs):
                     html_part=html_content,
                 )
 
-        transaction.on_commit(send_email)
+        transaction.on_commit(send_email_to_new_member)
 @receiver(post_save, sender=Registration)
 def set_team_member(sender, instance, created, **kwargs):
     if created:

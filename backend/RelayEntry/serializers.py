@@ -18,35 +18,8 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = ['id', 'name', 'captain', 'projected_team_time', 'members', 'complete']
-
     def get_complete(self, obj):
         return obj.complete()
-
-    def validate_members(self, value):
-        if not value:
-            raise serializers.ValidationError("Members cannot be empty.")
-        return value
-
-    def update(self, instance, validated_data):
-        members_data = validated_data.pop('members')
-        instance.name = validated_data.get('name', instance.name)
-        instance.projected_team_time = validated_data.get('projected_team_time', instance.projected_team_time)
-        instance.save()
-
-        for member_data in members_data:
-            member, created = TeamMember.objects.update_or_create(
-                team=instance,
-                email=member_data['email'],
-                defaults={'leg_order': member_data['leg_order']}
-            )
-
-        return instance
-    # TODO:
-    # 1) Test email system to new member + captain
-    # 2) same email validations (other teams etc or same team)
-    # 3) is TM created or updated?
-    # 4) ensure TM is deleted
-
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event

@@ -98,9 +98,27 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                     text_part="Greetings from RelayEntry!",
                     html_part=html_content,
                 )
-                for member in instance.members.all():
-                    if member.email != captain_email:
-                        html_content = f"""
+
+
+        transaction.on_commit(send_emails)
+
+@receiver(post_save, sender=TeamMember)
+def send_team_member_creation_email(sender, instance, created, **kwargs):
+    if created:
+        def send_email():
+            if instance.team and instance.team.race and instance.team.race.event:
+                team = instance.team
+                team_name = team.name
+                event = team.race.event
+                event_name = event.name
+                race_name = team.race.name
+                captain_first_name = team.captain.first_name
+                captain_last_name = team.captain.last_name
+                # iterate team.members & provide info in the confirmation email
+                team_members_info = ""
+                for member in team.members.all():
+                    team_members_info += f"<li>{member.email} (Leg Order: {member.leg_order})</li>"
+                html_content = f"""
                         <h3>Join your team!</h3>
                         <p>You were added to a team for the {race_name} race in {event_name}.</p>
                         <p>Your team: {team_name}, created by {captain_first_name} {captain_last_name}.</p>
@@ -108,20 +126,18 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                         <ul>
                             {team_members_info}
                         </ul>
-                        <p>Your team is already paid for. You only have to register here: https://www.relayentry.com/events/{event.race.event.url_alias}/register</p>
+                        <p>Your team is already paid for. You only have to register here: https://www.relayentry.com/events/{event.url_alias}/register</p>
                         """
 
-                        send_email(
-                            recipient_email=member.email,
-                            recipient_name="Team Member",
-                            subject=f'Please register for {event_name}',
-                            text_part="Greetings from RelayEntry!",
-                            html_part=html_content,
-                        )
+                send_email(
+                    recipient_email=instance.email,
+                    recipient_name="Team Member",
+                    subject=f'Please register for {event_name}',
+                    text_part="Greetings from RelayEntry!",
+                    html_part=html_content,
+                )
 
-
-        transaction.on_commit(send_emails)
-
+        transaction.on_commit(send_email)
 @receiver(post_save, sender=Registration)
 def set_team_member(sender, instance, created, **kwargs):
     if created:

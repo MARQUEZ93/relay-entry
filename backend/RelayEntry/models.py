@@ -199,9 +199,13 @@ class Team(models.Model):
         return f'{self.name} - {self.race.name}'
 
     def clean(self):
+        super().clean()
+         # Ensure the projected_team_time is one of the race's projected_team_time_choices
+        if self.projected_team_time and self.race.projected_team_time_choices:
+            if self.projected_team_time not in self.race.projected_team_time_choices:
+                raise ValidationError(f"Projected team time '{self.projected_team_time}' is not a valid choice for this race. Valid choices are: {', '.join(self.race.projected_team_time_choices)}")
         # Ensure the captain is only a captain for one team in the same event
         if self.captain:
-            # Check for other teams in the same event with the same captain
             if Team.objects.filter(race__event=self.race.event, captain=self.captain).exclude(pk=self.pk).exists():
                 raise ValidationError("This captain is already assigned to another team in this event.")
 
@@ -270,11 +274,8 @@ class Registration(models.Model):
  
     def clean(self):
         # Check if a registration with the same email and race already exists
-        # if Registration.objects.filter(race=self.race, email=self.email).exists():
-        #     raise ValidationError('A registration with this email for the same race already exists.')
-        # if self.coupon_code and self._state.adding:
-        #     if self.coupon_code.usage_count >= self.coupon_code.max_uses:
-        #         raise ValidationError("Coupon code has reached its maximum number of uses.")
+        if Registration.objects.filter(race=self.race, email=self.email).exists():
+            raise ValidationError('A registration with this email for the same race already exists.')
         super().clean()
 
     def save(self, *args, **kwargs):

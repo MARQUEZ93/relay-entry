@@ -11,7 +11,7 @@ import os
 import logging
 import json
 from .models import UserProfile, Event, Race, Registration, Team, TeamMember
-from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer
+from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer, TeamSerializer
 from rest_framework import generics
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.db import transaction
@@ -70,7 +70,7 @@ def index(request):
 #                 'New User Signup Requires Approval',
 #                 f'A new user {user.username} has signed up and requires approval.',
 #                 settings.DEFAULT_FROM_EMAIL,
-#                 ['admin@example.com'],  # TODO: Replace with the admin's email address
+#                 ['relayentry@gmail.com'],
 #                 fail_silently=False,
 #             )
 #             # Send email to the user
@@ -78,7 +78,7 @@ def index(request):
 #                 'Signup Successful - Approval Pending',
 #                 f'Thank you for signing up, {user.username}. Your account is currently pending approval by an admin. You will be notified once your account is approved.',
 #                 settings.DEFAULT_FROM_EMAIL,
-#                 [user.email],  # TODO: Send to the user's email address
+#                 [user.email],
 #                 fail_silently=False,
 #             )
 #             return redirect('signup_success')
@@ -520,6 +520,7 @@ def get_team_data(request, token):
 
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):
         return JsonResponse({'error': 'Invalid or expired token'}, status=400)
+
 @require_http_methods(["PUT"])
 def verify_token_and_update_team(request, token):
     try:
@@ -527,36 +528,40 @@ def verify_token_and_update_team(request, token):
         token_data = signing.loads(token, max_age=timedelta(minutes=30))  # Token expires in 30 minutes
         team_id = token_data['team_id']
         email = token_data['email']
-
-        # Get the team
-        team = Team.objects.get(id=team_id, captain__email=email)
-
-        # Parse the request body
-        data = json.loads(request.body)
-        data = convert_keys_to_snake_case(data)
-
-        # Update the team name and projected team time
-        team.name = data.get('name', team.name)
-        team.projected_team_time = data.get('projected_team_time', team.projected_team_time)
-        team.save()
-
-        # Update team members
-        members_data = data.get('members', [])
-        for member_data in members_data:
-            leg_order = member_data.get('leg_order')
-            if leg_order is None:
-                return JsonResponse({'error': 'leg_order cannot be null.'}, status=400)
-
-            member, created = TeamMember.objects.get_or_create(
-                team=team, email=member_data['email']
-            )
-            member.leg_order = leg_order
-            member.save()
-
-        logger.info(f"Team Updated: {team.id}")
-        return JsonResponse({'message': 'Team updated successfully'})
-
+        with transaction.atomic():
+            team = Team.objects.select_for_update().get(id=team_id, captain__email=email)
+            # Parse the request body
+            data = json.loads(request.body)
+            data = convert_keys_to_snake_case(data)
+            # Update team fields
+            team.name = data.get('name', team.name)
+            team.projected_team_time = data.get('projected_team_time', team.projected_team_time)
+            team.save()
+            # Update members
+            members_data = data.get('members', [])
+            existing_members = {member.email: member for member in team.members.all()}
+            for member_data in members_data:
+                email = member_data['email'].lower()  # Normalize email
+                leg_order = member_data['leg_order']
+                if email in existing_members:
+                    # Update existing member
+                    member = existing_members.pop(email)
+                    if leg_order != member.leg_order:
+                        member.leg_order = leg_order
+                        member.save()
+                else:
+                    # Create a new member
+                    TeamMember.objects.create(team=team, email=email, leg_order=leg_order)
+            # Delete members that are no longer in the list
+            for member in existing_members.values():
+                member.delete()
+            if team.members.count() != team.race.num_runners:
+                raise ValueError(f"Number of team members ({team.members.count()}) does not match the number of runners required by the race ({team.race.num_runners}).")
+            logger.info(f"Team Updated: {team.id}")
+            return JsonResponse({'message': 'Team updated successfully'})
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):
         return JsonResponse({'error': 'Invalid or expired token'}, status=400)
+    except ValueError as ve:
+        return JsonResponse({'error': str(ve)}, status=400)
     except Exception as e:
         return JsonResponse({'error': f"An unexpected error occurred: {str(e)}"}, status=500)

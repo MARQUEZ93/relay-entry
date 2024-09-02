@@ -74,7 +74,8 @@ export default {
             this.goToEventPage();
           }, 5000);
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           this.showSnackbar('An error occurred while updating the team.', 'error');
         });
     },

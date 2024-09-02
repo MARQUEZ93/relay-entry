@@ -46,6 +46,7 @@ export default {
     return apiClient.get(`/teams/get-team/${token}/`);
   },
   updateTeam(token, teamData) {
+    console.log(teamData);
     return apiClient.put(`/edit-team/${token}/`, teamData);
   },
   requestEditLink(url_alias, data) {

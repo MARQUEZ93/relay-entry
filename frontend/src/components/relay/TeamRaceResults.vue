@@ -80,7 +80,6 @@ export default {
     this.eventSlug = this.$route.params.eventUrlAlias;
     this.raceId = this.$route.params.raceId;
     try {
-        // TODO: props then IF NOT API call + 1 api call
         const eventResponse = await api.getEvent(this.eventSlug);
         this.event = eventResponse.data;
         const response = await api.getTeamRaceResults(this.raceId);

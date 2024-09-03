@@ -253,7 +253,7 @@ export default {
                 ${{ formatPrice(race.price) }}
               </v-card-subtitle>
               <v-card-actions class="justify-center">
-                <router-link :to="`/events/${event.url_alias}/`">
+                <router-link :to="`/events/${event.url_alias}/${race.id}`">
                   <v-btn :disabled="race.registration_closed" :color="race.registration_closed ? 'red' : 'primary'">{{ getRegisterButtonText(race) }}</v-btn>
                 </router-link>
               </v-card-actions>

@@ -536,12 +536,19 @@ def verify_token_and_update_team(request, token):
             data = json.loads(request.body)
             data = convert_keys_to_snake_case(data)
             # Update team fields
-            team.name = data.get('name', team.name)
-            team.projected_team_time = data.get('projected_team_time', team.projected_team_time)
-            team.save()
+            team_changed = False
+            if data.get('name') and data.get('name') != team.name:
+                team.name = data.get('name', team.name)
+                team_changed = True
+            if data.get('projected_team_time') and data.get('projected_team_time') != team.projected_team_time:
+                team.projected_team_time = data.get('projected_team_time', team.projected_team_time)
+                team_changed = True
+            if team_changed:
+                team.save()
             # Update members
             members_data = data.get('members', [])
             existing_members = {member.email: member for member in team.members.all()}
+            print(existing_members)
             for member_data in members_data:
                 email = member_data['email'].lower()  # Normalize email
                 leg_order = member_data['leg_order']
@@ -549,18 +556,19 @@ def verify_token_and_update_team(request, token):
                     # Update existing member
                     member = existing_members.pop(email)
                     if leg_order != member.leg_order:
+                        print("swap leg order")
                         member.leg_order = leg_order
                         member.save()
                 else:
                     # Create a new member
                     TeamMember.objects.create(team=team, email=email, leg_order=leg_order)
+                    print("created")
+                    print(email)
+            print (existing_members.values())
             # Delete members that are no longer in the list
             for member in existing_members.values():
                 member.delete()
             print ("got here")
-            if team.members.count() != team.race.num_runners:
-                raise ValueError(f"Number of team members ({team.members.count()}) does not match the number of runners required by the race ({team.race.num_runners}).")
-            print ("got here too")
             logger.info(f"Team Updated: {team.id}")
             return JsonResponse({'message': 'Team updated successfully'})
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):

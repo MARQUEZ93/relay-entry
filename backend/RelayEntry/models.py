@@ -159,11 +159,11 @@ class Race(models.Model):
         super().save(*args, **kwargs)
 
     def clean(self):
+        super().clean()
         if self.distance in [self.ULTRA_MARATHON, self.CUSTOM] and not self.custom_distance_value:
             raise ValidationError('Custom distance requires a custom distance value.')
         if self.is_relay and not self.num_runners:
             raise ValidationError('Relay race requires the number of runners.')
-        super().clean()
 
     class Meta:
         ordering = ['name', 'event__name']
@@ -211,7 +211,7 @@ class Team(models.Model):
 
     def save(self, *args, **kwargs):
         # Run the clean method to validate before saving
-        self.clean()
+        self.full_clean()
         base_name = self.name
         counter = 1
 
@@ -273,10 +273,17 @@ class Registration(models.Model):
         return f"{self.first_name} {self.last_name}"
  
     def clean(self):
-        # Check if a registration with the same email and race already exists
-        if Registration.objects.filter(race=self.race, email=self.email).exists():
-            raise ValidationError('A registration with this email for the same race already exists.')
         super().clean()
+         # Get the event related to the current race
+        event = self.race.event
+        # Exclude the current instance from the duplicate check
+        duplicate_registration = Registration.objects.filter(
+            race__event=event, email=self.email
+        ).exclude(pk=self.pk)
+
+        # If a duplicate exists, raise a validation error
+        if duplicate_registration.exists():
+            raise ValidationError('A registration with this email for this event already exists.')
 
     def save(self, *args, **kwargs):
         if self.email:
@@ -290,7 +297,6 @@ class Registration(models.Model):
             original = Registration.objects.get(pk=self.pk)
             if original.waiver_text != self.waiver_text:
                 raise ValidationError("You cannot change the value of this field.")
-
 
         # Validate minor fields
         # if self.minor and not (self.parent_guardian_name and self.parent_guardian_signature):

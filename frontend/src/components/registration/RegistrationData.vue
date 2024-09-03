@@ -16,6 +16,11 @@ export default {
       default: false,
     }
   },
+  mounted(){
+    if (process.env.NODE_ENV === 'development'){
+      this.fillForm();
+    }
+  },
   created() {
     this.initializeRunnerEmails();
     this.initializeProjectTeamTimeChoices();
@@ -88,6 +93,31 @@ export default {
     },
   },
   methods: {
+    getRandomString(){
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      const length = 4;  // Desired length of the random string
+      for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * characters.length);
+          result += characters[randomIndex];
+      }
+      return result;
+    },
+    fillForm(){
+      this.localRegistrationData["dateOfBirth"] = "2024-09-03";
+      this.localRegistrationData["firstName"] = "Hello";
+      this.localRegistrationData["lastName"] = "Lasty";
+      this.localRegistrationData["email"] = this.getRandomString() + "@gmail.com";
+      this.localRegistrationData["gender"] = "Male";
+      this.localRegistrationData["teamData"]["projectedTeamTime"] = "7:00 / mile";
+      this.localRegistrationData["teamData"]["name"] = this.getRandomString();
+      for (let i = 0; i < 4; i++) {
+        this.localRegistrationData.teamData.emails[i] = {
+          email: this.getRandomString() + "@gmail.com",
+          leg_order: i + 1
+        };
+      }
+    },
     initializeRunnerEmails() {
       // Check if race and num_runners are defined
       if (this.race && this.race.num_runners) {
@@ -121,6 +151,7 @@ export default {
       }
     },
     submit() {
+      console.log(this.localRegistrationData);
       if (this.$refs.form.validate()) {
         this.$emit('complete', this.localRegistrationData);
       }

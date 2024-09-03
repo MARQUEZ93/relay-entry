@@ -18,22 +18,17 @@ def send_registration_email(sender, instance, created, **kwargs):
     if created:
         def send_emails():
             race_name = instance.race.name
-            event_name = instance.race.event.name
+            event = instance.race.event
+            event_name = event.name
             confirmation_code = instance.confirmation_code
-            if instance.race.event.instagram_url:
-                url = instance.race.event.instagram_url
-            elif instance.race.event.website_url:
-                url = instance.race.event.website_url
-            else:
-                url = f"https://www.relayentry.com/events/{instance.race.event.url_alias}"  # Default URL if none provided
-            contact = "relayentry@gmail.com" # email this if you have questions
+            url = f"https://www.relayentry.com/events/{event.url_alias}"
 
             html_content = f"""
             <h3>Dear {instance.first_name}, welcome to RelayEntry!</h3>
             <p>You are registered for the <strong>{race_name}</strong> race in the event <strong>{event_name}</strong>.</p>
             <p>For updates about the event, please visit {url}</p>
             <p>Your confirmation code: {confirmation_code}.</p>
-            <p>Please email {contact} if help is needed with your registration. Include your confirmation code!</p>
+            <p>Please see {url} if help is needed with your registration.</p>
             """
 
             send_email(
@@ -54,7 +49,9 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                 race_director_email = instance.race.event.email
                 team_name = instance.name
                 race_name = instance.race.name
-                event_name = instance.race.event.name
+                event = instance.race.event
+                event_name = event.name
+                url = f"https://www.relayentry.com/events/{event.url_alias}"
                 captain_first_name = instance.captain.first_name
                 captain_last_name = instance.captain.last_name
                 captain_email = instance.captain.email
@@ -89,7 +86,7 @@ def send_team_creation_email(sender, instance, created, **kwargs):
                     {team_members_info}
                 </ul>
                 <p>Your confirmation code: {confirmation_code}.</p>
-                <p>Please email relayentry@gmail.com if help is needed with your team registration. Include your confirmation code!</p>
+                <p>Please see {url} if help is needed with your team registration.</p>
                 """
                 send_email(
                     recipient_email=captain_email,

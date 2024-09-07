@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.core import signing
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.db.models import Q, Value, CharField
+from django.db.models import Q, Value, CharField, OuterRef, Subquery, Value
 from django.db.models.functions import Concat
 from django.http import JsonResponse
 import os
@@ -576,7 +576,6 @@ def verify_token_and_update_team(request, token):
 @require_GET
 def confirm_registration(request, url_alias, name):
     name = name.strip()
-    print(name)
     if name:
         registrations = Registration.objects.filter(
             race__event__url_alias=url_alias
@@ -589,9 +588,15 @@ def confirm_registration(request, url_alias, name):
                 Value(' '), 
                 'last_name',
                 output_field=CharField()
+            ),
+            team_name=Subquery(
+                Team.objects.filter(
+                    members__registration=OuterRef('pk')  # Match the registration with the team members
+                ).values('name')[:1],  # Get the team name if it exists
+                output_field=CharField()
             )
-        ).values('first_name', 'last_name', 'full_name')
-        
+        ).values('first_name', 'last_name', 'full_name', 'race__name', 'team_name')
+        print(registrations)
         return JsonResponse(list(registrations), safe=False)
     
     return JsonResponse([], safe=False)

@@ -14,6 +14,7 @@ export default {
       confirmRegistration: false,
       manageTeamEmail: '',
       confirmName: '',
+      confirmationResults: [],
     };
   },
   computed: {
@@ -59,19 +60,25 @@ export default {
     formattedRaceDate,
     formatDateToUTC,
     formatMinute,
+    clearName(){
+      this.confirmName = '';
+      this.confirmationResults = [];
+    },
     confirmRegistrationQuery() {
       if (!this.confirmName || !this.event){
         this.showSnackbar('An error occurred while confirming registration', 'error');
         this.confirmName = '';
+        this.confirmationResults = [];
         return;
       }
-      console.log(this.confirmName);
       api.confirmEventRegistration(this.event.url_alias, this.confirmName).then(response => {
         console.log(response);
+        this.confirmationResults = response.data;
       })
       .catch( () => {
         this.showSnackbar('An error occurred while confirming registartion.', 'error');
         this.confirmName = '';
+        this.confirmationResults = [];
       });
     },
     sendManageTeamLink() {
@@ -196,7 +203,19 @@ export default {
                   required
                 ></v-text-field>
                 <v-btn type="submit" color="primary">Confirm Registration</v-btn>
+                <v-btn :disabled="!confirmName" @click="clearName" color="secondary">Reset</v-btn>
               </v-form>
+            </v-col>
+          </v-row>
+          <v-row class="justify-center mt-5" v-if="confirmationResults && confirmationResults.length">
+            <v-col cols="12" md="8">
+              <v-data-table
+                :headers="headers"
+                :items="confirmationResults"
+                class="elevation-1"
+              >
+                {{ item.full_name }}
+              </v-data-table>
             </v-col>
           </v-row>
         </v-container>

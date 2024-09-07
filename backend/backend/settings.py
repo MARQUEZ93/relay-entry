@@ -208,6 +208,11 @@ LOGGING = {
         },
     },
     'handlers': {
+        'email_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'email.log'),
+        },
         'stripe_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',

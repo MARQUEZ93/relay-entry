@@ -3,13 +3,14 @@ from django.conf import settings
 from mailjet_rest import Client
 import os
 import logging
-logger = logging.getLogger(__name__)
 from django.core import signing
 from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
 from ..models import Team
 from typing import Any
+# Set up logging for Emails
+email_logger = logging.getLogger('email')
 
 def generate_token(team_id, captain_email):
     data = {'team_id': team_id, 'email': captain_email}
@@ -70,12 +71,13 @@ def send_mailjet_email(recipient_email, recipient_name, subject, text_part, html
         result = mailjet.send.create(data=data)
         if result.status_code == 200:
             print(result.json())
+            email_logger.info(f"Sent email to {recipient_email} with subject: {subject}")
             return True
         else:
-            logger.error(f"Failed to send email via MailJet: {result.json()}")
+            email_logger.error(f"Failed to send email via MailJet: {result.json()}")
             return False
     except Exception as e:
-        logger.error(f"Failed to send email to {recipient_email} via MailJet: {e}")
+        email_logger.error(f"Failed to send email to {recipient_email} via MailJet: {e}")
         return False
 
 def send_mailhog_email(recipient_email, recipient_name, subject, text_part, html_part):
@@ -87,7 +89,8 @@ def send_mailhog_email(recipient_email, recipient_name, subject, text_part, html
             [recipient_email],
             fail_silently=False,
         )
+        email_logger.info(f"Sent email to {recipient_email} with subject: {subject}")
         return True
     except Exception as e:
-        logger.error(f"Failed to send email via MailHog: {e}")
+        email_logger.error(f"Failed to send email via MailHog: {e}")
         return False

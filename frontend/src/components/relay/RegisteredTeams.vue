@@ -106,7 +106,7 @@ export default {
                 </v-btn>
             </v-card-actions>
             <v-card-subtitle class="prevent-overflow">
-                Each team member must register for their name to appear for their leg!
+              A team’s registration status will be complete once all team members sign the waiver for their race.
             </v-card-subtitle>
             </v-card>
         </v-col>
@@ -134,7 +134,7 @@ export default {
                         <v-list-item-title class="d-flex align-center justify-center prevent-overflow">{{ team.name }} <v-icon small class="ml-3 mdi mdi-chevron-down"></v-icon></v-list-item-title>
                         <v-list-item-subtitle><strong>Captain:</strong> {{ team.captain.first_name }} {{ team.captain.last_name }}</v-list-item-subtitle>
                         <v-list-item-subtitle><strong>Projected Time:</strong> {{ team.projected_team_time }}</v-list-item-subtitle>
-                        <v-list-item-subtitle class="d-flex align-center justify-center" v-tooltip.top="statusInfo">
+                        <v-list-item-subtitle class="d-flex align-center justify-center">
                           <strong class="pr-1">Registration Status:</strong> 
                           <v-icon v-if="team.complete" color="green" aria-label="Team is completely registered">
                             mdi-check-circle

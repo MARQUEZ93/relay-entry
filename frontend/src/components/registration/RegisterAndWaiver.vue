@@ -93,7 +93,7 @@ export default {
         });
         if (response.data.error) {
           this.loading = false; // Hide loader on error
-          this.showSnackbar('An error occurred while processing your registration. Please try again later.', 'error');
+          this.showSnackbar(`An error occurred while processing your registration: ${response.data.error.response.data.error}`, 'error');
         } else {
           const { registrationResponseData, eventData } = await response.data;
           this.$store.commit('setConfirmationData', {
@@ -103,9 +103,9 @@ export default {
           this.loading = false;
           this.$router.push({ name: 'Confirmation' });
         }
-      } catch (error) {
+      } catch (e) {
         this.loading = false;
-        this.showSnackbar('An error occurred while processing your registration. Please try again later.', 'error');
+        this.showSnackbar(`An error occurred while processing your registration: ${e.response.data.error}`, 'error');
       }
     },
   },

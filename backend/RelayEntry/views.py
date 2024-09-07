@@ -95,6 +95,9 @@ def team_register(request):
         data = convert_keys_to_snake_case(data)
         race_id = data['race_id']
         registration_data = data['registration_data']
+        if registration_data['email'] != registration_data['confirm_email']:
+            logger.error(f"Confirm email error for team register: {registration_data['email']}")
+            return JsonResponse({'error': 'Confirm email must match email.'}, status=400)
         team_data = registration_data.get('team_data', {})
         # Calculate the amount based on the race price
         try:
@@ -227,6 +230,9 @@ def event_register(request, url_alias):
         event_id = data['event_id']
         
         registration_data = data['registration_data']
+        if registration_data['email'] != registration_data['confirm_email']:
+            logger.error(f"Confirm email error for team register: {registration_data['email']}")
+            return JsonResponse({'error': 'Confirm email must match email.'}, status=400)
         race_id = registration_data['selected_race']
         try:
             event = Event.objects.get(id=event_id)

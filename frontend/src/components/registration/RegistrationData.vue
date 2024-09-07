@@ -50,7 +50,12 @@ export default {
       ],
       emailRules: [
         v => !!v || 'Email is required',
-        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+        v => /.+@.+\..+/.test(v) || 'Email must be valid',
+      ],
+      confirmEmailRules: [
+        v => !!v || 'Confirm Email is required',
+        v => /.+@.+\..+/.test(v) || 'Confirm email must be valid',
+        v => v === this.localRegistrationData.email || 'Emails must match',
       ],
       // phoneRules: [
       //   v => !!v || 'Phone is required',
@@ -107,7 +112,9 @@ export default {
       this.localRegistrationData["dateOfBirth"] = "2024-09-03";
       this.localRegistrationData["firstName"] = "Hello";
       this.localRegistrationData["lastName"] = "Lasty";
-      this.localRegistrationData["email"] = this.getRandomString() + "@gmail.com";
+      const randomEmail = this.getRandomString() + "@gmail.com";
+      this.localRegistrationData["email"] = randomEmail;
+      this.localRegistrationData["confirmEmail"] = randomEmail;
       this.localRegistrationData["gender"] = "Male";
       this.localRegistrationData["teamData"]["projectedTeamTime"] = "7:00 / mile";
       this.localRegistrationData["teamData"]["name"] = this.getRandomString();
@@ -221,13 +228,12 @@ export default {
         ></v-text-field>
       </v-col>
       <v-col cols="6">
-        <v-select
-          v-model="localRegistrationData.gender"
-          :items="genders"
-          label="Gender"
-          :rules="[v => !!v || 'Gender is required']"
+        <v-text-field
+          v-model="localRegistrationData.confirmEmail"
+          :rules="confirmEmailRules"
+          label="Confirm Email"
           required
-        ></v-select>
+        ></v-text-field>
       </v-col>
       <!-- <v-col cols="12" md="6">
         <v-text-field
@@ -258,6 +264,17 @@ export default {
           :rules="dobRules"
           required
         ></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="6">
+        <v-select
+          v-model="localRegistrationData.gender"
+          :items="genders"
+          label="Gender"
+          :rules="[v => !!v || 'Gender is required']"
+          required
+        ></v-select>
       </v-col>
     </v-row>
     <!-- <v-checkbox

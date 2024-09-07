@@ -548,7 +548,6 @@ def verify_token_and_update_team(request, token):
             # Update members
             members_data = data.get('members', [])
             existing_members = {member.email: member for member in team.members.all()}
-            print(existing_members)
             for member_data in members_data:
                 email = member_data['email'].lower()  # Normalize email
                 leg_order = member_data['leg_order']
@@ -556,26 +555,23 @@ def verify_token_and_update_team(request, token):
                     # Update existing member
                     member = existing_members.pop(email)
                     if leg_order != member.leg_order:
-                        print("swap leg order")
                         member.leg_order = leg_order
                         member.save()
                 else:
                     # Create a new member
                     TeamMember.objects.create(team=team, email=email, leg_order=leg_order)
-                    print("created")
-                    print(email)
-            print (existing_members.values())
             # Delete members that are no longer in the list
             for member in existing_members.values():
                 member.delete()
-            print ("got here")
             logger.info(f"Team Updated: {team.id}")
             return JsonResponse({'message': 'Team updated successfully'})
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):
         return JsonResponse({'error': 'Invalid or expired token'}, status=400)
     except ValueError as ve:
+        logger.error(f"ValueError when editing team: {str(ve)}")
         return JsonResponse({'error': str(ve)}, status=400)
     except Exception as e:
+        logger.error(f"Error when editing team: {str(e)}")
         return JsonResponse({'error': f"An unexpected error occurred: {str(e)}"}, status=500)
 @require_GET
 def confirm_registration(request, url_alias, name):

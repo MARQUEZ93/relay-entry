@@ -86,11 +86,11 @@ export default {
                             this.$router.push({ path: '/' });
                         }, 3000);
                     } else {
-                        this.errorMessage = response?.data?.message || 'An error occurred while sending your message. Please try again later.';
+                        this.errorMessage = response?.data?.error || 'An error occurred while sending your message. Please try again later.';
                         this.successMessage = ''; // Clear any previous success message
                     }
                 } catch (error) {
-                    this.errorMessage = error.response?.data?.message || 'An error occurred while sending your message. Please try again later.';
+                    this.errorMessage = error.response?.data?.error || 'An error occurred while sending your message. Please try again later.';
                     this.successMessage = ''; // Clear any previous success message
                 } finally {
                     this.$refs.form.reset(); // Reset the form regardless of the outcome

@@ -274,16 +274,14 @@ class Registration(models.Model):
  
     def clean(self):
         super().clean()
-         # Get the event related to the current race
-        event = self.race.event
         # Exclude the current instance from the duplicate check
         duplicate_registration = Registration.objects.filter(
-            race__event=event, email=self.email
+            race=self.race, email=self.email
         ).exclude(pk=self.pk)
 
         # If a duplicate exists, raise a validation error
         if duplicate_registration.exists():
-            raise ValidationError('A registration with this email for this event already exists.')
+            raise ValidationError('A registration with this email for this race already exists.')
 
     def save(self, *args, **kwargs):
         if self.email:

@@ -98,7 +98,7 @@ export default {
         }
       } catch (e){
           this.loading = false; // Hide loader on error
-          this.showSnackbar('Something unexpected occurred while processing your registration. Please try again later.', 'error');
+          this.showSnackbar(`Something unexpected occurred while processing your registration: ${e.response.data.error} `, 'error');
           return;
       }
     },

@@ -57,8 +57,8 @@ export default {
           this.team = response.data.team;
           this.event = response.data.event;
         })
-        .catch((error) => {
-          this.showSnackbar(`An error occurred while fetching data: ${error?.response?.data?.error}`, 'error');
+        .catch((e) => {
+          this.showSnackbar(`An error occurred while fetching data: ${e.response.data.error}`, 'error');
           setTimeout(() => {
             this.$router.push({ name: 'HomeComponent' });
           }, 5000);
@@ -75,8 +75,7 @@ export default {
           }, 5000);
         })
         .catch((e) => {
-          console.log(e);
-          this.showSnackbar('An error occurred while updating the team.', 'error');
+          this.showSnackbar(`An error occurred while updating the team: ${e.response.data.error}`, 'error');
         });
     },
   }

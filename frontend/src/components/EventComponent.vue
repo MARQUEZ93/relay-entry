@@ -15,6 +15,11 @@ export default {
       manageTeamEmail: '',
       confirmName: '',
       confirmationResults: [],
+      confirmRegistrationHeaders: [
+        { title: 'Name', value: 'full_name', key: 'full_name', sortable: false, align: 'center' },
+        { title: 'Race', value: 'race__name', key: 'race__name', sortable: false, align: 'center' },
+        { title: 'Team (If Applicable)', value: 'team_name', key: 'team_name', sortable: false, align: 'center' },
+      ],
     };
   },
   computed: {
@@ -71,12 +76,15 @@ export default {
         this.confirmationResults = [];
         return;
       }
+      if (this.confirmName.length < 3){
+        this.showSnackbar('Input needs to be at least 3 characters long.', 'error');
+        return;
+      }
       api.confirmEventRegistration(this.event.url_alias, this.confirmName).then(response => {
-        console.log(response);
         this.confirmationResults = response.data;
       })
-      .catch( () => {
-        this.showSnackbar('An error occurred while confirming registartion.', 'error');
+      .catch( (e) => {
+        this.showSnackbar(`An error occurred while confirming registration: ${e.response.data.error}`, 'error');
         this.confirmName = '';
         this.confirmationResults = [];
       });
@@ -210,11 +218,24 @@ export default {
           <v-row class="justify-center mt-5" v-if="confirmationResults && confirmationResults.length">
             <v-col cols="12" md="8">
               <v-data-table
-                :headers="headers"
+                :headers="confirmRegistrationHeaders"
                 :items="confirmationResults"
                 class="elevation-1"
               >
-                {{ item.full_name }}
+                <template v-slot:[`item.full_name`]="{ item }">
+                  {{ item.full_name }}
+                </template>
+                <template v-slot:[`item.race__name`]="{ item }">
+                  {{ item.race__name }}
+                </template>
+                <template v-slot:[`item.team_name`]="{ item }">
+                  {{ item.team_name ? item.team_name : '' }}
+                </template>
+                <template v-slot:no-data>
+                  <v-alert :value="true" color="error" icon="mdi-alert">
+                    No registrations for this name
+                  </v-alert>
+                </template>
               </v-data-table>
             </v-col>
           </v-row>

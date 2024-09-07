@@ -349,12 +349,12 @@ def contact(request):
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
-        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     # List of required fields
     required_fields = ['name', 'email', 'role', 'message', 'ip']
     missing_fields = [field for field in required_fields if not data.get(field)]
     if missing_fields:
-        return JsonResponse({'status': 'error', 'message': f'Missing fields: {", ".join(missing_fields)}'}, status=400)
+        return JsonResponse({'error': f'Missing fields: {", ".join(missing_fields)}'}, status=400)
 
     name = escape(str(data.get('name', '')).strip())
     email = str(data.get('email', '')).strip()
@@ -365,25 +365,25 @@ def contact(request):
     honey = str(data.get('honey', '')).strip()
 
     if not ip:
-        return JsonResponse({'status': 'error', 'message': 'Could not determine your IP address.'}, status=400)
+        return JsonResponse({'error':'Could not determine your IP address.'}, status=400)
     if honey:  # If honeypot is filled, likely a bot
-        return JsonResponse({'status': 'error', 'message': 'Spam detected'}, status=400)
+        return JsonResponse({'error': 'Spam detected'}, status=400)
     
     request_count = cache.get(ip, 0)
     # Limit to 2 requests per 24hrs per IP address
     if request_count >= 2:
-        return JsonResponse({'status': 'error', 'message': 'Too many requests.'}, status=429)
+        return JsonResponse({'error': 'Too many requests.'}, status=429)
     
     # Increment the request count
     cache.set(ip, request_count + 1, timeout=86400)  # 86400 seconds = 24 hours
         # Validate that confirmation number is provided if role is 'Registrant'
     if role == 'Registrant' and not confirmation:
-        return JsonResponse({'status': 'error', 'message': 'Confirmation number is required for Registrants.'}, status=400)
+        return JsonResponse({'error': 'Confirmation number is required for Registrants.'}, status=400)
 
     try:
         validate_email(email)
     except ValidationError:
-        return JsonResponse({'status': 'error', 'message': 'Invalid email address'}, status=400)
+        return JsonResponse({'error': 'Invalid email address'}, status=400)
 
     # Compose the email content
     subject = f"New Contact Form Submission from {name}"
@@ -576,6 +576,10 @@ def verify_token_and_update_team(request, token):
 @require_GET
 def confirm_registration(request, url_alias, name):
     name = name.strip()
+    if len(name) < 3:
+        return JsonResponse({
+            'error': 'Input needs to be at least 3 characters long.'
+        }, status=400)
     if name:
         registrations = Registration.objects.filter(
             race__event__url_alias=url_alias

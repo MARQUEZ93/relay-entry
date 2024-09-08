@@ -1,17 +1,27 @@
-1) Delete migration files
+# Database
 
-2) Delete volumes in Docker
+### Local DB Setup
 
-3) docker-compose up --build
+1) Delete volumes in Docker
 
-4) docker-compose exec backend python manage.py makemigrations
+2) Build app
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
 
-5) docker-compose exec backend python manage.py migrate
+3) Run Migrations
+```bash
+docker-compose -f docker-compose.dev.yml exec backend python manage.py migrate
+```
 
-6) docker-compose exec backend python manage.py shell
+4) Enter the Django Shell
+```bash
+docker-compose -f docker-compose.dev.yml exec backend python manage.py shell
+```
 
-7) 
+5) Create admin user & event director users
 
+```
 from django.contrib.auth.models import User
 from RelayEntry.models import UserProfile
 
@@ -22,7 +32,4 @@ test2 = User.objects.create_user('test2', 'test2@example.com', 'p')
 for user in UserProfile.objects.all():
     user.is_approved = True
     user.save()
-
-
-admin / p
-u / p
+```

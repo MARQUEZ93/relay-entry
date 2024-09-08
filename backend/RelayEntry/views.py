@@ -131,6 +131,11 @@ def team_register(request):
         # Assuming `intent` is the payment intent object from Stripe
         amount_received_cents = intent['amount_received']
 
+        minor_value = request.data.get('minor')  # Get the value from the request
+        minor = False
+        if minor_value in ['true', 'True', True]:
+            minor = True
+
         # Convert from cents to dollars (or the base unit of your currency)
         amount_received_dollars = Decimal(amount_received_cents) / 100
         with transaction.atomic():
@@ -142,14 +147,14 @@ def team_register(request):
                     first_name=registration_data['first_name'],
                     last_name=registration_data['last_name'],
                     email=registration_data['email'],
-                    # phone=registration_data.get('phone', ''),
+                    phone=registration_data.get('phone', ''),
                     gender=registration_data['gender'],
                     dob=registration_data['date_of_birth'],
                     waiver_text=race.event.waiver_text,
                     ip_address=registration_data['ip_address'],
-                    # minor=registration_data['minor'],
-                    # parent_guardian_name=registration_data.get('parentGuardianName', ''),
-                    # parent_guardian_signature=registration_data.get('parentGuardianSignature', ''),
+                    minor=minor,
+                    parent_guardian_name=registration_data.get('parent_guardian_name', ''),
+                    parent_guardian_signature=registration_data.get('parent_guardian_signature', ''),
                 )
                 emails = team_data.get('emails', {})  # includes leg order
                 if len(emails) != race.num_runners:
@@ -252,6 +257,11 @@ def event_register(request, url_alias):
             logger.error("Race not found.")
             return JsonResponse({'error': "Race not found."}, status=404)
         
+        minor_value = request.data.get('minor')  # Get the value from the request
+        minor = False
+        if minor_value in ['true', 'True', True]:
+            minor = True
+        
         with transaction.atomic():
             try: 
                 registration = Registration.objects.create(
@@ -263,6 +273,9 @@ def event_register(request, url_alias):
                     dob=registration_data['date_of_birth'],
                     waiver_text=event.waiver_text,
                     ip_address=registration_data['ip_address'],
+                    minor=minor,
+                    parent_guardian_name=registration_data.get('parent_guardian_name', ''),
+                    parent_guardian_signature=registration_data.get('parent_guardian_signature', ''),
                 )
                 registrant_name = f"{registration_data['first_name']} {registration_data['last_name']}"
                 response_data = {

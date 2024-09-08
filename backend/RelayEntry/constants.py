@@ -89,3 +89,13 @@ TIME_INDICATORS = [
 
 HOURS = [(i, str(i)) for i in range(1, 13)]
 MINUTES = [(i, f'{i:02d}') for i in range(0, 60)]
+
+TSHIRT_SIZE_CHOICES = [
+    ('XS', 'Extra Small'),
+    ('S', 'Small'),
+    ('M', 'Medium'),
+    ('L', 'Large'),
+    ('XL', 'Extra Large'),
+    ('XXL', 'Double XL'),
+    ('XXXL', 'Triple XL'),
+]

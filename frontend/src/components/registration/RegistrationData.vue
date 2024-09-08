@@ -38,9 +38,9 @@ export default {
         },
         selectedRace: this.registrationData.selectedRace || '',
         dateOfBirth: this.registrationData.dateOfBirth || '',
-        // parentGuardianName: this.registrationData.parentGuardianName || '',
-        // parentGuardianSignature: this.registrationData.parentGuardianSignature || '',
-        // minor: this.registrationData.minor || false,
+        parentGuardianName: this.registrationData.parentGuardianName || '',
+        parentGuardianSignature: this.registrationData.parentGuardianSignature || '',
+        minor: this.registrationData.minor || false,
       },
       races: [],
       projectedTeamTimeChoices: this.race?.projected_team_time_choices || [],
@@ -56,6 +56,11 @@ export default {
         v => !!v || 'Confirm Email is required',
         v => /.+@.+\..+/.test(v) || 'Confirm email must be valid',
         v => v === this.localRegistrationData.email || 'Emails must match',
+      ],
+      parentGuardianSignatureRules: [
+        v => !!v || 'Guardian Signature is required',
+        v => (v && v.length > 1) || 'Guardian Signature must be more than 1 character',
+        v => v === this.localRegistrationData.parentGuardianName || 'Emails must match',
       ],
       // phoneRules: [
       //   v => !!v || 'Phone is required',
@@ -89,9 +94,9 @@ export default {
           ...newVal,
           selectedRace: newVal.selectedRace || '',
           dateOfBirth: newVal.dateOfBirth || '',
-          // parentGuardianName: newVal.parentGuardianName || '',
-          // parentGuardianSignature: newVal.parentGuardianSignature || '',
-          // minor: newVal.minor || false,
+          parentGuardianName: newVal.parentGuardianName || '',
+          parentGuardianSignature: newVal.parentGuardianSignature || '',
+          minor: newVal.minor || false,
         };
       },
       deep: true,
@@ -277,11 +282,11 @@ export default {
         ></v-select>
       </v-col>
     </v-row>
-    <!-- <v-checkbox
+    <v-checkbox
       v-model="localRegistrationData.minor"
       label="The registrant is a minor (under 18 years old)"
-    ></v-checkbox> -->
-    <!-- <v-text-field
+    ></v-checkbox>
+    <v-text-field
       v-if="localRegistrationData.minor"
       :rules="nameRules"
       v-model="localRegistrationData.parentGuardianName"
@@ -289,10 +294,10 @@ export default {
     ></v-text-field>
     <v-textarea
       v-if="localRegistrationData.minor"
-      :rules="nameRules"
+      :rules="parentGuardianSignatureRules"
       v-model="localRegistrationData.parentGuardianSignature"
       label="Parent/Guardian Signature"
-    ></v-textarea> -->
+    ></v-textarea>
     <v-btn type="submit" color="primary" :disabled="!valid">Next</v-btn>
   </v-form>
 </template>

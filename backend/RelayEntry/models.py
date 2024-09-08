@@ -2,11 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .constants import STATES, TEAM_GENDER_CHOICES, GENDER_CHOICES, UNIT_CHOICES_CONSTANT, AM, PM, TIME_INDICATORS, HOURS, MINUTES
+from .constants import STATES, TEAM_GENDER_CHOICES, GENDER_CHOICES, UNIT_CHOICES_CONSTANT, AM, PM, TIME_INDICATORS, HOURS, MINUTES, TSHIRT_SIZE_CHOICES
 import uuid
 from django.contrib.postgres.fields import ArrayField
 import os
 from django.conf import settings
+from datetime import date
 
 from django.utils.text import slugify
 
@@ -53,6 +54,9 @@ class Event(models.Model):
 
     url_alias = models.SlugField(max_length=255, unique=True, blank=True, null=True, db_index=True)
     registration_closed = models.BooleanField(default=False)
+
+    male_tshirt_image = models.ImageField(upload_to='race_tshirts/', blank=True, null=True)
+    female_tshirt_image = models.ImageField(upload_to='race_tshirts/', blank=True, null=True)
 
     def get_event_url(self):
         ui_base_url = settings.WWW_HOST
@@ -137,7 +141,11 @@ class Race(models.Model):
     )
 
     projected_team_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
+    projected_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
     registration_closed = models.BooleanField(default=False)
+
+    male_tshirt_image = models.ImageField(upload_to='event_tshirts/', blank=True, null=True)
+    female_tshirt_image = models.ImageField(upload_to='event_tshirts/', blank=True, null=True)
 
     def delete(self, *args, **kwargs):
         # Check if this author has any associated registraitons
@@ -269,11 +277,28 @@ class Registration(models.Model):
         ('Elite', 'Elite'),
     ], default='Standard')  # Type of bib
 
+    tshirt_size = models.CharField(max_length=4, choices=TSHIRT_SIZE_CHOICES, blank=True, null=True)
+
+    emergency_contact = models.CharField(max_length=255, help_text="Emergency Contact Full Name", blank=True, null=True)
+    emergency_contact_phone = models.CharField(max_length=15, blank=True, null=True)
+
+    projected_time = models.CharField(max_length=50, null=True, blank=True)
+
+    has_medical_condition = models.BooleanField(default=False)
+    medical_condition_details = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
  
     def clean(self):
         super().clean()
+         # Ensure the projected_time is one of the race's projected_time_choices
+        if self.projected_time and self.race.projected_time_choices:
+            if self.projected_time not in self.race.projected_time_choices:
+                raise ValidationError(f"Projected time '{self.projected_time}' is not a valid choice for this race. Valid choices are: {', '.join(self.race.projected_time_choices)}")
         # Exclude the current instance from the duplicate check
         duplicate_registration = Registration.objects.filter(
             race=self.race, email=self.email
@@ -282,7 +307,11 @@ class Registration(models.Model):
         # If a duplicate exists, raise a validation error
         if duplicate_registration.exists():
             raise ValidationError('A registration with this email for this race already exists.')
-
+    def calculate_age(self):
+        today = date.today()
+        return today.year - self.birth_date.year - (
+            (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
+        )
     def save(self, *args, **kwargs):
         if self.email:
             self.email = self.email.lower()
@@ -295,10 +324,16 @@ class Registration(models.Model):
             original = Registration.objects.get(pk=self.pk)
             if original.waiver_text != self.waiver_text:
                 raise ValidationError("You cannot change the value of this field.")
+        
+        if not self.pk:
+            age = self.calculate_age()
+            # Ensure the person younger than 18 is registered as a minor
+            if age < 18 and not self.minor:
+                raise ValidationError("Registrants under 18 must be registered as minors.")
 
         # Validate minor fields
-        # if self.minor and not (self.parent_guardian_name and self.parent_guardian_signature):
-            # raise ValueError("Parent/Guardian name and signature are required for minors.")
+        if self.minor and not (self.parent_guardian_name and self.parent_guardian_signature):
+            raise ValueError("Parent/Guardian name and signature are required for minors.")
 
         # Run full validation
         self.full_clean()

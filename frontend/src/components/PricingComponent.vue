@@ -75,6 +75,10 @@
                         <v-icon left>mdi-mail</v-icon>
                         &nbsp;Customizable email system
                       </li>
+                      <li>
+                        <v-icon left>mdi-cog</v-icon>
+                        &nbsp;Customizable UI per request
+                      </li>
                   </ul>
                 </v-col>
             </v-row>

@@ -351,7 +351,6 @@ def team_race_results(request, race_id):
 
 @require_POST
 def contact(request):
-    data = json.loads(request.body)
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
@@ -579,6 +578,7 @@ def verify_token_and_update_team(request, token):
     except Exception as e:
         logger.error(f"Error when editing team: {str(e)}")
         return JsonResponse({'error': f"An unexpected error occurred: {str(e)}"}, status=500)
+
 @require_GET
 def confirm_registration(request, url_alias, name):
     name = name.strip()
@@ -606,7 +606,6 @@ def confirm_registration(request, url_alias, name):
                 output_field=CharField()
             )
         ).values('first_name', 'last_name', 'full_name', 'race__name', 'team_name')
-        print(registrations)
         return JsonResponse(list(registrations), safe=False)
     
     return JsonResponse([], safe=False)

@@ -14,6 +14,8 @@ import EditTeam from '../components/relay/EditTeam.vue';
 import ConfirmationComponent from '../components/registration/ConfirmationComponent.vue';
 import AboutComponent from '../components/AboutComponent.vue';
 import ContactComponent from '../components/ContactComponent.vue';
+import PrivacyPolicy from '../components/PrivacyPolicy.vue';
+import TermsOfAgreement from '../components/TermsOfAgreement.vue';
 import store from '@/store'; // Import the store
 const routes = [
   {
@@ -72,6 +74,16 @@ const routes = [
     name: 'RegisterAndWaiver',
     component: RegisterAndWaiver,
     props: true
+  },
+  {
+    path: '/privacy-policy',
+    name: 'PrivacyPolicy',
+    component: PrivacyPolicy,
+  },
+  {
+    path: '/terms-of-agreement',
+    name: 'TermsOfAgreement',
+    component: TermsOfAgreement,
   },
   {
     path: '/confirmation',

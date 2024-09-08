@@ -22,6 +22,7 @@ docker-compose -f docker-compose.dev.yml exec backend python manage.py shell
 5) Create admin user & event director users
 
 ```
+docker-compose -f docker-compose.dev.yml exec backend python manage.py shell
 from django.contrib.auth.models import User
 from RelayEntry.models import UserProfile
 

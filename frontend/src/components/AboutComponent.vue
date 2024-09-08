@@ -37,6 +37,14 @@ export default {
                             </p>
                         </v-sheet>
                     </v-col>
+                    <!-- New Section for Privacy Policy & Terms of Agreement -->
+                    <v-col cols="12">
+                        <v-sheet class="my-5 pa-5" elevation="2">
+                            <h2>Policies & Agreements</h2>
+                            <v-btn text :to="{ path: '/privacy-policy' }">Privacy Policy</v-btn>
+                            <v-btn text :to="{ path: '/terms-of-agreement' }">Terms of Agreement</v-btn>
+                        </v-sheet>
+                    </v-col>
                 </v-row>
             </v-col>
         </v-row>

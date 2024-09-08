@@ -51,7 +51,7 @@ class Event(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    url_alias = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+    url_alias = models.SlugField(max_length=255, unique=True, blank=True, null=True, db_index=True)
     registration_closed = models.BooleanField(default=False)
 
     def get_event_url(self):
@@ -224,7 +224,7 @@ class Team(models.Model):
 
 class TeamMember(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members')
-    email = models.EmailField()
+    email = models.EmailField(db_index=True)
     leg_order = models.PositiveIntegerField()
     # leg = models.OneToOneField(Leg, related_name='teammember', on_delete=models.CASCADE, null=True, blank=True, help_text="The leg the team member is running (if applicable).")
     def __str__(self):
@@ -243,7 +243,7 @@ class Registration(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='registrations')
     amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
-    email = models.EmailField()
+    email = models.EmailField(db_index=True)
     dob = models.DateField()
     phone = models.CharField(max_length=15, blank=True, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)

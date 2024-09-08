@@ -54,6 +54,9 @@ docker-compose -f docker-compose.dev.yml up --build
 ```
 ### Execute Command in Running Docker Container 
 ```bash
+docker-compose -f docker-compose.dev.yml exec backend python manage.py makemigrations
+```
+```bash
 docker-compose -f docker-compose.dev.yml exec backend python manage.py migrate
 ```
 ### Activate Python3 Virtual Environment

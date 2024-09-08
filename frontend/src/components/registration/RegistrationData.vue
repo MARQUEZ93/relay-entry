@@ -57,6 +57,10 @@ export default {
         v => /.+@.+\..+/.test(v) || 'Confirm email must be valid',
         v => v === this.localRegistrationData.email || 'Emails must match',
       ],
+      parentGuardianNameRules: [
+        v => !!v || 'Parent Guardian Name is required',
+        v => (v && v.length > 1) || 'Name must be more than 1 character',
+      ],
       parentGuardianSignatureRules: [
         v => !!v || 'Guardian Signature is required',
         v => (v && v.length > 1) || 'Guardian Signature must be more than 1 character',
@@ -281,23 +285,31 @@ export default {
           required
         ></v-select>
       </v-col>
+      <v-col cols="6">
+        <v-checkbox
+          v-model="localRegistrationData.minor"
+          label="The registrant is a minor (under 18 years old)"
+        ></v-checkbox>
+      </v-col>
     </v-row>
-    <v-checkbox
-      v-model="localRegistrationData.minor"
-      label="The registrant is a minor (under 18 years old)"
-    ></v-checkbox>
-    <v-text-field
-      v-if="localRegistrationData.minor"
-      :rules="nameRules"
-      v-model="localRegistrationData.parentGuardianName"
-      label="Parent/Guardian Name"
-    ></v-text-field>
-    <v-textarea
-      v-if="localRegistrationData.minor"
-      :rules="parentGuardianSignatureRules"
-      v-model="localRegistrationData.parentGuardianSignature"
-      label="Parent/Guardian Signature"
-    ></v-textarea>
+    <v-row>
+      <v-col cols="6">
+        <v-text-field
+          v-if="localRegistrationData.minor"
+          :rules="parentGuardianNameRules"
+          v-model="localRegistrationData.parentGuardianName"
+          label="Parent/Guardian Name"
+        ></v-text-field>
+      </v-col>
+      <v-col cols="6">
+        <v-text-field
+          v-if="localRegistrationData.minor"
+          :rules="parentGuardianSignatureRules"
+          v-model="localRegistrationData.parentGuardianSignature"
+          label="Parent/Guardian Signature"
+        ></v-text-field>
+      </v-col>
+    </v-row>
     <v-btn type="submit" color="primary" :disabled="!valid">Next</v-btn>
   </v-form>
 </template>

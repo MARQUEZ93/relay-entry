@@ -7,7 +7,7 @@ import uuid
 from django.contrib.postgres.fields import ArrayField
 import os
 from django.conf import settings
-from datetime import date
+from datetime import date, datetime
 
 from django.utils.text import slugify
 
@@ -309,8 +309,12 @@ class Registration(models.Model):
             raise ValidationError('A registration with this email for this race already exists.')
     def calculate_age(self):
         today = date.today()
-        return today.year - self.birth_date.year - (
-            (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
+        formatted_dob = self.dob
+        if isinstance(self.dob, str):
+            # Parse the string to a date object if necessary
+            formatted_dob = datetime.strptime(self.dob, '%Y-%m-%d').date()
+        return today.year - formatted_dob.year - (
+            (today.month, today.day) < (formatted_dob.month, formatted_dob.day)
         )
     def save(self, *args, **kwargs):
         if self.email:

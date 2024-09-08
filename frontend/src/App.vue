@@ -12,7 +12,7 @@ export default {
     };
   },
   methods: {
-    showSnackbar(message, color = 'success', timeout = 5000) {
+    showSnackbar(message, color = 'success', timeout = 6000) {
       this.snackbar.message = message;
       this.snackbar.color = color;
       this.snackbar.timeout = timeout;
@@ -27,7 +27,7 @@ export default {
         show: false,
         message: '',
         color: 'success',
-        timeout: 5000,
+        timeout: 6000,
       },
     };
   },

@@ -131,7 +131,7 @@ def team_register(request):
         # Assuming `intent` is the payment intent object from Stripe
         amount_received_cents = intent['amount_received']
 
-        minor_value = request.data.get('minor')  # Get the value from the request
+        minor_value = registration_data['minor']
         minor = False
         if minor_value in ['true', 'True', True]:
             minor = True
@@ -223,7 +223,7 @@ def team_register(request):
         return JsonResponse({'error': "Invalid JSON data."}, status=400)
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
-        return JsonResponse({'error': "An unexpected error occurred."}, status=400)
+        return JsonResponse({'error': f"An unexpected error occurred: {str(e)}"}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
@@ -257,7 +257,7 @@ def event_register(request, url_alias):
             logger.error("Race not found.")
             return JsonResponse({'error': "Race not found."}, status=404)
         
-        minor_value = request.data.get('minor')  # Get the value from the request
+        minor_value = registration_data['minor']
         minor = False
         if minor_value in ['true', 'True', True]:
             minor = True
@@ -309,7 +309,7 @@ def event_register(request, url_alias):
         return JsonResponse({'error': "Invalid JSON data."}, status=400)
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
-        return JsonResponse({'error': "An unexpected error occurred."}, status=400)
+        return JsonResponse({'error': f"{str(e)}"}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
@@ -590,7 +590,7 @@ def verify_token_and_update_team(request, token):
         return JsonResponse({'error': str(ve)}, status=400)
     except Exception as e:
         logger.error(f"Error when editing team: {str(e)}")
-        return JsonResponse({'error': f"An unexpected error occurred: {str(e)}"}, status=500)
+        return JsonResponse({'error': f"{str(e)}"}, status=500)
 
 @require_GET
 def confirm_registration(request, url_alias, name):

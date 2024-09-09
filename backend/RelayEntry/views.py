@@ -221,9 +221,13 @@ def team_register(request):
     except json.JSONDecodeError as e:
         logger.error(f"JSON decode error: {str(e)}")
         return JsonResponse({'error': "Invalid JSON data."}, status=400)
+    except ValidationError as e:
+        error_message = str(e)
+        logger.error(f"ValidationError error: {str(e)}")
+        return JsonResponse({"error": error_message}, status=400)
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
-        return JsonResponse({'error': f"An unexpected error occurred: {str(e)}"}, status=400)
+        return JsonResponse({'error': f"An unexpected error occurred"}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
@@ -307,9 +311,13 @@ def event_register(request, url_alias):
     except json.JSONDecodeError as e:
         logger.error(f"JSON decode error: {str(e)}")
         return JsonResponse({'error': "Invalid JSON data."}, status=400)
+    except ValidationError as e:
+        error_message = str(e)
+        logger.error(f"ValidationError error: {str(e)}")
+        return JsonResponse({"error": error_message}, status=400)
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
-        return JsonResponse({'error': f"{str(e)}"}, status=400)
+        return JsonResponse({'error': "Unexpected error"}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
@@ -341,7 +349,8 @@ def create_payment_intent(request):
             'amount': intent.amount,
         })
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=403)
+        stripe_logger.error(f"Failed to create Payment Intent: {e}")
+        return JsonResponse({'error': "Failed to create Payment Intent"}, status=403)
 
 @require_GET
 def team_race_results(request, race_id):
@@ -360,7 +369,8 @@ def team_race_results(request, race_id):
         serializer = TeamResultSerializer(teams, many=True)
         return JsonResponse(serializer.data, safe=False)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=403)
+        logger.error(f"Failure to get Team Relay Race results: {str(e)}")
+        return JsonResponse({'error': "Failure to get Team Relay Race results"}, status=403)
 
 @require_POST
 def contact(request):
@@ -431,7 +441,7 @@ def contact(request):
     ):
         return JsonResponse({'status': 'success', 'message': 'Your message has been sent successfully!'})
     else:
-        return JsonResponse({'status': 'error', 'message': 'Failed to send your message. Please try again later.'}, status=500)
+        return JsonResponse({'error': 'Failed to send your message. Please try again later.'}, status=500)
 
 @csrf_exempt
 def stripe_webhook(request):
@@ -588,9 +598,13 @@ def verify_token_and_update_team(request, token):
     except ValueError as ve:
         logger.error(f"ValueError when editing team: {str(ve)}")
         return JsonResponse({'error': str(ve)}, status=400)
+    except ValidationError as e:
+        error_message = str(e)
+        logger.error(f"Error when editing team: {str(e)}")
+        return JsonResponse({"error": error_message}, status=400)
     except Exception as e:
         logger.error(f"Error when editing team: {str(e)}")
-        return JsonResponse({'error': f"{str(e)}"}, status=500)
+        return JsonResponse({'error': "Unexpected error when editing team"}, status=500)
 
 @require_GET
 def confirm_registration(request, url_alias, name):

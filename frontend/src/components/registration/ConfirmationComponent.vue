@@ -36,7 +36,7 @@ export default {
 </script>
 <template>
   <div>
-    <p class="confirmation-header wrap-break-word pa-2"><strong>{{ confirmationHeader }}</strong>&nbsp;#{{ registrationData.confirmationCode }}</p>
+    <p class="confirmation-header wrap-break-word pa-4"><strong>{{ confirmationHeader }}</strong>&nbsp;#{{ registrationData.confirmationCode }}</p>
     <v-container>
       <v-row justify="center">
         <v-col cols="12" md="10">

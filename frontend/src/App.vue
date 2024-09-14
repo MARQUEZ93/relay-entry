@@ -53,6 +53,9 @@ export default {
       <router-link to="/contact" class="white--text" v-if="$vuetify.display.mdAndUp">
         <v-btn text class="white--text">Contact</v-btn>
       </router-link>
+      <router-link to="/login" class="white--text" v-if="$vuetify.display.mdAndUp">
+        <v-btn text class="white--text">Log in</v-btn>
+      </router-link>
     </v-app-bar>
 
     <v-navigation-drawer app v-model="drawer" color="primary" dark v-if="!$vuetify.display.mdAndUp">
@@ -75,6 +78,11 @@ export default {
         <router-link to="/contact" @click="drawer = false">
           <v-list-item>
             <v-list-item-title>Contact</v-list-item-title>
+          </v-list-item>
+        </router-link>
+        <router-link to="/login" @click="drawer = false">
+          <v-list-item>
+            <v-list-item-title>Log in</v-list-item-title>
           </v-list-item>
         </router-link>
       </v-list>

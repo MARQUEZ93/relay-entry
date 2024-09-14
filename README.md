@@ -65,6 +65,13 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
+### Add pip package
+- Manually add the package / version constraint to requirements.txt
+```bash
+docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker-compose.dev.yml up --build
+```
+
 ## Stripe Test Cards
 
 You can use the following test card details to simulate different payment scenarios during development. These cards work only in test mode and won't trigger actual charges.

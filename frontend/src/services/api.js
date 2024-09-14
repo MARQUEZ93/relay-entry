@@ -27,6 +27,12 @@ function getCSRFToken() {
 // Add a request interceptor to include the CSRF token in each request
 apiClient.interceptors.request.use(
   (config) => {
+    // Add JWT access token to Authorization header
+    const accessToken = localStorage.getItem('access_token');
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
     const token = getCSRFToken();
     if (token)  {
       config.headers['X-CSRFToken'] = token;
@@ -34,6 +40,36 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+// Response interceptor to handle token refresh
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    const refreshToken = localStorage.getItem('refresh_token');
+
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      refreshToken &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      try {
+        const response = await apiClient.refreshToken(refreshToken);
+        localStorage.setItem('access_token', response.data.access);
+        // Update the Authorization header and retry the request
+        apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+        originalRequest.headers['Authorization'] = `Bearer ${response.data.access}`;
+        return apiClient(originalRequest);
+      } catch (err) {
+        // Refresh token is invalid, logout the user
+        apiClient.logout();
+        return Promise.reject(err);
+      }
+    }
     return Promise.reject(error);
   }
 );
@@ -75,5 +111,24 @@ export default {
   },
   confirmEventRegistration(eventSlug, name){
     return apiClient.get(`/search/${eventSlug}/${name}`);
-  }
+  },
+  protected(){
+    return apiClient.get(`/protected/`);
+  },
+  login(username, password){
+    return apiClient.post(`/token/`, {
+      username: username,
+      password: password,
+    });
+  },
+  refreshToken(refreshToken) {
+    return apiClient.post('/token/refresh/', {
+      refresh: refreshToken,
+    });
+  },
+  logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    delete apiClient.defaults.headers.common['Authorization'];
+  },
 };

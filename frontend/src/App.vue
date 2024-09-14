@@ -11,12 +11,21 @@ export default {
       showSnackbar: this.showSnackbar,
     };
   },
+  computed: {
+    isAuthenticated() {
+      return !!localStorage.getItem('access_token');
+    },
+  },
   methods: {
     showSnackbar(message, color = 'success', timeout = 6000) {
       this.snackbar.message = message;
       this.snackbar.color = color;
       this.snackbar.timeout = timeout;
       this.snackbar.show = true;
+    },
+    logout() {
+      api.logout();
+      this.$router.push('/login');
     },
   },
   data() {
@@ -54,7 +63,8 @@ export default {
         <v-btn text class="white--text">Contact</v-btn>
       </router-link>
       <router-link to="/login" class="white--text" v-if="$vuetify.display.mdAndUp">
-        <v-btn text class="white--text">Log in</v-btn>
+        <v-btn v-if="isAuthenticated" text class="white--text">Logout</v-btn>
+        <v-btn v-else text to="/login" class="white--text">Login</v-btn>
       </router-link>
     </v-app-bar>
 
@@ -80,9 +90,14 @@ export default {
             <v-list-item-title>Contact</v-list-item-title>
           </v-list-item>
         </router-link>
-        <router-link to="/login" @click="drawer = false">
+        <router-link v-if="isAuthenticated" @click="drawer = false">
+          <v-list-item @click="logout">
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </router-link>
+        <router-link v-else to="/login" @click="drawer = false">
           <v-list-item>
-            <v-list-item-title>Log in</v-list-item-title>
+            <v-list-item-title>Login</v-list-item-title>
           </v-list-item>
         </router-link>
       </v-list>

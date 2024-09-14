@@ -16,7 +16,11 @@ import AboutComponent from '../components/AboutComponent.vue';
 import ContactComponent from '../components/ContactComponent.vue';
 import PrivacyPolicy from '../components/PrivacyPolicy.vue';
 import TermsOfAgreement from '../components/TermsOfAgreement.vue';
+import LoginComponent from '../components/LoginComponent.vue';
+import ProtectedComponent from '../components/ProtectedComponent.vue';
+
 import store from '@/store'; // Import the store
+
 const routes = [
   {
     path: '/',
@@ -86,6 +90,17 @@ const routes = [
     component: TermsOfAgreement,
   },
   {
+    path: '/login',
+    name: 'Login',
+    component: LoginComponent,
+  },
+  {
+    path: '/protected',
+    name: 'Protected',
+    component: ProtectedComponent,
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/confirmation',
     name: 'Confirmation',
     component: ConfirmationComponent,
@@ -108,6 +123,16 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+// Navigation guard
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!localStorage.getItem('access_token');
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next('/login');
+  } else {
+    next();
+  }
 });
 
 export default router;

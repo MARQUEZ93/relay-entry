@@ -32,6 +32,7 @@ from django.core.validators import validate_email, URLValidator
 from .utils.email_utils import send_email, generate_token, send_team_edit_link
 from django.core.cache import cache
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from rest_framework.permissions import IsAuthenticated
 
 # Set up logging for Stripe
 stripe_logger = logging.getLogger('stripe')
@@ -39,6 +40,14 @@ stripe_logger = logging.getLogger('stripe')
 @ensure_csrf_cookie
 def get_csrf_token(request):
     return JsonResponse({'csrfToken': get_token(request)})
+
+from rest_framework.views import APIView
+class ProtectedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        print("FUCK")
+        return JsonResponse({'message': 'Hello, authenticated user!'})
 
 class RaceDetailView(generics.RetrieveAPIView):
     queryset = Race.objects.all()

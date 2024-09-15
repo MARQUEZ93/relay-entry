@@ -3,11 +3,11 @@
   
   export default {
     name: 'LoginComponent',
+    inject: ['showSnackbar'],
     data() {
       return {
         username: '',
         password: '',
-        error: null,
       };
     },
     methods: {
@@ -16,10 +16,9 @@
           const response = await api.login(this.username, this.password);
           localStorage.setItem('access_token', response.data.access);
           localStorage.setItem('refresh_token', response.data.refresh);
-          this.$router.push('/');
+          this.$router.push('/protected');
         } catch (error) {
-          this.error = 'Invalid username or password';
-          console.error(error);
+          this.showSnackbar('Invalid username or password', 'error');
         }
       },
     },
@@ -48,9 +47,6 @@
                 ></v-text-field>
                 <v-btn type="submit" color="primary" block>Login</v-btn>
               </v-form>
-              <v-alert v-if="error" type="error" dense>
-                {{ error }}
-              </v-alert>
             </v-card-text>
           </v-card>
         </v-col>

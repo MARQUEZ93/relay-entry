@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'RelayEntry',
     'corsheaders',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 CORS_ALLOW_CREDENTIALS = True
 MIDDLEWARE = [

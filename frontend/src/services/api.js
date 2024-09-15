@@ -43,33 +43,43 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-// Response interceptor to handle token refresh
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
     const refreshToken = localStorage.getItem('refresh_token');
 
+    // Initialize retry count if it doesn't exist
+    if (!originalRequest._retryCount) {
+      originalRequest._retryCount = 0;
+    }
+
     if (
       error.response &&
       error.response.status === 401 &&
       refreshToken &&
-      !originalRequest._retry
+      originalRequest._retryCount < 3 // Retry limit
     ) {
       originalRequest._retry = true;
+      originalRequest._retryCount++; // Increment retry count
+
       try {
-        const response = await apiClient.refreshToken(refreshToken);
+        const response = await apiClient.post('/token/refresh/', { refresh: refreshToken });
         localStorage.setItem('access_token', response.data.access);
-        // Update the Authorization header and retry the request
-        apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+
+        // Update the Authorization header for this request
         originalRequest.headers['Authorization'] = `Bearer ${response.data.access}`;
         return apiClient(originalRequest);
       } catch (err) {
-        // Refresh token is invalid, logout the user
-        apiClient.logout();
+        // If the refresh token is invalid, logout the user
+        if (err.response && err.response.status === 401) {
+          apiClient.logout();
+        }
         return Promise.reject(err);
       }
     }
+
     return Promise.reject(error);
   }
 );
@@ -127,8 +137,12 @@ export default {
     });
   },
   logout() {
+    const refreshToken = localStorage.getItem('refresh_token');
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     delete apiClient.defaults.headers.common['Authorization'];
+    return apiClient.post('/logout/', {
+      refresh_token: refreshToken
+    });
   },
 };

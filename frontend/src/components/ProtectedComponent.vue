@@ -3,18 +3,26 @@
   
   export default {
     name: 'ProtectedComponent',
+    inject: ['showSnackbar'],
     data() {
       return {
         message: '',
       };
+    },
+    methods: {
+      logout() {
+        api.logout();
+        this.$router.push('/');
+      },
     },
     async created() {
       try {
         const response = await api.protected();
         this.message = response.data.message;
       } catch (error) {
-        console.error(error);
-        this.message = 'Error fetching protected data.';
+        this.showSnackbar('Session expired. Log in again.', 'error');
+        api.logout();
+        this.$router.push('/login');
       }
     },
   };
@@ -23,6 +31,7 @@
     <v-container>
         <h2>Protected Page</h2>
         <p>{{ message }}</p>
+        <v-btn @click="logout" text>Logout</v-btn>
     </v-container>
 </template>
 

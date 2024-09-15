@@ -14,7 +14,7 @@ import logging
 import json
 from .models import UserProfile, Event, Race, Registration, Team, TeamMember
 from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer, TeamSerializer
-from rest_framework import generics
+from rest_framework import generics, status
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.db import transaction
 from .utils.stripe_utils import retrieve_payment_intent 
@@ -33,6 +33,9 @@ from .utils.email_utils import send_email, generate_token, send_team_edit_link
 from django.core.cache import cache
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.response import Response
 
 # Set up logging for Stripe
 stripe_logger = logging.getLogger('stripe')
@@ -41,12 +44,25 @@ stripe_logger = logging.getLogger('stripe')
 def get_csrf_token(request):
     return JsonResponse({'csrfToken': get_token(request)})
 
-from rest_framework.views import APIView
+class LogoutView(APIView):
+    def post(self, request):
+        try:
+            refresh_token = request.data.get('refresh_token')
+            if refresh_token is None:
+                return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # This blacklists the token
+            
+            return Response({"detail": "Logout successful."}, status=status.HTTP_205_RESET_CONTENT)
+        
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 class ProtectedView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        print("FUCK")
         return JsonResponse({'message': 'Hello, authenticated user!'})
 
 class RaceDetailView(generics.RetrieveAPIView):

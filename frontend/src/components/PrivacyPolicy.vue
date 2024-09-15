@@ -4,7 +4,7 @@ export default {
     data() {
         return {
             title: "Privacy Policy",
-            lastUpdated: "September 2024",
+            lastUpdated: "September 15 2024",
         };
     },
     async mounted() {
@@ -21,7 +21,7 @@ export default {
                 <p><strong>Last Updated:</strong> {{ lastUpdated }}</p>
                 <v-sheet class="my-5 pa-5" elevation="2">
                     <h2>Data Collection</h2>
-                    <p>We collect information such as name, email, and race registration details when you sign up for events. However, we do not store any payment information. All transactions are securely processed through Stripe.</p>
+                    <p>We collect information such as name, email, and race registration details when you sign up for events. However, we do not store any payment information.</p>
 
                     <h2>Data Usage</h2>
                     <p>The information we collect is used solely for event registration purposes. Your data is only shared with the event coordinator for the event you registered for and is never sold or shared with third parties.</p>
@@ -33,7 +33,7 @@ export default {
                     <p>For participants under the age of 18, a parent or guardian must complete the registration process. We do not knowingly collect information from minors without consent from a parent or guardian.</p>
 
                     <h2 class="pb-2">Third-Party Services</h2>
-                    <p>We use Stripe to securely process payments. Stripe handles the transaction, and we do not retain any payment information.</p>
+                    <p>We securely process payments. We do not retain any payment information.</p>
 
                     <h2 class="pb-2">Cookies & Tracking</h2>
                     <p class="pb-2">We do not use cookies or any other tracking technologies on our platform.</p>

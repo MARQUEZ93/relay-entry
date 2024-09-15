@@ -4,7 +4,7 @@ export default {
     data() {
         return {
             title: "Terms of Agreement",
-            lastUpdated: "September 2024",
+            lastUpdated: "September 15 2024",
         };
     },
     async mounted() {

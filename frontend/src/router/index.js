@@ -17,7 +17,9 @@ import ContactComponent from '../components/ContactComponent.vue';
 import PrivacyPolicy from '../components/PrivacyPolicy.vue';
 import TermsOfAgreement from '../components/TermsOfAgreement.vue';
 import LoginComponent from '../components/LoginComponent.vue';
-import DashboardComponent from '../components/DashboardComponent.vue';
+import DashboardComponent from '../components/dashboard/DashboardComponent.vue';
+import CreateEvent from '../components/dashboard/CreateEvent.vue';
+
 
 import store from '@/store'; // Import the store
 
@@ -96,8 +98,14 @@ const routes = [
   },
   {
     path: '/dashboard',
-    name: 'Dashboard',
+    name: 'DashboardComponent',
     component: DashboardComponent,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/dashboard/create-event',
+    name: 'CreateEvent',
+    component: CreateEvent,
     meta: { requiresAuth: true },
   },
   {

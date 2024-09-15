@@ -16,7 +16,7 @@
           const response = await api.login(this.username, this.password);
           localStorage.setItem('access_token', response.data.access);
           localStorage.setItem('refresh_token', response.data.refresh);
-          this.$router.push('/protected');
+          this.$router.push('/dashboard');
         } catch (error) {
           this.showSnackbar('Invalid username or password', 'error');
         }

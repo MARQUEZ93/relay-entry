@@ -122,8 +122,8 @@ export default {
   confirmEventRegistration(eventSlug, name){
     return apiClient.get(`/search/${eventSlug}/${name}`);
   },
-  protected(){
-    return apiClient.get(`/protected/`);
+  dashboard(){
+    return apiClient.get(`/dashboard/`);
   },
   login(username, password){
     return apiClient.post(`/token/`, {

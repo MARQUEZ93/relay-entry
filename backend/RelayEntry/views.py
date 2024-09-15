@@ -59,11 +59,18 @@ class LogoutView(APIView):
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class ProtectedView(APIView):
+class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return JsonResponse({'message': 'Hello, authenticated user!'})
+         # Get the logged-in user's username and email
+        username = request.user.username
+        email = request.user.email
+        return JsonResponse({
+            'message': f"Hello, {username}!",
+            'username': username,
+            'email': email,
+        })
 
 class RaceDetailView(generics.RetrieveAPIView):
     queryset = Race.objects.all()

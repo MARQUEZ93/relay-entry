@@ -93,7 +93,7 @@ export default {
     <v-footer app color="primary" dark>
       <v-row>
         <v-col cols="12">
-          &copy; 2024 RelayEntry - Beta 1.0.1
+          &copy; 2024 RelayEntry - Alpha 3.0.1 (Early Access)
         </v-col>
       </v-row>
     </v-footer>

@@ -17,7 +17,7 @@ import ContactComponent from '../components/ContactComponent.vue';
 import PrivacyPolicy from '../components/PrivacyPolicy.vue';
 import TermsOfAgreement from '../components/TermsOfAgreement.vue';
 import LoginComponent from '../components/LoginComponent.vue';
-import ProtectedComponent from '../components/ProtectedComponent.vue';
+import DashboardComponent from '../components/DashboardComponent.vue';
 
 import store from '@/store'; // Import the store
 
@@ -95,9 +95,9 @@ const routes = [
     component: LoginComponent,
   },
   {
-    path: '/protected',
-    name: 'Protected',
-    component: ProtectedComponent,
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: DashboardComponent,
     meta: { requiresAuth: true },
   },
   {

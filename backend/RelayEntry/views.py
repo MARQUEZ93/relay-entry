@@ -68,7 +68,7 @@ class DashboardView(APIView):
         username = request.user.username
         email = request.user.email
         return JsonResponse({
-            'message': f"Hello, {username}!",
+            'message': f"",
             'username': username,
             'email': email,
         })

@@ -3,7 +3,7 @@
     name: 'PricingComponent',
     data(){
       return {
-        texasDescription: "Texas races are eligible for lower rates because RelayEntry is a Texas small business. Contact us!",
+        stripeDescription: "All payments are processed through Stripe Connect. Race directors create their own Stripe accounts, and we handle the rest to ensure smooth and secure transactions.",
       }
     },
     async mounted() {
@@ -20,12 +20,12 @@
             <v-sheet class="mx-auto my-5 pa-5" elevation="2">
             <v-row>
                 <v-col cols="12">
-                  <h2>Simple Pricing</h2>
+                  <h2>2.9% + 30¢ per Transaction</h2>
                   <p class="texas-transaction d-flex align-center justify-center">
                     <strong>
-                      3.9% + $1 per Transaction
+                      $50 for every $5,000 in sales!
                     </strong>
-                    <v-icon size="x-small" class="ml-2" color="primary" v-tooltip.top="texasDescription">
+                    <v-icon size="x-small" class="ml-2" color="primary" v-tooltip.top="stripeDescription">
                           mdi-information
                     </v-icon>
                   </p>
@@ -41,7 +41,7 @@
                       </li>
                       <li>
                         <v-icon left>mdi-wallet</v-icon>
-                        &nbsp;Receive payments twice weekly
+                        &nbsp;Receive payments immediately
                       </li>
                       <li>
                         <v-icon left>mdi-file-document-edit</v-icon>

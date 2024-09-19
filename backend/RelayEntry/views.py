@@ -13,8 +13,9 @@ import os
 import logging
 import json
 from .models import UserProfile, Event, Race, Registration, Team, TeamMember
-from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer, TeamSerializer
+from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer, TeamSerializer, EventDashboardSerializer
 from rest_framework import generics, status
+from rest_framework.exceptions import NotFound
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.db import transaction
 from .utils.stripe_utils import retrieve_payment_intent 
@@ -31,7 +32,7 @@ from django.utils.html import escape
 from django.core.validators import validate_email, URLValidator
 from .utils.email_utils import send_email, generate_token, send_team_edit_link
 from django.core.cache import cache
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ValidationError, ObjectDoesNotExist, PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -668,3 +669,34 @@ def confirm_registration(request, url_alias, name):
         return JsonResponse(list(registrations), safe=False)
     
     return JsonResponse([], safe=False)
+
+class EventCreateView(generics.CreateAPIView):
+    serializer_class = EventDashboardSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Get the logged-in user's profile
+        user_profile = UserProfile.objects.get(user=self.request.user)
+
+        # Check if the user is approved to create events
+        if not user_profile.is_approved:
+            raise PermissionDenied("You are not approved to create events.")
+
+        # Save the event with the created_by field set to the logged-in user's profile
+        serializer.save(created_by=user_profile)
+
+class EventUpdateView(generics.UpdateAPIView):
+    serializer_class = EventDashboardSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    queryset = Event.objects.all()
+
+    def get_object(self):
+        # Get the event by ID and make sure the logged-in user is the creator
+        obj = super().get_object()
+        user_profile = UserProfile.objects.get(user=self.request.user)
+
+        if obj.created_by != user_profile:
+            raise PermissionDenied("You are not allowed to update this event.")
+
+        return obj

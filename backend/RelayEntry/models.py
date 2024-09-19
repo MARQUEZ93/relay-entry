@@ -29,7 +29,7 @@ class Event(models.Model):
     description = models.TextField(null=True, blank=True)
     date = models.DateField()
     end_date = models.DateField(blank=True, null=True, help_text="Only if the event spans multiple days. Must be after the date field.")
-    created_by = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, related_name='events', help_text="The user who created this event.")
+    created_by = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL, related_name='events', help_text="The user who created this event.")
     published = models.BooleanField(default=False, help_text="Whether the event can be viewed by the public.")
 
     address = models.CharField(max_length=255, blank=True, null=True)

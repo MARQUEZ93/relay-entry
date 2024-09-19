@@ -23,7 +23,9 @@ class CustomGroupAdmin(admin.ModelAdmin):
     pass
 
 class CustomUserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user',)
+    list_display = ('user', 'is_approved', 'stripe_account_id', 'stripe_account_verified')
+    list_filter = ('is_approved',)
+    search_fields = ('user__username', 'stripe_account_id')
 
 admin.site.unregister(User)
 admin.site.unregister(Group)

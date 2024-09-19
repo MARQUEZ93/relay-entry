@@ -20,6 +20,20 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'captain', 'projected_team_time', 'members', 'complete']
     def get_complete(self, obj):
         return obj.complete()
+
+class EventDashboardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = [
+            'name', 'description', 'date', 'end_date', 'address', 'city', 'state',
+            'postal_code', 'email', 'waiver_text', 'facebook_url', 'instagram_url', 
+            'twitter_url', 'website_url'
+        ]
+
+    def validate(self, data):
+        if data['end_date'] and data['end_date'] < data['date']:
+            raise serializers.ValidationError("End date must be after the start date.")
+        return data
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event

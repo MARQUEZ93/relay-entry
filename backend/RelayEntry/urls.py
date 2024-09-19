@@ -2,7 +2,7 @@
 
 from django.urls import path
 from . import views
-from .views import EventDetailView, RaceDetailView, DashboardView, LogoutView
+from .views import EventDetailView, RaceDetailView, DashboardView, LogoutView, EventCreateView, EventUpdateView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -10,6 +10,9 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('', views.index, name='index'), 
+    # Authenticated-only views
+    path('api/dashboard/events/create/', EventCreateView.as_view(), name='event-create'),
+    path('api/dashboard/events/update/<int:id>/', EventUpdateView.as_view(), name='event-update'),
     path('api/dashboard/', DashboardView.as_view(), name='dashboard'),
     # path('signup/', views.signup, name='signup'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

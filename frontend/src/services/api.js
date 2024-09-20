@@ -179,19 +179,11 @@ export default {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       delete apiClient.defaults.headers.common['Authorization'];
-      this.$router.push('/login');  // Redirect to login page
       return;
     }
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     delete apiClient.defaults.headers.common['Authorization'];
     return apiClient.post('/logout/', { refresh_token: refreshToken })
-      .then(() => {
-        this.$router.push('/login');  // Redirect to login page on success
-      })
-      .catch(error => {
-        console.error('Logout failed', error);  // Log any errors
-        this.showSnackbar('Logout failed, please try again', 'error');
-      });
   },
 };

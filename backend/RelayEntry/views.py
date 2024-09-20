@@ -15,6 +15,7 @@ import json
 from .models import UserProfile, Event, Race, Registration, Team, TeamMember
 from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer, TeamSerializer, EventDashboardSerializer
 from rest_framework import generics, status
+from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import NotFound
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.db import transaction
@@ -684,6 +685,16 @@ class EventCreateView(generics.CreateAPIView):
 
         # Save the event with the created_by field set to the logged-in user's profile
         serializer.save(created_by=user_profile)
+    
+    def create(self, request, *args, **kwargs):
+        # Call the original create method
+        response = super().create(request, *args, **kwargs)
+        
+        # Customize the response data if needed
+        return Response({
+            "message": "Event created successfully!",
+            "data": response.data
+        }, status=status.HTTP_201_CREATED)
 
 class EventUpdateView(generics.UpdateAPIView):
     serializer_class = EventDashboardSerializer
@@ -696,7 +707,23 @@ class EventUpdateView(generics.UpdateAPIView):
         obj = super().get_object()
         user_profile = UserProfile.objects.get(user=self.request.user)
 
-        if obj.created_by != user_profile:
+        if obj.created_by != user_profile or not user_profile.is_approved:
             raise PermissionDenied("You are not allowed to update this event.")
 
         return obj
+    
+    def perform_update(self, serializer):
+        user_profile = UserProfile.objects.get(user=self.request.user)
+
+        if not user_profile.is_approved:
+            raise PermissionDenied("You are not approved to update events.")
+        
+        serializer.save()
+
+class UserEventsListAPIView(ListAPIView):
+    serializer_class = EventWithRacesSerializer
+    permission_classes = [IsAuthenticated]  # Ensures only authenticated users can access
+
+    def get_queryset(self):
+        # Filter the events based on the logged-in user
+        return Event.objects.filter(created_by=self.request.user.userprofile)

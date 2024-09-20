@@ -35,19 +35,20 @@ admin.site.register(UserProfile, CustomUserProfileAdmin)
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'date', 'created_at', 'updated_at', 'url_alias', 'event_url', )
+    list_display = ('name', 'get_created_by', 'description', 'date', 'created_at', 'updated_at', 'url_alias', 'event_url', )
     search_fields = ('name',)
     prepopulated_fields = {"url_alias": ("name",)}
+    raw_id_fields = ('created_by',)  # Use raw_id_fields to show a link
 
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
+    def get_created_by(self, obj):
+        if obj.created_by and obj.created_by.user:
+            return format_html('<a href="/admin/RelayEntry/userprofile/{}/change/">{}</a>', obj.created_by.id, obj.created_by.user.username)
+        return 'No user'
+    get_created_by.short_description = 'Created By'
 
     def event_url(self, obj):
         return format_html('<a href="{}" target="_blank">{}</a>', obj.get_event_url(), obj.get_event_url())
     event_url.short_description = 'Event URL'
-
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 class EventFilter(admin.SimpleListFilter):
     title = 'event'  # Human-readable name for the filter
@@ -69,6 +70,7 @@ class RaceAdmin(admin.ModelAdmin):
     form = RaceAdminForm
     list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator','projected_team_time_choices', 'registration_closed',)
     search_fields = ('name', 'event__name', 'distance',)
+    raw_id_fields = ('event',)  # Use raw_id_fields to show a link
 
 class RegistrationEventFilter(admin.SimpleListFilter):
     title = 'event'  # Human-readable name for the filter
@@ -158,11 +160,3 @@ class ResultAdmin(admin.ModelAdmin):
         }),
     )
     readonly_fields = ('is_team_total',)
-
-    def save_model(self, request, obj, form, change):
-        # Ensure the is_team_total flag is set correctly based on leg_order and team
-        if obj.team and obj.leg_order is None:
-            obj.is_team_total = True
-        else:
-            obj.is_team_total = False
-        super().save_model(request, obj, form, change)

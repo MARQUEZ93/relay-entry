@@ -19,7 +19,7 @@ export default {
     },
     async fetchEvents() {
       try {
-        const response = await api.get('/api/dashboard/events/');  // Fetch user events
+        const response = await api.getUserEvents()  // Fetch user events
         this.events = response.data;
       } catch (error) {
         this.showSnackbar('Error loading events.', 'error');
@@ -84,16 +84,15 @@ export default {
                   <v-list-item
                     v-for="event in events"
                     :key="event.id"
-                    @click="$router.push(`/dashboard/manage-event/${event.id}/`)"
+                    @click="$router.push(`/dashboard/events/${event.id}/`)"
                     class="hoverable"
+                    rounded="md"
+                    elevation="1"
                   >
-                    <v-list-item-content>
-                      <v-list-item-title>{{ event.name }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ event.date }}</v-list-item-subtitle>
-                    </v-list-item-content>
-                    <v-list-item-icon>
-                      <v-icon>mdi-chevron-right</v-icon>
-                    </v-list-item-icon>
+                    <v-list-item>
+                      <v-list-item-title class="text-h6">{{ event.name }} <v-icon class="ml-auto" right>mdi-chevron-right</v-icon></v-list-item-title>
+                      <v-list-item-subtitle class="text-body-2">{{ event.date }}</v-list-item-subtitle>
+                    </v-list-item>
                   </v-list-item>
                 </v-list>
 

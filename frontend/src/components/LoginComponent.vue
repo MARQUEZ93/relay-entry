@@ -10,6 +10,11 @@
         password: '',
       };
     },
+    mounted() {
+      if (localStorage.getItem('access_token')) {
+        this.$router.push('/dashboard');
+      }
+    },
     methods: {
       async login() {
         try {

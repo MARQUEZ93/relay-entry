@@ -20,6 +20,9 @@ class UserProfile(models.Model):
 
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
     stripe_account_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username  # or whatever field you want to display
     
 class Event(models.Model):
 
@@ -66,6 +69,7 @@ class Event(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        self.full_clean()
         if self.email:
             self.email = self.email.lower()
         if not self.url_alias:
@@ -76,7 +80,6 @@ class Event(models.Model):
                 for race in self.races.all():
                     race.registration_closed = True
                     race.save()
-        self.full_clean()  # Ensure all validations are checked
         super().save(*args, **kwargs)
 
 class PhotoPackage(models.Model):
@@ -157,11 +160,11 @@ class Race(models.Model):
         return f'{self.name} - {self.event.name}'
 
     def save(self, *args, **kwargs):
+        self.full_clean()  # Ensure all validations are checked
         if self.pk is not None:  # Check if the race is being updated
             old_race = Race.objects.get(pk=self.pk)
             if old_race.registration_closed != self.registration_closed and not self.registration_closed and self.event.registration_closed:
                 raise ValidationError('Parent event registration is closed.')
-        self.full_clean()  # Ensure all validations are checked
         super().save(*args, **kwargs)
 
     def clean(self):
@@ -236,6 +239,7 @@ class TeamMember(models.Model):
         return f'{self.email} - {self.team.name} - {self.team.race.name}'
     
     def save(self, *args, **kwargs):
+        self.full_clean()
         self.email = self.email.lower()
         super().save(*args, **kwargs)
     
@@ -314,6 +318,7 @@ class Registration(models.Model):
             (today.month, today.day) < (formatted_dob.month, formatted_dob.day)
         )
     def save(self, *args, **kwargs):
+        self.full_clean()
         if self.email:
             self.email = self.email.lower()
         # Generate confirmation code if not present
@@ -335,9 +340,6 @@ class Registration(models.Model):
         # Validate minor fields
         if self.minor and not (self.parent_guardian_name and self.parent_guardian_signature):
             raise ValueError("Parent/Guardian name and signature are required for minors.")
-
-        # Run full validation
-        self.full_clean()
 
         # Set the price and handle coupon logic
         # if self.coupon_code and self._state.adding:
@@ -382,6 +384,7 @@ class Result(models.Model):
     is_team_total = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
+        self.full_clean()
         if self.team and self.leg_order is None:
             self.is_team_total = True
         super(Result, self).save(*args, **kwargs)

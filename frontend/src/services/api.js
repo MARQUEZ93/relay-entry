@@ -44,6 +44,18 @@ apiClient.interceptors.request.use(
   }
 );
 
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+function subscribeTokenRefresh(cb) {
+  refreshSubscribers.push(cb);
+}
+
+function onRefreshed(accessToken) {
+  refreshSubscribers.forEach(cb => cb(accessToken));
+  refreshSubscribers = [];
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -61,22 +73,41 @@ apiClient.interceptors.response.use(
       refreshToken &&
       originalRequest._retryCount < 3 // Retry limit
     ) {
-      originalRequest._retry = true;
       originalRequest._retryCount++; // Increment retry count
 
-      try {
-        const response = await apiClient.post('/token/refresh/', { refresh: refreshToken });
-        localStorage.setItem('access_token', response.data.access);
+      if (!isRefreshing) {
+        isRefreshing = true;
 
-        // Update the Authorization header for this request
-        originalRequest.headers['Authorization'] = `Bearer ${response.data.access}`;
-        return apiClient(originalRequest);
-      } catch (err) {
-        // If the refresh token is invalid, logout the user
-        if (err.response && err.response.status === 401) {
-          apiClient.logout();
+        try {
+          const response = await apiClient.post('/token/refresh/', { refresh: refreshToken });
+          const newAccessToken = response.data.access;
+          localStorage.setItem('access_token', newAccessToken);
+
+          // Mark refreshing as done
+          isRefreshing = false;
+          onRefreshed(newAccessToken);
+
+          // Update the Authorization header for this request
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          return apiClient(originalRequest); // Retry the original request
+        } catch (err) {
+          // If the refresh token is invalid, logout the user
+          if (err.response && err.response.status === 401) {
+            apiClient.logout();
+            return Promise.reject(err);
+          }
+          isRefreshing = false;
+          return Promise.reject(err);
         }
-        return Promise.reject(err);
+      } else {
+        // If there's already a refresh in progress, queue the request
+        return new Promise((resolve) => {
+          subscribeTokenRefresh((newAccessToken) => {
+            // Update the original request's Authorization header and retry
+            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+            resolve(apiClient(originalRequest));
+          });
+        });
       }
     }
 
@@ -85,6 +116,12 @@ apiClient.interceptors.response.use(
 );
 
 export default {
+  getUserEvents() {
+    return apiClient.get(`/dashboard/events/`);
+  },
+  createEvent(eventData) {
+    return apiClient.post(`/dashboard/events/create/`, eventData);
+  },
   fetchCsrfToken() {
     return apiClient.get(`/get-csrf/`);
   },
@@ -92,7 +129,6 @@ export default {
     return apiClient.get(`/teams/get-team/${token}/`);
   },
   updateTeam(token, teamData) {
-    console.log(teamData);
     return apiClient.put(`/edit-team/${token}/`, teamData);
   },
   requestEditLink(url_alias, data) {
@@ -138,11 +174,24 @@ export default {
   },
   logout() {
     const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      // If no refresh token exists, just clear and redirect
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      delete apiClient.defaults.headers.common['Authorization'];
+      this.$router.push('/login');  // Redirect to login page
+      return;
+    }
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     delete apiClient.defaults.headers.common['Authorization'];
-    return apiClient.post('/logout/', {
-      refresh_token: refreshToken
-    });
+    return apiClient.post('/logout/', { refresh_token: refreshToken })
+      .then(() => {
+        this.$router.push('/login');  // Redirect to login page on success
+      })
+      .catch(error => {
+        console.error('Logout failed', error);  // Log any errors
+        this.showSnackbar('Logout failed, please try again', 'error');
+      });
   },
 };

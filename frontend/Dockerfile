@@ -1,12 +1,8 @@
 # Stage 1: Build the Vue.js application
 FROM node:18-alpine as build
 
-# Install Python and pip, then create a virtual environment
-RUN apk add --no-cache python3 py3-pip
-RUN python3 -m venv /app/venv
-
-# Activate the virtual environment and install Certbot and the DNS plugin
-RUN /app/venv/bin/pip install certbot certbot-dns-route53
+# Install essential packages including Certbot, DNS Route53 plugin for AWS, and cron
+RUN apk add --no-cache bash curl certbot certbot-dns-route53 cronie
 
 # Set work directory
 WORKDIR /app
@@ -36,7 +32,7 @@ COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Set up the cron job for Certbot renewal
-RUN echo "0 */12 * * * /app/venv/bin/certbot renew --quiet --deploy-hook \"nginx -s reload\"" > /etc/crontabs/root
+RUN echo "0 */12 * * * certbot renew --quiet --deploy-hook \"nginx -s reload\"" > /etc/crontabs/root
 
 # Start cron and Nginx
 CMD ["sh", "-c", "crond && nginx -g 'daemon off;'"]

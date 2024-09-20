@@ -2,7 +2,6 @@
 
 from django.urls import path
 from . import views
-from .views import EventDetailView, RaceDetailView, DashboardView, LogoutView, EventCreateView, EventUpdateView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -11,15 +10,16 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('', views.index, name='index'), 
     # Authenticated-only views
-    path('api/dashboard/events/create/', EventCreateView.as_view(), name='event-create'),
-    path('api/dashboard/events/update/<int:id>/', EventUpdateView.as_view(), name='event-update'),
-    path('api/dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('api/dashboard/events/create/', views.EventCreateView.as_view(), name='event-create'),
+    path('api/dashboard/events/update/<int:id>/', views.EventUpdateView.as_view(), name='event-update'),
+    path('api/dashboard/events/', views.UserEventsListAPIView.as_view(), name='user-events'),
+    path('api/dashboard/', views.DashboardView.as_view(), name='dashboard'),
     # path('signup/', views.signup, name='signup'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/logout/', LogoutView.as_view(), name='token_logout'),
-    path('api/events/<slug:url_alias>/races/<int:id>/', RaceDetailView.as_view(), name='race-detail'),
-    path('api/events/<slug:url_alias>/', EventDetailView.as_view(), name='event-detail'),
+    path('api/logout/', views.LogoutView.as_view(), name='token_logout'),
+    path('api/events/<slug:url_alias>/races/<int:id>/', views.RaceDetailView.as_view(), name='race-detail'),
+    path('api/events/<slug:url_alias>/', views.EventDetailView.as_view(), name='event-detail'),
     path('api/get-csrf/', views.get_csrf_token, name='get_csrf_token'),
     path('api/races/<int:race_id>/team-results/', views.team_race_results, name='team-race-results'),
     path('api/events/<slug:url_alias>/register/', views.event_register, name='event_register'),

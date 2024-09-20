@@ -108,6 +108,12 @@ const routes = [
     component: CreateEvent,
     meta: { requiresAuth: true },
   },
+  // {
+  //   path: '/dashboard/events/',
+  //   name: 'CreateEvent', // TODO: MyEvent
+  //   component: CreateEvent, // TODO: MyEvent
+  //   meta: { requiresAuth: true },
+  // },
   {
     path: '/confirmation',
     name: 'Confirmation',

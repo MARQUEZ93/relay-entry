@@ -77,6 +77,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_THROTTLE_RATES': {
+        'login': '5/minute',  # Limit anonymous users to 5 login attempts per minute
+    }
 }
 # Add Simple JWT settings
 from datetime import timedelta

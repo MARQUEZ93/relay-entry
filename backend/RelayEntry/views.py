@@ -42,6 +42,15 @@ from rest_framework.response import Response
 # Set up logging for Stripe
 stripe_logger = logging.getLogger('stripe')
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.throttling import AnonRateThrottle
+
+class LoginRateThrottle(AnonRateThrottle):
+    scope = 'login'
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    throttle_classes = [LoginRateThrottle]
+
 @ensure_csrf_cookie
 def get_csrf_token(request):
     return JsonResponse({'csrfToken': get_token(request)})

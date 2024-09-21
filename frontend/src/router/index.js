@@ -19,6 +19,7 @@ import TermsOfAgreement from '../components/TermsOfAgreement.vue';
 import LoginComponent from '../components/LoginComponent.vue';
 import DashboardComponent from '../components/dashboard/DashboardComponent.vue';
 import CreateEvent from '../components/dashboard/CreateEvent.vue';
+import MyEvent from '../components/dashboard/MyEvent.vue';
 
 
 import store from '@/store'; // Import the store
@@ -108,12 +109,12 @@ const routes = [
     component: CreateEvent,
     meta: { requiresAuth: true },
   },
-  // {
-  //   path: '/dashboard/events/',
-  //   name: 'CreateEvent', // TODO: MyEvent
-  //   component: CreateEvent, // TODO: MyEvent
-  //   meta: { requiresAuth: true },
-  // },
+  {
+    path: '/dashboard/events/:id',
+    name: 'MyEvent',
+    component: MyEvent,
+    meta: { requiresAuth: true },
+  },
   {
     path: '/confirmation',
     name: 'Confirmation',

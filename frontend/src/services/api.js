@@ -116,6 +116,9 @@ apiClient.interceptors.response.use(
 );
 
 export default {
+  getUserEvent(id){
+    return apiClient.get(`/dashboard/events/${id}/`);
+  },
   getUserEvents() {
     return apiClient.get(`/dashboard/events/`);
   },

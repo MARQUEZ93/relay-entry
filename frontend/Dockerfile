@@ -2,7 +2,7 @@
 FROM node:18-alpine as build
 
 # Install essential packages including Certbot, DNS Route53 plugin for AWS, and cron
-RUN apk add --no-cache bash curl certbot certbot-dns-route53 cronie
+RUN apk update && apk add --no-cache bash curl certbot certbot-dns-route53 cronie
 
 # Set work directory
 WORKDIR /app

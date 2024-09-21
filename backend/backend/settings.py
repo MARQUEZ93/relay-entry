@@ -47,6 +47,7 @@ if not os.path.exists(LOG_DIR):
 
 INSTALLED_APPS = [
     'rest_framework',
+    'rest_framework_simplejwt',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

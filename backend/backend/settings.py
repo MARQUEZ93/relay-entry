@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
@@ -81,8 +82,6 @@ REST_FRAMEWORK = {
         'login': '5/minute',  # Limit anonymous users to 5 login attempts per minute
     }
 }
-# Add Simple JWT settings
-from datetime import timedelta
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Token lifetime
@@ -90,6 +89,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),  # Authorization header prefix
+    "SIGNING_KEY": SECRET_KEY,
 }
 
 # CSRF settings

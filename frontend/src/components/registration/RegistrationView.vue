@@ -15,7 +15,6 @@ export default {
   },
   async mounted() {
     window.scrollTo(0, 0);
-    console.log("this is mounted");
   },
   data() {
     return {
@@ -136,7 +135,6 @@ export default {
   async created() {
     const eventSlug = this.$route.params.url_alias;
     const raceId = this.$route.params.id;
-    console.log("this is created");
     await this.fetchRace(eventSlug, raceId);
     await this.createPaymentIntentOnMount();
     await this.initStripe();

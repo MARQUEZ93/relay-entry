@@ -167,7 +167,6 @@ export default {
       }
     },
     submit() {
-      console.log(this.localRegistrationData);
       if (this.$refs.form.validate()) {
         this.$emit('complete', this.localRegistrationData);
       }

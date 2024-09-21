@@ -85,16 +85,14 @@ REST_FRAMEWORK = {
         'login': '5/minute',  # Limit anonymous users to 5 login attempts per minute
     }
 }
-IN_BUILD_PHASE = os.getenv('IN_BUILD_PHASE', 'false').lower() == 'true'
-if not IN_BUILD_PHASE:
-    SIMPLE_JWT = {
-        'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Token lifetime
-        'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Refresh token lifetime
-        'ROTATE_REFRESH_TOKENS': True,
-        'BLACKLIST_AFTER_ROTATION': True,
-        'AUTH_HEADER_TYPES': ('Bearer',),  # Authorization header prefix
-        "SIGNING_KEY": JWT_SIGNING_KEY,
-    }
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Token lifetime
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Refresh token lifetime
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),  # Authorization header prefix
+    "SIGNING_KEY": JWT_SIGNING_KEY,
+}
 
 # CSRF settings
 WWW_HOST = os.getenv('WWW_HOST', 'www.relayentry.com')

@@ -19,7 +19,8 @@ RUN pip install -r requirements.txt
 # Copy project files
 COPY . .
 
-ENV IN_BUILD_PHASE true
+# Temporary SECRET_KEY during build
+ENV JWT_SIGNING_KEY dummy_fdsffewfwe_jwt_secret_key_54jf34j43kfdso3
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
@@ -28,9 +29,6 @@ EXPOSE 8000
 
 # Install gunicorn
 RUN pip install gunicorn
-
-# Set IN_BUILD_PHASE to false for runtime in Dockerfile
-ENV IN_BUILD_PHASE false
 
 # Command to run the application with Gunicorn
 CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]

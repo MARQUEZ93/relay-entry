@@ -89,7 +89,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),  # Authorization header prefix
-    "SIGNING_KEY": SECRET_KEY,
+    "SIGNING_KEY": os.getenv('SECRET_KEY', SECRET_KEY),
 }
 
 # CSRF settings

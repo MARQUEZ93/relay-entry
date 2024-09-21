@@ -69,7 +69,14 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
 ]
-
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Token lifetime
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Refresh token lifetime
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),  # Authorization header prefix
+    "SIGNING_KEY": JWT_SIGNING_KEY,
+}
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -84,14 +91,6 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'login': '5/minute',  # Limit anonymous users to 5 login attempts per minute
     }
-}
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Token lifetime
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Refresh token lifetime
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'AUTH_HEADER_TYPES': ('Bearer',),  # Authorization header prefix
-    "SIGNING_KEY": JWT_SIGNING_KEY,
 }
 
 # CSRF settings

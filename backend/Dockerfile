@@ -20,7 +20,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Temporary SECRET_KEY during build
-ENV JWT_SIGNING_KEY dummy_fdsffewfwe_jwt_secret_key_54jf34j43kfdso3
+ENV SECRET_KEY fdsvfdbgt4jr_fdsffewfwe_gerger5435345gdfgdf_54jf34j43kfdso3
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
@@ -30,5 +30,6 @@ EXPOSE 8000
 # Install gunicorn
 RUN pip install gunicorn
 
+# At runtime, SECRET_KEY will be provided via environment variable
 # Command to run the application with Gunicorn
 CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]

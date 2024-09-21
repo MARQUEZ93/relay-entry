@@ -97,40 +97,57 @@ export default {
                 label="Description"
                 rows="4"
               ></v-textarea>
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="eventData.address"
+                    label="Address"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="eventData.city"
+                    label="City"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
 
-              <v-text-field
-                v-model="eventData.address"
-                label="Address"
-              ></v-text-field>
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="eventData.postal_code"
+                    label="Postal Code"
+                  ></v-text-field>
+                </v-col>
 
-              <v-text-field
-                v-model="eventData.city"
-                label="City"
-              ></v-text-field>
+                <v-col cols="6">
+                  <v-select
+                    v-model="eventData.state"
+                    :items="states"
+                    label="State"
+                  ></v-select>
+                </v-col>
+              </v-row>
 
-              <v-text-field
-                v-model="eventData.postal_code"
-                label="Postal Code"
-              ></v-text-field>
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="eventData.date"
+                    label="Start Date *"
+                    required
+                    type="date"
+                  ></v-text-field>
+                </v-col>
 
-              <v-select
-                v-model="eventData.state"
-                :items="states"
-                label="State"
-              ></v-select>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="eventData.end_date"
+                    label="End Date"
+                    type="date"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
 
-              <v-text-field
-                v-model="eventData.date"
-                label="Start Date *"
-                required
-                type="date"
-              ></v-text-field>
-
-              <v-text-field
-                v-model="eventData.end_date"
-                label="End Date"
-                type="date"
-              ></v-text-field>
 
               <v-text-field
                 v-model="eventData.email"
@@ -146,25 +163,37 @@ export default {
                 required
               ></v-textarea>
 
-              <v-text-field
-                v-model="eventData.facebook_url"
-                label="Facebook URL"
-              ></v-text-field>
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="eventData.facebook_url"
+                    label="Facebook URL"
+                  ></v-text-field>
+                </v-col>
 
-              <v-text-field
-                v-model="eventData.instagram_url"
-                label="Instagram URL"
-              ></v-text-field>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="eventData.instagram_url"
+                    label="Instagram URL"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
 
-              <v-text-field
-                v-model="eventData.twitter_url"
-                label="Twitter URL"
-              ></v-text-field>
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="eventData.twitter_url"
+                    label="Twitter URL"
+                  ></v-text-field>
+                </v-col>
 
-              <v-text-field
-                v-model="eventData.website_url"
-                label="Website URL"
-              ></v-text-field>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="eventData.website_url"
+                    label="Website URL"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
 
               <v-checkbox
                 v-model="eventData.published"

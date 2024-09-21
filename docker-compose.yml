@@ -28,6 +28,8 @@ services:
       - "8000" # Use expose instead of ports for internal communication
     env_file:
       - ./backend/.env.backend
+    environment:
+      - IN_BUILD_PHASE=false
     restart: always
 volumes:
   staticfiles:

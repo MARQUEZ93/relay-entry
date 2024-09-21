@@ -11,6 +11,8 @@ services:
       - "8000:8000"
     env_file:
       - .env.backend
+    environment:
+      - IN_BUILD_PHASE=false
     depends_on:
       - postgres
       - mailhog

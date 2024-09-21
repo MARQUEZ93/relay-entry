@@ -19,6 +19,9 @@ RUN pip install -r requirements.txt
 # Copy project files
 COPY . .
 
+# Set IN_BUILD_PHASE to true during build time
+ARG IN_BUILD_PHASE=true
+ENV IN_BUILD_PHASE=${IN_BUILD_PHASE}
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
@@ -27,6 +30,9 @@ EXPOSE 8000
 
 # Install gunicorn
 RUN pip install gunicorn
+
+# Set IN_BUILD_PHASE to false for runtime in Dockerfile
+ENV IN_BUILD_PHASE=false
 
 # Command to run the application with Gunicorn
 CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]

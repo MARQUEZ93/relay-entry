@@ -44,70 +44,40 @@ apiClient.interceptors.request.use(
   }
 );
 
-let isRefreshing = false;
-let refreshSubscribers = [];
-
-function subscribeTokenRefresh(cb) {
-  refreshSubscribers.push(cb);
-}
-
-function onRefreshed(accessToken) {
-  refreshSubscribers.forEach(cb => cb(accessToken));
-  refreshSubscribers = [];
-}
-
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
     const refreshToken = localStorage.getItem('refresh_token');
 
-    // Initialize retry count if it doesn't exist
-    if (!originalRequest._retryCount) {
-      originalRequest._retryCount = 0;
+    // Prevent interceptor from intercepting token refresh request
+    if (originalRequest.url === '/token/refresh/') {
+      return Promise.reject(error);
     }
 
     if (
       error.response &&
       error.response.status === 401 &&
-      refreshToken &&
-      originalRequest._retryCount < 3 // Retry limit
+      refreshToken
     ) {
-      originalRequest._retryCount++; // Increment retry count
+      try {
+        // Attempt to refresh the access token
+        const response = await apiClient.post('/token/refresh/', { refresh: refreshToken });
 
-      if (!isRefreshing) {
-        isRefreshing = true;
+        const newAccessToken = response.data.access;
+        localStorage.setItem('access_token', newAccessToken);
 
-        try {
-          const response = await apiClient.post('/token/refresh/', { refresh: refreshToken });
-          const newAccessToken = response.data.access;
-          localStorage.setItem('access_token', newAccessToken);
+        // Update the Authorization header for the original request
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
-          // Mark refreshing as done
-          isRefreshing = false;
-          onRefreshed(newAccessToken);
+        // Retry the original request with the new token
+        return apiClient(originalRequest);
+      } catch (err) {
+        console.error('Error during token refresh:', err);
 
-          // Update the Authorization header for this request
-          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-          return apiClient(originalRequest); // Retry the original request
-        } catch (err) {
-          // If the refresh token is invalid, logout the user
-          if (err.response && err.response.status === 401) {
-            apiClient.logout();
-            return Promise.reject(err);
-          }
-          isRefreshing = false;
-          return Promise.reject(err);
-        }
-      } else {
-        // If there's already a refresh in progress, queue the request
-        return new Promise((resolve) => {
-          subscribeTokenRefresh((newAccessToken) => {
-            // Update the original request's Authorization header and retry
-            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-            resolve(apiClient(originalRequest));
-          });
-        });
+        // Logout the user if token refresh fails
+        apiClient.logout();
+        return Promise.reject(err);
       }
     }
 
@@ -170,23 +140,16 @@ export default {
       password: password,
     });
   },
-  refreshToken(refreshToken) {
-    return apiClient.post('/token/refresh/', {
-      refresh: refreshToken,
-    });
-  },
   logout() {
+    console.log("logout()")
     const refreshToken = localStorage.getItem('refresh_token');
-    if (!refreshToken) {
-      // If no refresh token exists, just clear and redirect
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      delete apiClient.defaults.headers.common['Authorization'];
-      return;
-    }
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     delete apiClient.defaults.headers.common['Authorization'];
+    console.log(refreshToken);
+    if (!refreshToken) {
+      return;
+    }
     return apiClient.post('/logout/', { refresh_token: refreshToken })
   },
 };

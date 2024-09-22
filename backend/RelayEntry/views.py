@@ -13,7 +13,7 @@ import os
 import logging
 import json
 from .models import UserProfile, Event, Race, Registration, Team, TeamMember
-from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer, TeamSerializer, EventDashboardSerializer
+from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer, TeamSerializer, EventDashboardSerializer, RaceDashboardSerializer
 from rest_framework import generics, status
 from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import NotFound
@@ -736,3 +736,70 @@ class UserEventsListAPIView(ListAPIView):
     def get_queryset(self):
         # Filter the events based on the logged-in user
         return Event.objects.filter(created_by=self.request.user.userprofile)
+
+class UserEventAPIView(generics.RetrieveAPIView):
+    serializer_class = EventWithRacesSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Event.objects.all()
+    lookup_field = 'id'
+
+    def get_object(self):
+        obj = super().get_object()
+        user_profile = UserProfile.objects.get(user=self.request.user)
+
+        # Ensure the event belongs to the authenticated user
+        if obj.created_by != user_profile:
+            raise PermissionDenied("You do not have permission to view this event.")
+
+        return obj
+
+class UserRacesListAPIView(generics.ListAPIView):
+    serializer_class = RaceDashboardSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        event_id = self.kwargs['event_id']
+        user_profile = UserProfile.objects.get(user=self.request.user)
+
+        # Ensure the event belongs to the user
+        try:
+            event = Event.objects.get(id=event_id, created_by=user_profile)
+        except Event.DoesNotExist:
+            raise PermissionDenied("You do not have permission to view races for this event.")
+
+        return Race.objects.filter(event=event)
+
+class RaceUpdateView(generics.UpdateAPIView):
+    serializer_class = RaceDashboardSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    queryset = Race.objects.all()
+
+    def get_object(self):
+        obj = super().get_object()
+        user_profile = UserProfile.objects.get(user=self.request.user)
+
+        # Ensure the race belongs to an event created by the user
+        if obj.event.created_by != user_profile:
+            raise PermissionDenied("You are not allowed to update this race.")
+
+        return obj
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+class UserRaceAPIView(generics.RetrieveAPIView):
+    serializer_class = RaceDashboardSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    queryset = Race.objects.all()
+
+    def get_object(self):
+        obj = super().get_object()
+        user_profile = UserProfile.objects.get(user=self.request.user)
+
+        # Ensure the race belongs to an event created by the user
+        if obj.event.created_by != user_profile:
+            raise PermissionDenied("You are not allowed to view this race.")
+
+        return obj

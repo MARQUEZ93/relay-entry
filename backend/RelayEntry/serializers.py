@@ -90,4 +90,9 @@ class TeamResultSerializer(serializers.ModelSerializer):
 
     def get_race_name(self, obj):
         return obj.race.name
+
+class RaceDashboardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Race
+        fields = '__all__'
     

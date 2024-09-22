@@ -86,6 +86,12 @@ apiClient.interceptors.response.use(
 );
 
 export default {
+  getUserRace(raceId) {
+    return apiClient.get(`/dashboard/races/${raceId}/`);
+  },
+  updateUserRace(raceId, data) {
+    return apiClient.put(`/dashboard/races/update/${raceId}/`, data);
+  },
   getUserEvent(id){
     return apiClient.get(`/dashboard/events/${id}/`);
   },

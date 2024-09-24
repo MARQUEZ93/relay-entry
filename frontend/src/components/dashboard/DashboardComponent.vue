@@ -7,7 +7,6 @@ export default {
   data() {
     return {
       message: '',
-      username: '',
       email: '',
       events: []  // Array to hold user's events
     };
@@ -30,7 +29,6 @@ export default {
     try {
       const response = await api.dashboard();
       this.message = response.data.message;
-      this.username = response.data.username;
       this.email = response.data.email;
       this.fetchEvents();  // Fetch events when the component is created
     } catch (error) {
@@ -48,7 +46,7 @@ export default {
       <v-col cols="12" md="8">
         <v-card class="mx-auto" elevation="2">
           <v-card-title class="d-flex justify-space-between">
-            <span class="text-h5">Dashboard - {{ username }}</span>
+            <span class="text-h5">{{ email }}</span>
             <v-btn @click="logout" color="error" text>Logout</v-btn>
           </v-card-title>
           <v-card-subtitle class="mt-2">
@@ -85,14 +83,11 @@ export default {
                     v-for="event in events"
                     :key="event.id"
                     @click="$router.push(`/dashboard/events/${event.id}/`)"
-                    class="hoverable"
-                    rounded="md"
+                    rounded="lg"
                     elevation="1"
                   >
-                    <v-list-item>
                       <v-list-item-title class="text-h6">{{ event.name }} <v-icon class="ml-auto" right>mdi-chevron-right</v-icon></v-list-item-title>
                       <v-list-item-subtitle class="text-body-2">{{ event.date }}</v-list-item-subtitle>
-                    </v-list-item>
                   </v-list-item>
                 </v-list>
 

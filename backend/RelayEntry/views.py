@@ -79,7 +79,6 @@ class DashboardView(APIView):
         email = request.user.email
         return JsonResponse({
             'message': f"",
-            'username': username,
             'email': email,
         })
 

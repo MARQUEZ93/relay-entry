@@ -1,74 +1,75 @@
 <script>
     import api from '@/services/api';
+    import EditEventModal from './EditEventModal.vue';
 
     export default {
-    name: 'MyEvent',
-    inject: ['showSnackbar'],
-    mounted() {
-        this.baseUrl = process.env.VUE_APP_RE_URL;
-    },
-    data() {
-        return {
-            message: '',
-            username: '',
-            email: '',
-            event: {},
-            editModal: false,
-            isValid: false,
-            baseUrl: '',
-        };
-    },
-    methods: {
-        async updateEvent() {
-            if (this.$refs.editForm.validate()) {
+        name: 'MyEvent',
+        inject: ['showSnackbar'],
+        components: {
+            EditEventModal,
+        },
+        mounted() {
+            this.baseUrl = process.env.VUE_APP_RE_URL;
+        },
+        data() {
+            return {
+                message: '',
+                username: '',
+                email: '',
+                event: {},
+                editModal: false,
+                isValid: false,
+                baseUrl: '',
+            };
+        },
+        methods: {
+            async updateEvent(updatedEvent) {
+                try {
+                    // Make an API call to update the event
+                    const response = await api.updateEvent(updatedEvent.id, updatedEvent);
+                    this.event = response.data;
+                    this.showSnackbar('Event updated successfully.', 'success');
+                } catch (error) {
+                    this.showSnackbar('Error updating event.', 'error');
+                }
+            },
+            dashboard() {
+                this.$router.push('/dashboard');
+            },
+            logout() {
+                api.logout();
+                this.$router.push('/login'); // Ensure logout redirects to login
+            },
+            async fetchEvent(id) {
+                try {
+                    const response = await api.getUserEvent(id);  // Fetch event by id
+                    this.event = response.data;
+                    console.log(this.event);
+                } catch (error) {
+                    this.showSnackbar('Error loading event.', 'error'); // Adjusted message for clarity
+                }
+            },
+        },
+        async created() {
             try {
-                // Make an API call to update the event
-                const response = await api.updateEvent(this.event.id, this.event);
-                this.event = response.data;
-                this.editModal = false;
-                this.showSnackbar('Event updated successfully.', 'success');
-            } catch (error) {
-                this.showSnackbar('Error updating event.', 'error');
-            }
-            }
-        },
-        dashboard() {
-            this.$router.push('/dashboard');
-        },
-        logout() {
-            api.logout();
-            this.$router.push('/login'); // Ensure logout redirects to login
-        },
-        async fetchEvent(id) {
-            try {
-                const response = await api.getUserEvent(id);  // Fetch event by id
-                this.event = response.data;
-                console.log(this.event);
-            } catch (error) {
-                this.showSnackbar('Error loading event.', 'error'); // Adjusted message for clarity
-            }
-        },
-    },
-    async created() {
-        try {
-            const response = await api.dashboard(); // Fetch dashboard data
-            this.message = response.data.message;
-            this.email = response.data.email;
+                const response = await api.dashboard(); // Fetch dashboard data
+                this.message = response.data.message;
+                this.email = response.data.email;
 
-            // Get the event id from the route
-            const id = this.$route.params.id; // Extract event id from URL
-            if (id) {
-                this.fetchEvent(id);
-            } else {
-                this.showSnackbar('No event ID found in the URL.', 'error');
+                // Get the event id from the route
+                const id = this.$route.params.id; // Extract event id from URL
+                if (id) {
+                    this.fetchEvent(id);
+                } else {
+                    this.showSnackbar('No event ID found in the URL.', 'error');
+                }
+            } catch (error) {
+                this.showSnackbar('Session expired. Log in again.', 'error');
+                api.logout();
+                this.$router.push('/login');
             }
-        } catch (error) {
-            this.showSnackbar('Session expired. Log in again.', 'error');
-            api.logout();
-            this.$router.push('/login');
-        }
-    },
-    };
+        },
+        };
 </script>
 
 <template>
@@ -205,6 +206,12 @@
           </v-card>
         </v-col>
       </v-row>
+      <!-- Include the edit modal component -->
+        <edit-event-modal
+            v-model="editModal"
+            :event="event"
+            @update-event="updateEvent"
+        ></edit-event-modal>
     </v-container>
   </template>
   

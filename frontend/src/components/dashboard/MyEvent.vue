@@ -4,14 +4,18 @@
     export default {
     name: 'MyEvent',
     inject: ['showSnackbar'],
+    mounted() {
+        this.baseUrl = process.env.VUE_APP_RE_URL;
+    },
     data() {
         return {
-        message: '',
-        username: '',
-        email: '',
-        event: {},
-        editModal: false,
-        isValid: false,
+            message: '',
+            username: '',
+            email: '',
+            event: {},
+            editModal: false,
+            isValid: false,
+            baseUrl: '',
         };
     },
     methods: {
@@ -29,39 +33,39 @@
             }
         },
         dashboard() {
-        this.$router.push('/dashboard');
+            this.$router.push('/dashboard');
         },
         logout() {
-        api.logout();
-        this.$router.push('/login'); // Ensure logout redirects to login
+            api.logout();
+            this.$router.push('/login'); // Ensure logout redirects to login
         },
         async fetchEvent(id) {
-        try {
-            const response = await api.getUserEvent(id);  // Fetch event by id
-            this.event = response.data;
-            console.log(this.event);
-        } catch (error) {
-            this.showSnackbar('Error loading event.', 'error'); // Adjusted message for clarity
-        }
+            try {
+                const response = await api.getUserEvent(id);  // Fetch event by id
+                this.event = response.data;
+                console.log(this.event);
+            } catch (error) {
+                this.showSnackbar('Error loading event.', 'error'); // Adjusted message for clarity
+            }
         },
     },
     async created() {
         try {
-        const response = await api.dashboard(); // Fetch dashboard data
-        this.message = response.data.message;
-        this.email = response.data.email;
+            const response = await api.dashboard(); // Fetch dashboard data
+            this.message = response.data.message;
+            this.email = response.data.email;
 
-        // Get the event id from the route
-        const id = this.$route.params.id; // Extract event id from URL
-        if (id) {
-            this.fetchEvent(id);
-        } else {
-            this.showSnackbar('No event ID found in the URL.', 'error');
-        }
+            // Get the event id from the route
+            const id = this.$route.params.id; // Extract event id from URL
+            if (id) {
+                this.fetchEvent(id);
+            } else {
+                this.showSnackbar('No event ID found in the URL.', 'error');
+            }
         } catch (error) {
-        this.showSnackbar('Session expired. Log in again.', 'error');
-        api.logout();
-        this.$router.push('/login');
+            this.showSnackbar('Session expired. Log in again.', 'error');
+            api.logout();
+            this.$router.push('/login');
         }
     },
     };
@@ -113,6 +117,13 @@
                     {{ event.description?.length > 100 ? event.description.substring(0, 100) + '...' : event.description }}
                 </p>
 
+                 <!-- URL Alias -->
+                <p><strong>Event URL: </strong> 
+                    <a :href="`${baseUrl}events/${event.url_alias}`" target="_blank">
+                    {{ `${baseUrl}events/${event.url_alias}` }}
+                    </a>
+                </p>
+
                 <!-- Media -->
                 <p v-if="event.media_file">
                     <strong>Event Media:</strong> <v-img :src="event.media_file" max-width="150"></v-img>
@@ -144,8 +155,12 @@
                     <strong>Female T-shirt:</strong> <v-img :src="event.female_tshirt_image" max-width="150"></v-img>
                 </p>
 
+                <!-- Created/Updated Dates -->
+                <p><strong>Created At:</strong> {{ new Date(event.created_at).toLocaleString() }}</p>
+                <p><strong>Last Updated:</strong> {{ new Date(event.updated_at).toLocaleString() }}</p>
+
                 <!-- Published Status -->
-                <p><strong>Published:</strong> {{ event.published ? 'Yes' : 'No' }}</p>
+                <p><strong>Published (Publicly viewable):</strong> {{ event.published ? 'Yes' : 'No' }}</p>
 
                 <!-- Registration Status -->
                 <p><strong>Registration Closed (this closes registration for all races):</strong> {{ event.registration_closed ? 'Yes' : 'No' }}</p>

@@ -116,7 +116,7 @@ export default {
                 <v-col cols="6">
                   <v-text-field
                     v-model="eventData.postal_code"
-                    label="Postal Code"
+                    label="Zip"
                   ></v-text-field>
                 </v-col>
 

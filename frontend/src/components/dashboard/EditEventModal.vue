@@ -6,8 +6,15 @@ export default {
   },
   data() {
     return {
-      isValid: false,
-      localEvent: { ...this.event } // Create a local copy of the event prop
+        states: [
+            'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+            'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+            'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+            'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+            'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+        ],
+        isValid: false,
+        localEvent: { ...this.event } // Create a local copy of the event prop
     };
   },
   watch: {
@@ -58,14 +65,14 @@ export default {
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="6">
+            <v-col cols="5">
               <v-text-field v-model="localEvent.city" label="City"></v-text-field>
             </v-col>
             <v-col cols="3">
-              <v-text-field v-model="localEvent.state" label="State"></v-text-field>
+              <v-select v-model="localEvent.state" :items="states" label="State"></v-select>
             </v-col>
-            <v-col cols="3">
-              <v-text-field v-model="localEvent.postal_code" label="Postal Code"></v-text-field>
+            <v-col cols="4">
+              <v-text-field v-model="localEvent.postal_code" label="Zip"></v-text-field>
             </v-col>
           </v-row>
 
@@ -102,7 +109,7 @@ export default {
                 <v-checkbox v-model="localEvent.published" label="Published"></v-checkbox>
             </v-col>
             <v-col cols="6">
-                <v-checkbox v-model="localEvent.registration_closed" label="Registration Closed"></v-checkbox>
+                <v-checkbox v-model="localEvent.registration_closed" label="Registration Closed (closes registration for all races)"></v-checkbox>
             </v-col>
           </v-row>
 

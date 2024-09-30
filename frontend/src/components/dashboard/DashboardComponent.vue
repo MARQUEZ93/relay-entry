@@ -7,7 +7,7 @@ export default {
   data() {
     return {
       message: '',
-      email: '',
+      username: '',
       events: []  // Array to hold user's events
     };
   },
@@ -29,7 +29,7 @@ export default {
     try {
       const response = await api.dashboard();
       this.message = response.data.message;
-      this.email = response.data.email;
+      this.username = response.data.username;
       this.fetchEvents();  // Fetch events when the component is created
     } catch (error) {
       this.showSnackbar('Session expired. Log in again.', 'error');
@@ -46,7 +46,7 @@ export default {
       <v-col cols="12" md="8">
         <v-card class="mx-auto" elevation="2">
           <v-card-title class="d-flex justify-space-between">
-            <span class="text-h5">{{ email }}</span>
+            <span class="text-h4">{{ username }}</span>
             <v-btn @click="logout" color="error" text>Logout</v-btn>
           </v-card-title>
           <v-card-subtitle class="mt-2">
@@ -124,8 +124,8 @@ export default {
   text-decoration: none;
 }
 
-.text-h5 {
-  font-size: 1.5rem;
+.text-h4 {
+  font-size: 2rem;
 }
 
 .ml-3 {

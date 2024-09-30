@@ -15,7 +15,6 @@
             return {
                 message: '',
                 username: '',
-                email: '',
                 event: {},
                 editModal: false,
                 isValid: false,
@@ -54,7 +53,7 @@
             try {
                 const response = await api.dashboard(); // Fetch dashboard data
                 this.message = response.data.message;
-                this.email = response.data.email;
+                this.username = response.data.username;
 
                 // Get the event id from the route
                 const id = this.$route.params.id; // Extract event id from URL
@@ -79,7 +78,7 @@
         <v-col cols="12" md="8">
           <v-card class="mx-auto" elevation="2">
             <v-card-title class="d-flex justify-space-between">
-              <span class="my-event-span">{{ email }}</span>
+              <span class="text-h4">{{ username }}</span>
               <div>
                 <v-btn @click="dashboard" color="primary" class="my-event-v-btn" text>Back</v-btn>
                 <v-btn @click="logout" color="error" text>Logout</v-btn>
@@ -161,10 +160,10 @@
                 <p><strong>Last Updated:</strong> {{ new Date(event.updated_at).toLocaleString() }}</p>
 
                 <!-- Published Status -->
-                <p><strong>Published (Publicly viewable):</strong> {{ event.published ? 'Yes' : 'No' }}</p>
+                <p><strong>Published (Public URL):</strong> {{ event.published ? 'Yes' : 'No' }}</p>
 
                 <!-- Registration Status -->
-                <p><strong>Registration Closed (this closes registration for all races):</strong> {{ event.registration_closed ? 'Yes' : 'No' }}</p>
+                <p><strong>Registration Closed (registration closed for all races):</strong> {{ event.registration_closed ? 'Yes' : 'No' }}</p>
                 </v-card-text>
           </v-card>
         </v-col>
@@ -240,17 +239,12 @@
         text-decoration: none;
     }
 
-    .my-event-span {
-        font-size: 1.2rem;
+    .text-h4 {
+        font-size: 2rem;
     }
 
     .ml-3 {
         margin-left: 1rem;
     }
 
-    @media (max-width: 600px) {
-        .my-event-span {
-            font-size: 1rem;
-        }
-    }
 </style>

@@ -74,12 +74,11 @@ class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-         # Get the logged-in user's username and email
         username = request.user.username
         email = request.user.email
         return JsonResponse({
             'message': f"",
-            'email': email,
+            'username': username,
         })
 
 class RaceDetailView(generics.RetrieveAPIView):

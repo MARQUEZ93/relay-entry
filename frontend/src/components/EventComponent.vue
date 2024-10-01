@@ -174,7 +174,7 @@ export default {
               <v-btn color="primary">Registered Teams</v-btn>
             </router-link>
             ·
-            <v-btn :disabled="manageTeam" @click="toggleManageTeam" color="primary">Manage My Team</v-btn>
+            <v-btn :disabled="manageTeam" @click="toggleManageTeam" color="primary">My Team</v-btn>
           </v-card-actions>
           <v-card-actions class="d-flex flex-row justify-center align-center" v-if="eventHasRelayRace">
             <router-link :to="`/events/${event.url_alias}/team-results`">
@@ -200,17 +200,17 @@ export default {
             </v-col>
           </v-row>
           <v-alert type="info" class="mt-5 mb-5">
-            Please enter the name to confirm registration
+            Enter the name to confirm registration
           </v-alert>
           <v-row class="justify-center mb-5">
-            <v-col cols="6">
+            <v-col cols="9" md="6">
               <v-form @submit.prevent="confirmRegistrationQuery">
                 <v-text-field
                   v-model="confirmName"
                   label="Enter name"
                   required
                 ></v-text-field>
-                <v-btn type="submit" color="primary">Confirm Registration</v-btn>
+                <v-btn class="mb-2" type="submit" color="primary">Confirm Registration</v-btn>
                 <v-btn :disabled="!confirmName" @click="clearName" color="secondary">Reset</v-btn>
               </v-form>
             </v-col>
@@ -254,7 +254,7 @@ export default {
             This email will be used to send a link for managing your team.
           </v-alert>
           <v-row class="justify-center mb-5">
-            <v-col cols="6">
+            <v-col cols="9" md="6">
               <v-form @submit.prevent="sendManageTeamLink">
                 <v-text-field
                   v-model="manageTeamEmail"

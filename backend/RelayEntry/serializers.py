@@ -27,7 +27,7 @@ class EventDashboardSerializer(serializers.ModelSerializer):
         fields = [
             'name', 'description', 'date', 'end_date', 'address', 'city', 'state',
             'postal_code', 'email', 'waiver_text', 'facebook_url', 'instagram_url', 
-            'twitter_url', 'website_url'
+            'twitter_url', 'website_url', 'published', 'registration_closed',
         ]
 
     def validate(self, data):
@@ -94,5 +94,6 @@ class TeamResultSerializer(serializers.ModelSerializer):
 class RaceDashboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Race
+        # TODO: fix this shit (google b/w updated team etc + passing entire object to DJANGO rather than pieces)
         fields = '__all__'
     

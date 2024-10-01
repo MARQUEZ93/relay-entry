@@ -19,29 +19,12 @@
                 editModal: false,
                 isValid: false,
                 baseUrl: '',
+                id: null,
             };
         },
         methods: {
-          async updateEvent(updatedEvent) {
-            try {
-                const response = await api.updateEvent(updatedEvent.id, updatedEvent);
-                this.event = response.data;
-                this.showSnackbar('Event updated successfully', 'success');
-            } catch (error) {
-                let errorMessage = '';
-                if (error.response && error.response.data) {
-                  for (const [field, messages] of Object.entries(error.response.data)) {
-                    if (Array.isArray(messages)) {
-                      errorMessage += `${field}: ${messages.join(', ')}\n`;
-                    } else {
-                      errorMessage += `${field}: ${messages}\n`;
-                    }
-                  }
-                } else {
-                  errorMessage = error.response?.data?.message || 'Unknown error occurred';
-                }
-                this.showSnackbar(`Failed to update event: ${errorMessage}`, 'error');
-            }
+          closeModal() {
+            this.editModal = false;
           },
           dashboard() {
               this.$router.push('/dashboard');
@@ -50,11 +33,13 @@
               api.logout();
               this.$router.push('/login'); // Ensure logout redirects to login
           },
-          async fetchEvent(id) {
+          async fetchEvent() {
               try {
-                  const response = await api.getUserEvent(id);  // Fetch event by id
+                  if (!this.id){
+                    this.id = this.$route.params.id;
+                  }
+                  const response = await api.getUserEvent(this.id);  // Fetch event by id
                   this.event = response.data;
-                  console.log(this.event);
               } catch (error) {
                   this.showSnackbar('Error loading event.', 'error'); // Adjusted message for clarity
               }
@@ -67,9 +52,9 @@
                 this.username = response.data.username;
 
                 // Get the event id from the route
-                const id = this.$route.params.id; // Extract event id from URL
-                if (id) {
-                    this.fetchEvent(id);
+                this.id = this.$route.params.id; // Extract event id from URL
+                if (this.id) {
+                    this.fetchEvent();
                 } else {
                     this.showSnackbar('No event ID found in the URL.', 'error');
                 }
@@ -79,7 +64,7 @@
                 this.$router.push('/login');
             }
         },
-        };
+      };
 </script>
 
 <template>
@@ -220,7 +205,8 @@
         <edit-event-modal
             v-model="editModal"
             :event="event"
-            @update-event="updateEvent"
+            @event-updated="fetchEvent"
+            @close-modal="closeModal"
         ></edit-event-modal>
     </v-container>
   </template>

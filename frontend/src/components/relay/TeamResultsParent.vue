@@ -105,7 +105,7 @@ export default {
             <v-card class="race-card">
                 <v-card-title>
                     <router-link :to="{ name: 'TeamRaceResults', params: { eventUrlAlias: this.eventSlug, raceId: race.id } }">
-                        {{ race.name }} Results
+                        {{ race.name }}
                     </router-link>
                 </v-card-title>
             </v-card>

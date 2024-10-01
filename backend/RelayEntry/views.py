@@ -14,9 +14,6 @@ import logging
 import json
 from .models import UserProfile, Event, Race, Registration, Team, TeamMember
 from .serializers import EventSerializer, RaceSerializer, EventWithRacesSerializer, TeamResultSerializer, TeamSerializer, EventDashboardSerializer, RaceDashboardSerializer
-from rest_framework import generics, status
-from rest_framework.generics import ListAPIView
-from rest_framework.exceptions import NotFound
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.db import transaction
 from .utils.stripe_utils import retrieve_payment_intent 
@@ -34,16 +31,29 @@ from django.core.validators import validate_email, URLValidator
 from .utils.email_utils import send_email, generate_token, send_team_edit_link
 from django.core.cache import cache
 from django.core.exceptions import ValidationError, ObjectDoesNotExist, PermissionDenied
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
+
+from rest_framework import generics, status
+from rest_framework.exceptions import NotFound
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.throttling import AnonRateThrottle
+from rest_framework.views import APIView
 
 # Set up logging for Stripe
 stripe_logger = logging.getLogger('stripe')
 
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.throttling import AnonRateThrottle
+
+class IsEventCreator(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)
+        except UserProfile.DoesNotExist:
+            raise PermissionDenied("User profile not found.")
+
+        return obj.created_by == user_profile and user_profile.is_approved
 
 class LoginRateThrottle(AnonRateThrottle):
     scope = 'login'
@@ -705,27 +715,10 @@ class EventCreateView(generics.CreateAPIView):
 
 class EventUpdateView(generics.UpdateAPIView):
     serializer_class = EventDashboardSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEventCreator]
     lookup_field = 'id'
     queryset = Event.objects.all()
 
-    def get_object(self):
-        # Get the event by ID and make sure the logged-in user is the creator
-        obj = super().get_object()
-        user_profile = UserProfile.objects.get(user=self.request.user)
-
-        if obj.created_by != user_profile or not user_profile.is_approved:
-            raise PermissionDenied("You are not allowed to update this event.")
-
-        return obj
-    
-    def perform_update(self, serializer):
-        user_profile = UserProfile.objects.get(user=self.request.user)
-
-        if not user_profile.is_approved:
-            raise PermissionDenied("You are not approved to update events.")
-        
-        serializer.save()
 
 class UserEventsListAPIView(ListAPIView):
     serializer_class = EventWithRacesSerializer

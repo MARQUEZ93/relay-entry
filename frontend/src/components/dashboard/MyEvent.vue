@@ -22,32 +22,43 @@
             };
         },
         methods: {
-            async updateEvent(updatedEvent) {
-                try {
-                    // Make an API call to update the event
-                    const response = await api.updateEvent(updatedEvent.id, updatedEvent);
-                    this.event = response.data;
-                    this.showSnackbar('Event updated successfully.', 'success');
-                } catch (error) {
-                    this.showSnackbar('Error updating event.', 'error');
+          async updateEvent(updatedEvent) {
+            try {
+                const response = await api.updateEvent(updatedEvent.id, updatedEvent);
+                this.event = response.data;
+                this.showSnackbar('Event updated successfully', 'success');
+            } catch (error) {
+                let errorMessage = '';
+                if (error.response && error.response.data) {
+                  for (const [field, messages] of Object.entries(error.response.data)) {
+                    if (Array.isArray(messages)) {
+                      errorMessage += `${field}: ${messages.join(', ')}\n`;
+                    } else {
+                      errorMessage += `${field}: ${messages}\n`;
+                    }
+                  }
+                } else {
+                  errorMessage = error.response?.data?.message || 'Unknown error occurred';
                 }
-            },
-            dashboard() {
-                this.$router.push('/dashboard');
-            },
-            logout() {
-                api.logout();
-                this.$router.push('/login'); // Ensure logout redirects to login
-            },
-            async fetchEvent(id) {
-                try {
-                    const response = await api.getUserEvent(id);  // Fetch event by id
-                    this.event = response.data;
-                    console.log(this.event);
-                } catch (error) {
-                    this.showSnackbar('Error loading event.', 'error'); // Adjusted message for clarity
-                }
-            },
+                this.showSnackbar(`Failed to update event: ${errorMessage}`, 'error');
+            }
+          },
+          dashboard() {
+              this.$router.push('/dashboard');
+          },
+          logout() {
+              api.logout();
+              this.$router.push('/login'); // Ensure logout redirects to login
+          },
+          async fetchEvent(id) {
+              try {
+                  const response = await api.getUserEvent(id);  // Fetch event by id
+                  this.event = response.data;
+                  console.log(this.event);
+              } catch (error) {
+                  this.showSnackbar('Error loading event.', 'error'); // Adjusted message for clarity
+              }
+          },
         },
         async created() {
             try {

@@ -98,6 +98,9 @@ export default {
   getUserEvents() {
     return apiClient.get(`/dashboard/events/`);
   },
+  updateEvent(eventId, eventData) {
+    return apiClient.put(`/dashboard/events/update/${eventId}/`, eventData);
+  },
   createEvent(eventData) {
     return apiClient.post(`/dashboard/events/create/`, eventData);
   },

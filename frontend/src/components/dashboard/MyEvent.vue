@@ -130,14 +130,23 @@
                         <v-img :src="event.logo" max-width="150"></v-img>
                     </div>
                 </div>
-                <!-- Social Media Links -->
-                <p v-if="event.facebook_url"><strong>Facebook:</strong> <a :href="event.facebook_url" target="_blank">Facebook Page</a></p>
-                <p v-if="event.instagram_url"><strong>Instagram:</strong> <a :href="event.instagram_url" target="_blank">Instagram Profile</a></p>
-                <p v-if="event.twitter_url"><strong>Twitter:</strong> <a :href="event.twitter_url" target="_blank">Twitter Profile</a></p>
-
-                <!-- Website -->
-                <p><strong>Website:</strong> <a :href="event.website_url" target="_blank">{{ event.website_url }}</a></p>
-
+                <!-- Links -->
+                <v-row>
+                  <v-col cols="6">
+                    <p><strong>Facebook:</strong> <a v-if="event.facebook_url" :href="event.facebook_url" target="_blank">Facebook Page</a></p>
+                  </v-col>
+                  <v-col cols="6">
+                    <p><strong>Instagram:</strong> <a v-if="event.instagram_url" :href="event.instagram_url" target="_blank">Instagram Profile</a></p>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="6">
+                    <p><strong>Twitter:</strong> <a v-if="event.twitter_url" :href="event.twitter_url" target="_blank">Twitter Profile</a></p>
+                  </v-col>
+                  <v-col>
+                    <p><strong>Website:</strong> <a v-if="event.website_url" :href="event.website_url" target="_blank">My Event Website</a></p>
+                  </v-col>
+                </v-row>
                 <!-- Waiver Text -->
                 <p><strong>Waiver Text:</strong> 
                     {{ event.waiver_text?.length > 100 ? event.waiver_text.substring(0, 100) + '...' : event.waiver_text }}
@@ -159,7 +168,7 @@
                 <p><strong>Published (Public URL):</strong> {{ event.published ? 'Yes' : 'No' }}</p>
 
                 <!-- Registration Status -->
-                <p><strong>Registration Closed (registration closed for all races):</strong> {{ event.registration_closed ? 'Yes' : 'No' }}</p>
+                <p><strong>Registration Closed (All races closed):</strong> {{ event.registration_closed ? 'Yes' : 'No' }}</p>
                 </v-card-text>
           </v-card>
         </v-col>

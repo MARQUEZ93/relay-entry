@@ -85,7 +85,7 @@ export default {
             <span class="headline">Create Event</span>
           </v-card-title>
           <v-card-text>
-            <v-form @submit.prevent="createEvent">
+            <v-form @submit.prevent="createEvent" enctype="multipart/form-data">
               <v-text-field
                 v-model="eventData.name"
                 label="Event Name *"
@@ -192,6 +192,24 @@ export default {
                     v-model="eventData.website_url"
                     label="Website URL"
                   ></v-text-field>
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="6">
+                  <v-file-input v-model="localEvent.media_file" label="Event Media"></v-file-input>
+                </v-col>
+                <v-col cols="6">
+                    <v-file-input v-model="localEvent.logo" label="Event Logo"></v-file-input>
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="6">
+                  <v-file-input v-model="localEvent.male_tshirt_image" label="Male T-Shirt Image"></v-file-input>
+                </v-col>
+                <v-col cols="6">
+                    <v-file-input v-model="localEvent.female_tshirt_image" label="Female T-Shirt Image"></v-file-input>
                 </v-col>
               </v-row>
 

@@ -30,6 +30,16 @@ export default {
   methods: {
     async updateEvent(updatedEvent) {
         try {
+          const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB in bytes
+          const fileFields = ['logo', 'media_file', 'male_tshirt_image', 'female_tshirt_image']; 
+          for (const field of fileFields) {
+            const file = this.localEvent[field];  // Dynamically access each field
+            if (file && file.size > MAX_FILE_SIZE) {
+              console.error(`${field} file size exceeds the allowed limit`);
+              this.showSnackbar(`${field} file size exceeds the 5 MB limit.`, 'error');
+              return;
+            }
+}
             await api.updateEvent(updatedEvent.id, updatedEvent);
             this.showSnackbar('Event updated successfully', 'success');
             this.$emit('event-updated');  // Emit a custom event to refresh the event
@@ -68,7 +78,7 @@ export default {
     <v-card>
       <v-card-title>Edit Event</v-card-title>
       <v-card-text>
-        <v-form ref="editForm" v-model="isValid">
+        <v-form ref="editForm" v-model="isValid" enctype="multipart/form-data">
           
           <!-- Event Name -->
           <v-text-field v-model="localEvent.name" label="Event Name" required></v-text-field>
@@ -105,13 +115,22 @@ export default {
           <!-- Google Maps Link -->
           <v-text-field v-model="localEvent.google_maps_link" label="Google Maps Link"></v-text-field>
 
-          <!-- Media fields: Combine Media and Logo -->
+          <!-- Media fields-->
           <v-row>
             <v-col cols="6">
-              <v-file-input v-model="localEvent.media_file" label="Event Media"></v-file-input>
+              <v-file-input accept="image/*" v-model="localEvent.media_file" label="Event Media"></v-file-input>
             </v-col>
             <v-col cols="6">
-                <v-file-input v-model="localEvent.logo" label="Event Logo"></v-file-input>
+                <v-file-input accept="image/*" v-model="localEvent.logo" label="Event Logo"></v-file-input>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="6">
+              <v-file-input accept="image/*" v-model="localEvent.male_tshirt_image" label="Male T-Shirt Image"></v-file-input>
+            </v-col>
+            <v-col cols="6">
+                <v-file-input accept="image/*" v-model="localEvent.female_tshirt_image" label="Female T-Shirt Image"></v-file-input>
             </v-col>
           </v-row>
 
@@ -135,7 +154,7 @@ export default {
                 <v-checkbox v-model="localEvent.published" label="Published"></v-checkbox>
             </v-col>
             <v-col cols="6">
-                <v-checkbox v-model="localEvent.registration_closed" label="Registration Closed (closes registration for all races)"></v-checkbox>
+                <v-checkbox v-model="localEvent.registration_closed" label="Registration Closed (All races closed)"></v-checkbox>
             </v-col>
           </v-row>
 

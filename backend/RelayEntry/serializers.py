@@ -27,7 +27,8 @@ class EventDashboardSerializer(serializers.ModelSerializer):
         fields = [
             'name', 'description', 'date', 'end_date', 'address', 'city', 'state',
             'postal_code', 'email', 'waiver_text', 'facebook_url', 'instagram_url', 
-            'twitter_url', 'website_url', 'published', 'registration_closed',
+            'twitter_url', 'website_url', 'published', 'registration_closed', 
+            'logo', 'male_tshirt_image', 'female_tshirt_image', 'media_file',
         ]
 
     def validate(self, data):

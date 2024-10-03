@@ -90,6 +90,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_THROTTLE_RATES': {
         'login': '5/minute',  # Limit anonymous users to 5 login attempts per minute
+        'user': '10/hour',  # Limit to 10 uploads per hour per user
     }
 }
 
@@ -278,3 +279,4 @@ CACHES = {
 }
 
 STRIPE_ENDPOINT_SECRET = os.getenv('STRIPE_ENDPOINT_SECRET')
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # Limit request size to 10 MB

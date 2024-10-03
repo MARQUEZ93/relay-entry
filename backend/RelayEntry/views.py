@@ -35,6 +35,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist, Permissi
 from rest_framework import generics, status
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import ListAPIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -70,14 +71,17 @@ class LogoutView(APIView):
         try:
             refresh_token = request.data.get('refresh_token')
             if refresh_token is None:
+                logger.error("Logout attempt without refresh token.")
                 return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
-            
-            token = RefreshToken(refresh_token)
-            token.blacklist()  # This blacklists the token
-            
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()  # This blacklists the token
+            except Exception as e:
+                logger.error(f"Invalid or expired refresh token: {refresh_token} - Error: {str(e)}")
+                return Response({"detail": "Invalid or expired refresh token."}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"detail": "Logout successful."}, status=status.HTTP_205_RESET_CONTENT)
-        
         except Exception as e:
+            logger.error(f"Logout failed: {str(e)}")
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class DashboardView(APIView):
@@ -714,6 +718,7 @@ class EventCreateView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 class EventUpdateView(generics.UpdateAPIView):
+    parser_classes = [MultiPartParser, FormParser]
     serializer_class = EventDashboardSerializer
     permission_classes = [IsAuthenticated, IsEventCreator]
     lookup_field = 'id'

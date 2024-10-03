@@ -99,10 +99,18 @@ export default {
     return apiClient.get(`/dashboard/events/`);
   },
   updateEvent(eventId, eventData) {
-    return apiClient.put(`/dashboard/events/update/${eventId}/`, eventData);
+    return apiClient.put(`/dashboard/events/update/${eventId}/`, eventData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
   createEvent(eventData) {
-    return apiClient.post(`/dashboard/events/create/`, eventData);
+    return apiClient.post(`/dashboard/events/create/`, eventData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
   fetchCsrfToken() {
     return apiClient.get(`/get-csrf/`);
@@ -149,16 +157,23 @@ export default {
       password: password,
     });
   },
-  logout() {
-    console.log("logout()")
+  async logout() {
     const refreshToken = localStorage.getItem('refresh_token');
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     delete apiClient.defaults.headers.common['Authorization'];
-    console.log(refreshToken);
     if (!refreshToken) {
       return;
     }
-    return apiClient.post('/logout/', { refresh_token: refreshToken })
+    try {
+      return apiClient.post('/logout/', { refresh_token: refreshToken })
+        .catch(error => {
+          // Handle API response error
+          console.error('Error during logout:', error.response ? error.response.data : error.message);
+        });
+    } catch (error) {
+      // Handle unexpected errors
+      console.error('Unexpected error during logout:', error.message);
+    }
   },
 };

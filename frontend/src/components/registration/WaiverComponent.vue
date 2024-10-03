@@ -47,8 +47,10 @@
         return 'No waiver text available';
       }
     },
-    mounted() {
+    created(){
       this.getUserIp();
+    },
+    mounted() {
       window.scrollTo(0, 0);
     },
     data() {

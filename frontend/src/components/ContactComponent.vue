@@ -5,8 +5,10 @@ import axios from 'axios';
 import api from '@/services/api';  // Adjust the path according to your project structure
 export default {
     name: 'ContactComponent',
-    mounted() {
+    created(){
         this.getUserIp();
+    },
+    mounted() {
         if (process.env.NODE_ENV === 'development'){
             this.fillForm();
         }

@@ -121,7 +121,7 @@ export default {
               <v-file-input accept="image/*" v-model="localEvent.media_file" label="Event Media"></v-file-input>
             </v-col>
             <v-col cols="6">
-                <v-file-input accept="image/*" v-model="localEvent.logo" label="Event Logo"></v-file-input>
+                <v-file-input accept="image/*" v-model="localEvent.logo" label="Event Image"></v-file-input>
             </v-col>
           </v-row>
 

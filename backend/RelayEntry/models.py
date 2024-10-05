@@ -41,8 +41,17 @@ class Event(models.Model):
     postal_code = models.CharField(max_length=10, blank=True, null=True)
     google_maps_link = models.URLField(max_length=200, blank=True, null=True)
     google_maps_html = models.TextField(blank=True, null=True, help_text="Embed HTML for the Google Maps location. You can get this from the 'Embed a map' section of the Google Maps share options.")
-    media_file = models.FileField(upload_to='event_media/', blank=True, null=True)
-    logo = models.ImageField(upload_to='event_logos/', blank=True, null=True)
+    media_file = models.FileField(upload_to='event_media/', blank=True, null=True,
+        validators=[
+            validate_file_size,
+        ]
+    )
+    logo = models.ImageField(upload_to='event_logos/', blank=True, null=True,
+        validators=[
+            validate_file_size,
+        ],
+        help_text="The event page image",
+    )
 
     facebook_url = models.URLField(max_length=200, blank=True, null=True)
     instagram_url = models.URLField(max_length=200, blank=True, null=True)
@@ -58,8 +67,12 @@ class Event(models.Model):
     url_alias = models.SlugField(max_length=255, unique=True, blank=True, null=True, db_index=True)
     registration_closed = models.BooleanField(default=False)
 
-    male_tshirt_image = models.ImageField(upload_to='race_tshirts/', blank=True, null=True)
-    female_tshirt_image = models.ImageField(upload_to='race_tshirts/', blank=True, null=True)
+    male_tshirt_image = models.ImageField(upload_to='race_tshirts/', blank=True, null=True,
+        validators=[validate_file_size],
+    )
+    female_tshirt_image = models.ImageField(upload_to='race_tshirts/', blank=True, null=True,
+        validators=[validate_file_size],
+    )
 
     def get_event_url(self):
         ui_base_url = settings.WWW_HOST
@@ -126,7 +139,11 @@ class Race(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The price of registration before a discount may or may not have been applied.")
 
-    course_map = models.FileField(upload_to='race_course_maps/', blank=True, null=True)
+    course_map = models.FileField(upload_to='race_course_maps/', blank=True, null=True,
+        validators=[
+            validate_file_size,
+        ]
+    )
     hour = models.IntegerField(
         choices=HOURS,
         default=7,
@@ -145,8 +162,12 @@ class Race(models.Model):
     projected_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
     registration_closed = models.BooleanField(default=False)
 
-    male_tshirt_image = models.ImageField(upload_to='event_tshirts/', blank=True, null=True)
-    female_tshirt_image = models.ImageField(upload_to='event_tshirts/', blank=True, null=True)
+    male_tshirt_image = models.ImageField(upload_to='event_tshirts/', blank=True, null=True,
+        validators=[validate_file_size]
+    )
+    female_tshirt_image = models.ImageField(upload_to='event_tshirts/', blank=True, null=True,
+        validators=[validate_file_size]
+    )
 
     def delete(self, *args, **kwargs):
         # Check if this author has any associated registraitons
@@ -363,7 +384,11 @@ class Registration(models.Model):
 class Leg(models.Model):
     race = models.ForeignKey(Race, related_name='legs', on_delete=models.CASCADE)
     leg_number = models.PositiveIntegerField()
-    leg_map = models.FileField(upload_to='leg_maps/', blank=True, null=True)
+    leg_map = models.FileField(upload_to='leg_maps/', blank=True, null=True,
+        validators=[
+            validate_file_size,
+        ],
+    )
 
     custom_distance_value = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     custom_distance_unit = models.CharField(max_length=2, choices=UNIT_CHOICES, blank=True, null=True)

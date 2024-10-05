@@ -125,7 +125,7 @@
                     <strong>Event Media:</strong> <v-img :src="event.media_file" max-width="150"></v-img>
                 </p>
                 <div v-if="event.logo">
-                    <strong>Event Logo:</strong>
+                    <strong>Event Image:</strong>
                     <div class="d-flex justify-center">
                         <v-img :src="event.logo" max-width="150"></v-img>
                     </div>

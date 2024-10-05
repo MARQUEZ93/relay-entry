@@ -107,7 +107,7 @@ export default {
     <v-row>
         <v-col>
             <v-card class="mx-auto my-5 pa-5">
-            <v-img :src="event.logo" :alt="`Event logo for ${event.name}`" v-if="event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
+            <v-img :src="event.logo" :alt="`Event image for ${event.name}`" v-if="event.logo" class="mb-4" aspect-ratio="2.75"></v-img>
             <v-card-title class="event-name">{{ event.name }}</v-card-title>
             <v-card-subtitle v-if="formattedEventDate">
                 <strong>Date:</strong> {{ formattedEventDate }}

@@ -58,7 +58,7 @@ export default {
           <!-- Create Event Box -->
           <v-row class="mt-6" justify="center">
             <v-col cols="12" md="6" lg="4" class="d-flex justify-center">
-              <router-link :to="`/dashboard/create-event/`" class="text-decoration-none">
+              <router-link to="/dashboard/create-event" class="text-decoration-none">
                 <v-card class="elevation-2 hoverable">
                   <v-card-title class="d-flex justify-center">
                     <v-icon large color="primary">mdi-calendar-plus</v-icon>

@@ -43,18 +43,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
+from .permissions import IsUserApproved, IsEventCreator, IsRaceEventCreator
+
 # Set up logging for Stripe
 stripe_logger = logging.getLogger('stripe')
-
-
-class IsEventCreator(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        try:
-            user_profile = UserProfile.objects.get(user=request.user)
-        except UserProfile.DoesNotExist:
-            raise PermissionDenied("User profile not found.")
-
-        return obj.created_by == user_profile and user_profile.is_approved
 
 class LoginRateThrottle(AnonRateThrottle):
     scope = 'login'
@@ -694,7 +686,8 @@ def confirm_registration(request, url_alias, name):
 
 class EventCreateView(generics.CreateAPIView):
     serializer_class = EventDashboardSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsUserApproved]
+    parser_classes = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer):
         # Get the logged-in user's profile
@@ -722,12 +715,15 @@ class EventUpdateView(generics.UpdateAPIView):
     serializer_class = EventDashboardSerializer
     permission_classes = [IsAuthenticated, IsEventCreator]
     lookup_field = 'id'
-    queryset = Event.objects.all()
+
+    def get_queryset(self):
+        user_profile = UserProfile.objects.get(user=self.request.user)
+        return Event.objects.filter(created_by=user_profile)
 
 
 class UserEventsListAPIView(ListAPIView):
     serializer_class = EventWithRacesSerializer
-    permission_classes = [IsAuthenticated]  # Ensures only authenticated users can access
+    permission_classes = [IsAuthenticated, IsUserApproved]  # Ensures only authenticated users can access
 
     def get_queryset(self):
         # Filter the events based on the logged-in user
@@ -735,7 +731,7 @@ class UserEventsListAPIView(ListAPIView):
 
 class UserEventAPIView(generics.RetrieveAPIView):
     serializer_class = EventWithRacesSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsUserApproved]
     queryset = Event.objects.all()
     lookup_field = 'id'
 
@@ -749,33 +745,31 @@ class UserEventAPIView(generics.RetrieveAPIView):
 
         return obj
 
-class UserRacesListAPIView(generics.ListAPIView):
+class RaceCreateUpdateView(generics.RetrieveUpdateAPIView, generics.CreateAPIView):
     serializer_class = RaceDashboardSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsUserApproved]
+    parser_classes = [MultiPartParser, FormParser]
+    lookup_field = 'id'
 
     def get_queryset(self):
-        event_id = self.kwargs['event_id']
+        """
+        Retrieve queryset for the races. 
+        If updating, ensure race belongs to an event created by the user.
+        """
         user_profile = UserProfile.objects.get(user=self.request.user)
 
-        # Ensure the event belongs to the user
-        try:
-            event = Event.objects.get(id=event_id, created_by=user_profile)
-        except Event.DoesNotExist:
-            raise PermissionDenied("You do not have permission to view races for this event.")
-
-        return Race.objects.filter(event=event)
-
-class RaceUpdateView(generics.UpdateAPIView):
-    serializer_class = RaceDashboardSerializer
-    permission_classes = [IsAuthenticated]
-    lookup_field = 'id'
-    queryset = Race.objects.all()
+        if 'id' in self.kwargs:
+            # When updating, we check if the race's event was created by the user
+            return Race.objects.filter(event__created_by=user_profile)
+        return None
 
     def get_object(self):
+        """
+        When updating, ensure the race belongs to an event created by the user.
+        """
         obj = super().get_object()
         user_profile = UserProfile.objects.get(user=self.request.user)
 
-        # Ensure the race belongs to an event created by the user
         if obj.event.created_by != user_profile:
             raise PermissionDenied("You are not allowed to update this race.")
 
@@ -784,18 +778,76 @@ class RaceUpdateView(generics.UpdateAPIView):
     def perform_update(self, serializer):
         serializer.save()
 
-class UserRaceAPIView(generics.RetrieveAPIView):
-    serializer_class = RaceDashboardSerializer
-    permission_classes = [IsAuthenticated]
-    lookup_field = 'id'
-    queryset = Race.objects.all()
-
-    def get_object(self):
-        obj = super().get_object()
+    def perform_create(self, serializer):
+        """
+        When creating, ensure the user is approved and save the race with the user's profile.
+        """
         user_profile = UserProfile.objects.get(user=self.request.user)
 
-        # Ensure the race belongs to an event created by the user
-        if obj.event.created_by != user_profile:
-            raise PermissionDenied("You are not allowed to view this race.")
+        if not user_profile.is_approved:
+            raise PermissionDenied("You are not approved to create races.")
 
-        return obj
+        # Save the race with the created_by field set to the user's profile
+        serializer.save(created_by=user_profile)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Customize the response after creating a race.
+        """
+        response = super().create(request, *args, **kwargs)
+        return Response({
+            "message": "Race created successfully!",
+            "data": response.data
+        }, status=status.HTTP_201_CREATED)
+
+# get single / all races for a user
+class UserRacesAPIView(generics.GenericAPIView):
+    serializer_class = RaceDashboardSerializer
+    permission_classes = [IsAuthenticated, IsUserApproved]
+
+    def get_queryset(self):
+        """
+        Returns a queryset of races based on the presence of event_id in the URL.
+        If event_id is present, it fetches all races for that event.
+        Otherwise, it assumes the user is fetching a single race by id.
+        """
+        user_profile = UserProfile.objects.get(user=self.request.user)
+
+        # Check if event_id is in the URL for retrieving races by event
+        event_id = self.kwargs.get('event_id', None)
+        if event_id:
+            # Fetch all races for a specific event
+            try:
+                event = Event.objects.get(id=event_id, created_by=user_profile)
+            except Event.DoesNotExist:
+                raise PermissionDenied("You do not have permission to view races for this event.")
+            return Race.objects.filter(event=event)
+
+        # If no event_id, fetch by race id
+        race_id = self.kwargs.get('id', None)
+        if race_id:
+            # Fetch a single race by id
+            try:
+                race = Race.objects.get(id=race_id, event__created_by=user_profile)
+            except Race.DoesNotExist:
+                raise PermissionDenied("You are not allowed to view this race.")
+            return Race.objects.filter(id=race_id)
+        else:
+            raise PermissionDenied("Race ID or Event ID is required.")
+
+    def get(self, request, *args, **kwargs):
+        """
+        Handles both retrieving a single race and listing races for an event.
+        """
+        queryset = self.get_queryset()
+
+        # Check if we are retrieving a single race or a list of races
+        if 'id' in self.kwargs:
+            # Single race retrieval
+            race = queryset.first()  # We are filtering by id, so this should be a single race
+            serializer = self.get_serializer(race)
+        else:
+            # List of races for a specific event
+            serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)

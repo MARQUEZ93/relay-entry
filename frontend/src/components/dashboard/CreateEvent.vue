@@ -14,7 +14,7 @@ export default {
         city: '',
         state: '',
         postal_code: '',
-        address: '',
+        address: '', 
         facebook_url: '',
         instagram_url: '',
         twitter_url: '',
@@ -22,6 +22,10 @@ export default {
         email: '',
         waiver_text: '',
         published: false,
+        logo: '',
+        female_tshirt_image: '',
+        male_tshirt_image: '',
+        media_file: '',
       },
       states: [
         'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
@@ -47,6 +51,16 @@ export default {
         };
 
         const eventDataSubmit = convertEmptyStringsToNull(this.eventData);
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB in bytes
+        const fileFields = ['logo', 'media_file', 'male_tshirt_image', 'female_tshirt_image']; 
+        for (const field of fileFields) {
+          const file = this.localEvent[field];  // Dynamically access each field
+          if (file && file.size > MAX_FILE_SIZE) {
+            console.error(`${field} file size exceeds the allowed limit`);
+            this.showSnackbar(`${field} file size exceeds the 5 MB limit.`, 'error');
+            return;
+          }
+        }
         await api.createEvent(eventDataSubmit);
         this.showSnackbar('Event created successfully!', 'success');
         this.$router.push('/dashboard');
@@ -197,25 +211,25 @@ export default {
 
               <v-row>
                 <v-col cols="6">
-                  <v-file-input v-model="localEvent.media_file" label="Event Media"></v-file-input>
+                  <v-file-input accept="image/*" v-model="eventData.media_file" label="Event Media"></v-file-input>
                 </v-col>
                 <v-col cols="6">
-                    <v-file-input v-model="localEvent.logo" label="Event Image"></v-file-input>
+                    <v-file-input accept="image/*" v-model="eventData.logo" label="Event Image"></v-file-input>
                 </v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="6">
-                  <v-file-input v-model="localEvent.male_tshirt_image" label="Male T-Shirt Image"></v-file-input>
+                  <v-file-input accept="image/*" v-model="eventData.male_tshirt_image" label="Male T-Shirt Image"></v-file-input>
                 </v-col>
                 <v-col cols="6">
-                    <v-file-input v-model="localEvent.female_tshirt_image" label="Female T-Shirt Image"></v-file-input>
+                    <v-file-input accept="image/*" v-model="eventData.female_tshirt_image" label="Female T-Shirt Image"></v-file-input>
                 </v-col>
               </v-row>
 
               <v-checkbox
                 v-model="eventData.published"
-                label="Published"
+                label="Published (Public URL)"
               ></v-checkbox>
 
               <v-btn type="submit" color="primary" block>Create Event</v-btn>

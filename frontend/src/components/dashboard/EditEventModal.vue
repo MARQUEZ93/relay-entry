@@ -15,7 +15,6 @@ export default {
             'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
             'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
         ],
-        isValid: false,
         localEvent: { ...this.event } // Create a local copy of the event prop
     };
   },
@@ -39,7 +38,7 @@ export default {
               this.showSnackbar(`${field} file size exceeds the 5 MB limit.`, 'error');
               return;
             }
-}
+          }
             await api.updateEvent(updatedEvent.id, updatedEvent);
             this.showSnackbar('Event updated successfully', 'success');
             this.$emit('event-updated');  // Emit a custom event to refresh the event
@@ -78,7 +77,7 @@ export default {
     <v-card>
       <v-card-title>Edit Event</v-card-title>
       <v-card-text>
-        <v-form ref="editForm" v-model="isValid" enctype="multipart/form-data">
+        <v-form ref="editForm" enctype="multipart/form-data">
           
           <!-- Event Name -->
           <v-text-field v-model="localEvent.name" label="Event Name" required></v-text-field>

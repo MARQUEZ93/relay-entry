@@ -23,6 +23,10 @@
             };
         },
         methods: {
+          async openModal() {
+            await this.fetchEvent();
+            this.editModal = true;
+          },
           closeModal() {
             this.editModal = false;
           },
@@ -90,7 +94,7 @@
       <v-row justify="center">
         <v-col cols="12" md="8">
           <v-card class="mt-6">
-            <v-btn color="primary" @click="editModal = true">Edit</v-btn>
+            <v-btn color="primary" @click="openModal">Edit</v-btn>
             <v-card-title>
               {{ event.name }}
               <v-spacer></v-spacer>
@@ -119,45 +123,24 @@
                     {{ `${baseUrl}events/${event.url_alias}` }}
                     </a>
                 </p>
-
-                <!-- Media -->
-                <p v-if="event.media_file">
-                    <strong>Event Media:</strong> <v-img :src="event.media_file" max-width="150"></v-img>
-                </p>
-                <div v-if="event.logo">
-                    <strong>Event Image:</strong>
-                    <div class="d-flex justify-center">
-                        <v-img :src="event.logo" max-width="150"></v-img>
-                    </div>
-                </div>
                 <!-- Links -->
                 <v-row>
-                  <v-col cols="6">
-                    <p><strong>Facebook:</strong> <a v-if="event.facebook_url" :href="event.facebook_url" target="_blank">Facebook Page</a></p>
+                  <v-col cols="3" v-if="event.facebook_url">
+                    <p><a :href="event.facebook_url" target="_blank"><strong>Facebook</strong></a></p>
                   </v-col>
-                  <v-col cols="6">
-                    <p><strong>Instagram:</strong> <a v-if="event.instagram_url" :href="event.instagram_url" target="_blank">Instagram Profile</a></p>
+                  <v-col cols="3" v-if="event.instagram_url">
+                    <p><a :href="event.instagram_url" target="_blank"><strong>Instagram</strong></a></p>
                   </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="6">
-                    <p><strong>Twitter:</strong> <a v-if="event.twitter_url" :href="event.twitter_url" target="_blank">Twitter Profile</a></p>
+                  <v-col v-if="event.twitter_url">
+                    <p><a :href="event.twitter_url" target="_blank"><strong>Twitter</strong></a></p>
                   </v-col>
-                  <v-col>
-                    <p><strong>Website:</strong> <a v-if="event.website_url" :href="event.website_url" target="_blank">My Event Website</a></p>
+                  <v-col v-if="event.website_url">
+                    <p><a :href="event.website_url" target="_blank"><strong>Website</strong></a></p>
                   </v-col>
                 </v-row>
                 <!-- Waiver Text -->
                 <p><strong>Waiver Text:</strong> 
                     {{ event.waiver_text?.length > 100 ? event.waiver_text.substring(0, 100) + '...' : event.waiver_text }}
-                </p>
-
-                <!-- T-shirt Images -->
-                <p v-if="event.male_tshirt_image">
-                    <strong>Male T-shirt:</strong> <v-img :src="event.male_tshirt_image" max-width="150"></v-img>
-                </p>
-                <p v-if="event.female_tshirt_image">
-                    <strong>Female T-shirt:</strong> <v-img :src="event.female_tshirt_image" max-width="150"></v-img>
                 </p>
 
                 <!-- Created/Updated Dates -->
@@ -169,7 +152,48 @@
 
                 <!-- Registration Status -->
                 <p><strong>Registration Closed (All races closed):</strong> {{ event.registration_closed ? 'Yes' : 'No' }}</p>
-                </v-card-text>
+                <!-- T-shirt Images -->
+                <div v-if="event.male_tshirt_image || event.female_tshirt_image">
+                  <v-row class="d-flex justify-center">
+                    <!-- Female T-Shirt Image -->
+                    <v-col cols="6" class="text-center">
+                      <strong>Female T-Shirt Image</strong>
+                      <v-img 
+                        v-if="event.female_tshirt_image" 
+                        :src="event.female_tshirt_image" 
+                        max-width="75" 
+                        class="mt-2 d-block mx-auto"
+                        alt="Female T-Shirt Image"
+                      ></v-img>
+                    </v-col>
+                    
+                    <!-- Male T-Shirt Image -->
+                    <v-col cols="6" class="text-center">
+                      <strong>Male T-Shirt Image</strong>
+                      <v-img 
+                        v-if="event.male_tshirt_image" 
+                        :src="event.male_tshirt_image" 
+                        max-width="75" 
+                        class="mt-2 d-block mx-auto"
+                        alt="Male T-Shirt Image"
+                      ></v-img>
+                    </v-col>
+                  </v-row>
+                </div>
+                <!-- Media -->
+                <div v-if="event.media_file">
+                    <strong>Event Media:</strong>
+                    <div class="d-flex justify-center">
+                        <v-img :src="event.media_file" max-width="150"></v-img>
+                    </div>
+                </div>
+                <div v-if="event.logo">
+                    <strong>Event Image:</strong>
+                    <div class="d-flex justify-center">
+                        <v-img :src="event.logo" max-width="150"></v-img>
+                    </div>
+                </div>
+              </v-card-text>
           </v-card>
         </v-col>
       </v-row>

@@ -10,6 +10,7 @@ from django.conf import settings
 from datetime import date, datetime
 
 from django.utils.text import slugify
+from .utils.models_utils import validate_file_size
 
 UNIT_CHOICES = UNIT_CHOICES_CONSTANT
 TEAM_TYPE_CHOICES = TEAM_GENDER_CHOICES

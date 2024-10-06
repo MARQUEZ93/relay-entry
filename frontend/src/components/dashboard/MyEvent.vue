@@ -124,7 +124,7 @@
                     </a>
                 </p>
                 <!-- Links -->
-                <v-row>
+                <v-row v-if="event.facebook_url || event.instagram_url || event.twitter_url || event.website_url">
                   <v-col cols="3" v-if="event.facebook_url">
                     <p><a :href="event.facebook_url" target="_blank"><strong>Facebook</strong></a></p>
                   </v-col>

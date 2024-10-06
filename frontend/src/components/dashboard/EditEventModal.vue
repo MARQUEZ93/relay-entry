@@ -2,7 +2,6 @@
 import api from '@/services/api';
 export default {
   props: {
-    modelValue: Boolean,
     event: Object
   },
   inject: ['showSnackbar'],
@@ -39,12 +38,20 @@ export default {
               return;
             }
           }
-            await api.updateEvent(updatedEvent.id, updatedEvent);
+           // Detect which fields have changed
+          const updatedFields = {};
+          Object.entries(this.localEvent).forEach(([key, value]) => {
+            // Only include fields that have changed
+            if (value !== this.event[key]) {
+              updatedFields[key] = value;
+            }
+          });
+
+            await api.updateEvent(updatedEvent.id, updatedFields);
             this.showSnackbar('Event updated successfully', 'success');
             this.$emit('event-updated');  // Emit a custom event to refresh the event
         } catch (error) {
             let errorMessage = '';
-            console.log(error);
             if (error.response && error.response.data) {
                 for (const [field, messages] of Object.entries(error.response.data)) {
                 if (Array.isArray(messages)) {
@@ -64,7 +71,7 @@ export default {
     updateEventClick() {
       if (this.$refs.editForm.validate()) {
         this.updateEvent(this.localEvent);
-        this.$emit('update:modelValue', false); // Close the modal by emitting update:modelValue
+        this.$emit('close-modal');
       }
     }
   }
@@ -72,7 +79,7 @@ export default {
 </script>
 
 <template>
-  <v-dialog :model-value="modelValue" @update:modelValue="$emit('update:modelValue', $event)" max-width="800px">
+  <v-dialog max-width="800px">
     <!-- Adjust the width here by changing max-width -->
     <v-card>
       <v-card-title>Edit Event</v-card-title>
@@ -161,8 +168,7 @@ export default {
       </v-card-text>
       <v-card-actions>
         <v-btn color="primary" @click="updateEventClick">Save</v-btn>
-        <!-- TODO: FIX THIS SHIT -->
-        <v-btn @click="$emit('update:modelValue', false)">Cancel</v-btn>
+        <v-btn @click="$emit('close-modal')">Cancel</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

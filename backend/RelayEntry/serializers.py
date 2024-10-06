@@ -32,7 +32,9 @@ class EventDashboardSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        if data['end_date'] and data['end_date'] < data['date']:
+        start_date = data.get('date')
+        end_date = data.get('end_date')
+        if (end_date and not start_date) or (end_date and end_date < start_date):
             raise serializers.ValidationError("End date must be after the start date.")
         return data
 class EventSerializer(serializers.ModelSerializer):

@@ -54,7 +54,7 @@ export default {
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB in bytes
         const fileFields = ['logo', 'media_file', 'male_tshirt_image', 'female_tshirt_image']; 
         for (const field of fileFields) {
-          const file = this.localEvent[field];  // Dynamically access each field
+          const file = this.eventData[field];  // Dynamically access each field
           if (file && file.size > MAX_FILE_SIZE) {
             console.error(`${field} file size exceeds the allowed limit`);
             this.showSnackbar(`${field} file size exceeds the 5 MB limit.`, 'error');
@@ -65,6 +65,7 @@ export default {
         this.showSnackbar('Event created successfully!', 'success');
         this.$router.push('/dashboard');
       } catch (error) {
+          console.log(error);
           let errorMessage = '';
           if (error.response && error.response.data) {
             // Loop through the error data

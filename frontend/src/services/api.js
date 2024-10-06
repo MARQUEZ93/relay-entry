@@ -90,7 +90,7 @@ export default {
     return apiClient.get(`/dashboard/races/${raceId}/`);
   },
   updateUserRace(raceId, data) {
-    return apiClient.put(`/dashboard/races/update/${raceId}/`, data);
+    return apiClient.patch(`/dashboard/races/update/${raceId}/`, data);
   },
   getUserEvent(id){
     return apiClient.get(`/dashboard/events/${id}/`);
@@ -99,7 +99,7 @@ export default {
     return apiClient.get(`/dashboard/events/`);
   },
   updateEvent(eventId, eventData) {
-    return apiClient.put(`/dashboard/events/update/${eventId}/`, eventData, {
+    return apiClient.patch(`/dashboard/events/update/${eventId}/`, eventData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -119,7 +119,7 @@ export default {
     return apiClient.get(`/teams/get-team/${token}/`);
   },
   updateTeam(token, teamData) {
-    return apiClient.put(`/edit-team/${token}/`, teamData);
+    return apiClient.patch(`/edit-team/${token}/`, teamData);
   },
   requestEditLink(url_alias, data) {
     return apiClient.post(`/events/${url_alias}/request-edit-link/`, data);

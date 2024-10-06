@@ -8,14 +8,16 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('', views.index, name='index'), 
-    # Authenticated-only views
-    path('api/dashboard/events/create/', views.EventCreateView.as_view(), name='event-create'),
-    path('api/dashboard/events/update/<int:id>/', views.EventUpdateView.as_view(), name='event-update'),
-    path('api/dashboard/events/', views.UserEventsListAPIView.as_view(), name='user-events'),
-    path('api/dashboard/events/<int:id>/', views.UserEventAPIView.as_view(), name='user-event'),
+    # basic auth
     path('api/dashboard/', views.DashboardView.as_view(), name='dashboard'),
-    path('api/dashboard/events/<int:event_id>/races/', views.UserRacesAPIView.as_view(), name='user-races'),
-    path('api/dashboard/races/<int:id>/', views.UserRacesAPIView.as_view(), name='user-race'),
+    # event
+    path('api/dashboard/events/create/', views.EventCreateUpdateView.as_view(), name='event-create'),
+    path('api/dashboard/events/update/<int:id>/', views.EventCreateUpdateView.as_view(), name='event-update'),
+    path('api/dashboard/events/', views.UserEventView.as_view(), name='user-events'),
+    path('api/dashboard/events/<int:id>/', views.UserEventView.as_view(), name='user-event'),
+    # races
+    path('api/dashboard/events/<int:event_id>/races/', views.UserRacesView.as_view(), name='user-races'),
+    path('api/dashboard/races/<int:id>/', views.UserRacesView.as_view(), name='user-race'),
     path('api/dashboard/races/update/<int:id>/', views.RaceCreateUpdateView.as_view(), name='race-update'),
     # path('signup/', views.signup, name='signup'),
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),

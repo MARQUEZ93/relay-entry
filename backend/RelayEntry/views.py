@@ -32,9 +32,9 @@ from .utils.email_utils import send_email, generate_token, send_team_edit_link
 from django.core.cache import cache
 from django.core.exceptions import ValidationError, ObjectDoesNotExist, PermissionDenied
 
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import RetrieveAPIView, GenericAPIView, CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework.response import Response
@@ -87,12 +87,12 @@ class DashboardView(APIView):
             'username': username,
         })
 
-class RaceDetailView(generics.RetrieveAPIView):
+class RaceDetailView(RetrieveAPIView):
     queryset = Race.objects.all()
     serializer_class = RaceSerializer
     lookup_field = 'id'
 
-class EventDetailView(generics.RetrieveAPIView):
+class EventDetailView(RetrieveAPIView):
     queryset = Event.objects.all()
     serializer_class = EventWithRacesSerializer
 
@@ -684,7 +684,7 @@ def confirm_registration(request, url_alias, name):
     
     return JsonResponse([], safe=False)
 
-class EventCreateUpdateView(generics.GenericAPIView):
+class EventCreateUpdateView(GenericAPIView):
     serializer_class = EventDashboardSerializer
     permission_classes = [IsAuthenticated, IsUserApproved]
     parser_classes = [MultiPartParser, FormParser]
@@ -749,7 +749,7 @@ class EventCreateUpdateView(generics.GenericAPIView):
         return self.update(request, *args, **kwargs)
 
 
-class UserEventView(generics.GenericAPIView):
+class UserEventView(GenericAPIView):
     serializer_class = EventWithRacesSerializer
     permission_classes = [IsAuthenticated, IsUserApproved]
 
@@ -760,9 +760,9 @@ class UserEventView(generics.GenericAPIView):
         """
         user_profile = UserProfile.objects.get(user=self.request.user)
 
-        if 'id' in self.kwargs:
+        if 'event_id' in self.kwargs:
             # If retrieving a single event, ensure it belongs to the user
-            return Event.objects.filter(id=self.kwargs['id'], created_by=user_profile)
+            return Event.objects.filter(id=self.kwargs['event_id'], created_by=user_profile)
 
         # If no id is provided, return all events created by the user
         return Event.objects.filter(created_by=user_profile)
@@ -771,7 +771,7 @@ class UserEventView(generics.GenericAPIView):
         """
         Handles both retrieving a single event and listing events.
         """
-        if 'id' in self.kwargs:
+        if 'event_id' in self.kwargs:
             # Retrieve a specific event if 'id' is in the URL
             event = self.get_queryset().first()
             if not event:
@@ -785,7 +785,7 @@ class UserEventView(generics.GenericAPIView):
             return Response(serializer.data)
 
 # this shit needs to be examined
-class RaceCreateUpdateView(generics.RetrieveUpdateAPIView, generics.CreateAPIView):
+class RaceCreateUpdateView(RetrieveUpdateAPIView, CreateAPIView):
     serializer_class = RaceDashboardSerializer
     permission_classes = [IsAuthenticated, IsUserApproved, IsObjectEventCreator]
     parser_classes = [MultiPartParser, FormParser]
@@ -798,7 +798,7 @@ class RaceCreateUpdateView(generics.RetrieveUpdateAPIView, generics.CreateAPIVie
         """
         user_profile = UserProfile.objects.get(user=self.request.user)
 
-        if 'id' in self.kwargs:
+        if 'race_id' in self.kwargs:
             # When updating, we check if the race's event was created by the user
             return Race.objects.filter(event__created_by=user_profile)
         return None
@@ -870,7 +870,7 @@ class RaceCreateUpdateView(generics.RetrieveUpdateAPIView, generics.CreateAPIVie
         return self.update(request, *args, **kwargs)
 
 # get single / all races for a user
-class UserRacesView(generics.GenericAPIView):
+class UserRacesView(GenericAPIView):
     serializer_class = RaceDashboardSerializer
     permission_classes = [IsAuthenticated, IsUserApproved, IsObjectEventCreator]
 
@@ -893,7 +893,7 @@ class UserRacesView(generics.GenericAPIView):
             return Race.objects.filter(event=event)
 
         # If no event_id, fetch by race id
-        race_id = self.kwargs.get('id', None)
+        race_id = self.kwargs.get('race_id', None)
         if race_id:
             try:
                 race = Race.objects.get(id=race_id, event__created_by=user_profile)
@@ -910,7 +910,7 @@ class UserRacesView(generics.GenericAPIView):
         queryset = self.get_queryset()
 
         # Check if we are retrieving a single race or a list of races
-        if 'id' in self.kwargs:
+        if 'race_id' in self.kwargs:
             # Single race retrieval
             race = queryset.first()  # We are filtering by id, so this should be a single race
             serializer = self.get_serializer(race)

@@ -78,6 +78,7 @@ SIMPLE_JWT = {
     "SIGNING_KEY": JWT_SIGNING_KEY,
 }
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'RelayEntry.exceptions.custom_exception_handler',
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',

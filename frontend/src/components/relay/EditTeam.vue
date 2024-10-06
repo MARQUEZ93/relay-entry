@@ -8,7 +8,7 @@ export default {
   data() {
     return {
       isUpdating: false,
-      team: null,  // holds the team form data
+      team: null, // holds the team form data
       event: null,
       originalTeam: null, // stores the original team data for comparison
     };
@@ -97,7 +97,7 @@ export default {
           // Wait 5 seconds, then toggle back to the previous state
           setTimeout(() => {
             this.goToEventPage();
-          }, 5000);
+          }, 3000);
         })
         .catch((e) => {
           this.showSnackbar(`An error occurred while updating the team: ${e.response.data.error}`, 'error');

@@ -231,9 +231,9 @@ class Team(models.Model):
     def clean(self):
         super().clean()
          # Ensure the projected_team_time is one of the race's projected_team_time_choices
-        if self.projected_team_time and self.race.projected_team_time_choices:
-            if self.projected_team_time not in self.race.projected_team_time_choices:
-                raise ValidationError(f"Projected team time '{self.projected_team_time}' is not a valid choice for this race. Valid choices are: {', '.join(self.race.projected_team_time_choices)}")
+        # if self.projected_team_time and self.race.projected_team_time_choices:
+            # if self.projected_team_time not in self.race.projected_team_time_choices:
+                # raise ValidationError(f"Projected team time '{self.projected_team_time}' is not a valid choice for this race. Valid choices are: {', '.join(self.race.projected_team_time_choices)}")
         # Ensure the captain is only a captain for one team in the same event
         if self.captain:
             if Team.objects.filter(race__event=self.race.event, captain=self.captain).exclude(pk=self.pk).exists():
@@ -319,9 +319,9 @@ class Registration(models.Model):
     def clean(self):
         super().clean()
          # Ensure the projected_time is one of the race's projected_time_choices
-        if self.projected_time and self.race.projected_time_choices:
-            if self.projected_time not in self.race.projected_time_choices:
-                raise ValidationError(f"Projected time '{self.projected_time}' is not a valid choice for this race. Valid choices are: {', '.join(self.race.projected_time_choices)}")
+        # if self.projected_time and self.race.projected_time_choices:
+        #     if self.projected_time not in self.race.projected_time_choices:
+        #         raise ValidationError(f"Projected time '{self.projected_time}' is not a valid choice for this race. Valid choices are: {', '.join(self.race.projected_time_choices)}")
         # Exclude the current instance from the duplicate check
         duplicate_registration = Registration.objects.filter(
             race=self.race, email=self.email
@@ -353,16 +353,6 @@ class Registration(models.Model):
             if original.waiver_text != self.waiver_text:
                 raise ValidationError("You cannot change the value of this field.")
         
-        if not self.pk:
-            age = self.calculate_age()
-            # Ensure the person younger than 18 is registered as a minor
-            if age < 18 and not self.minor:
-                raise ValidationError("Registrants under 18 must be registered as minors.")
-
-        # Validate minor fields
-        if self.minor and not (self.parent_guardian_name and self.parent_guardian_signature):
-            raise ValueError("Parent/Guardian name and signature are required for minors.")
-
         # Set the price and handle coupon logic
         # if self.coupon_code and self._state.adding:
         #     discount = (self.coupon_code.percentage / 100) * self.price

@@ -9,6 +9,11 @@ const apiClient = axios.create({
   },
 });
 
+function clearTokens(){ 
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+}
+
 // Function to get CSRF token from cookies
 function getCSRFToken() {
   let cookieValue = null;
@@ -73,10 +78,9 @@ apiClient.interceptors.response.use(
         // Retry the original request with the new token
         return apiClient(originalRequest);
       } catch (err) {
+        clearTokens();
+        delete apiClient.defaults.headers.common['Authorization'];
         console.error('Error during token refresh:', err);
-
-        // Logout the user if token refresh fails
-        apiClient.logout();
         return Promise.reject(err);
       }
     }
@@ -170,8 +174,7 @@ export default {
   },
   async logout() {
     const refreshToken = localStorage.getItem('refresh_token');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    clearTokens();
     delete apiClient.defaults.headers.common['Authorization'];
     if (!refreshToken) {
       return;

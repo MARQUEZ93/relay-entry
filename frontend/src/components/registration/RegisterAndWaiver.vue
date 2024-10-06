@@ -91,21 +91,18 @@ export default {
           eventId: this.event.id,
           registrationData: this.registrationData,
         });
-        if (response.data.error) {
-          this.loading = false; // Hide loader on error
-          this.showSnackbar(`An error occurred while processing your registration: ${response.data.error.response.data.error}`, 'error');
-        } else {
-          const { registrationResponseData, eventData } = await response.data;
-          this.$store.commit('setConfirmationData', {
-            registrationData: registrationResponseData,
-            eventData: eventData,
-          });
-          this.loading = false;
-          this.$router.push({ name: 'Confirmation' });
-        }
+        const { registrationResponseData, eventData } = response.data;
+        this.$store.commit('setConfirmationData', {
+          registrationData: registrationResponseData,
+          eventData: eventData,
+        });
+        this.loading = false;
+        this.$router.push({ name: 'Confirmation' });
       } catch (e) {
         this.loading = false;
-        this.showSnackbar(`An error occurred while processing your registration: ${e.response.data.error}`, 'error');
+        let errorMessage = 'An error occurred while processing your registration: ';
+        errorMessage += e.response.data.error;
+        this.showSnackbar(errorMessage, 'error');
       }
     },
   },

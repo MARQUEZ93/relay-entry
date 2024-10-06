@@ -12,9 +12,9 @@ export default {
   computed: {
     confirmationHeader(){
       if (this.teamData){
-        return "Team Registration Successful";
+        return "Team Registration";
       } else {
-        return "Registration Successful"
+        return "Registration"
       }
     },
     ...mapState({

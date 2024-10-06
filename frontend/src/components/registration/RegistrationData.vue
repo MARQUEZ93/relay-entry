@@ -64,7 +64,7 @@ export default {
       parentGuardianSignatureRules: [
         v => !!v || 'Guardian Signature is required',
         v => (v && v.length > 1) || 'Guardian Signature must be more than 1 character',
-        v => v === this.localRegistrationData.parentGuardianName || 'Emails must match',
+        v => v === this.localRegistrationData.parentGuardianName || 'Signature must match',
       ],
       // phoneRules: [
       //   v => !!v || 'Phone is required',
@@ -73,6 +73,7 @@ export default {
       genders: ['Male', 'Female', 'Other'],
       dobRules: [
         v => !!v || 'Date of Birth is required',
+        // v => this.isAdult(v) || 'You must be at least 18 years old, or check the minor box and provide guardian information',
       ],
     };
   },
@@ -107,6 +108,19 @@ export default {
     },
   },
   methods: {
+    // isAdult(dob) {
+    //   if (!dob) return false;
+    //   const today = new Date();
+    //   const birthDate = new Date(dob);
+    //   const age = today.getFullYear() - birthDate.getFullYear();
+    //   const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+    //   // Adjust the age if the birth month and day have not passed yet
+    //   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    //     return age > 18;
+    //   }
+    //   return age >= 18;
+    // },
     getRandomString(){
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       let result = '';
@@ -118,7 +132,7 @@ export default {
       return result;
     },
     fillForm(){
-      this.localRegistrationData["dateOfBirth"] = "2024-09-03";
+      // this.localRegistrationData["dateOfBirth"] = "2024-09-03";
       this.localRegistrationData["firstName"] = "Hello";
       this.localRegistrationData["lastName"] = "Lasty";
       const randomEmail = this.getRandomString() + "@gmail.com";
@@ -265,10 +279,11 @@ export default {
           ></v-select>
       </v-col>
       <v-col cols="6">
+        <!-- TODO: UPDATE VUE 3.6 to get vue-date-input -->
         <v-text-field
+          type="date"
           v-model="localRegistrationData.dateOfBirth"
           label="Date of Birth"
-          type="date"
           :rules="dobRules"
           required
         ></v-text-field>

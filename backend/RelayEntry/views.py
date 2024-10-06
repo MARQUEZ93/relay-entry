@@ -263,7 +263,7 @@ def team_register(request):
                 transaction.on_commit(lambda: logger.info(f'Team created: {team.id} for race: {race.id}'))
                 return JsonResponse(response_data)
             except Exception as e:
-                logger.error(f"Error during transaction: {str(e)}")
+                logger.error(f"Error during team creation: {str(e)}")
                 raise
     except json.JSONDecodeError as e:
         logger.error(f"JSON decode error: {str(e)}")
@@ -353,13 +353,20 @@ def event_register(request, url_alias):
                 transaction.on_commit(lambda: logger.info(f'Registration : {registration.id} for race: {race.id}'))
                 return JsonResponse(response_data)
             except Exception as e:
-                logger.error(f"Error during transaction: {str(e)}")
+                logger.error(f"Error during event registration: {str(e)}")
                 raise
     except json.JSONDecodeError as e:
         logger.error(f"JSON decode error: {str(e)}")
         return JsonResponse({'error': "Invalid JSON data."}, status=400)
     except ValidationError as e:
-        error_message = str(e)
+        if hasattr(e, 'message_dict'):
+            error_message = ', '.join([f'{field}: {", ".join(msgs)}' for field, msgs in e.message_dict.items()])
+        elif hasattr(e, 'messages'):
+            # Join list of error messages into a single string
+            error_message = ', '.join(e.messages)
+        else:
+            # Fallback to a simple string if no structure is found
+            error_message = str(e)
         logger.error(f"ValidationError error: {str(e)}")
         return JsonResponse({"error": error_message}, status=400)
     except Exception as e:
@@ -572,11 +579,13 @@ def get_team_data(request, token):
         # Retrieve the team and its members
         team = Team.objects.get(id=team_id, captain__email=email)
         event = team.race.event
+        # Ensure members are ordered by leg_order
+        members = team.members.all().order_by('leg_order').values('email', 'leg_order')
         team_data = {
             'name': team.name,
             'projected_team_time_choices': team.race.projected_team_time_choices,
             'projected_team_time': team.projected_team_time,
-            'members': list(team.members.values('email', 'leg_order')),
+            'members': list(members),
         }
         event_data = {
             'name': event.name,

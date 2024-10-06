@@ -19,13 +19,13 @@ export default {
         <v-row>
             <v-col cols="12">
                 <h1>About Us</h1>
-                <p>The soon-to-be best running platform for race directors, runners & spectators alike!</p>
+                <p>The best running platform for team relay races!</p>
                 <v-row>
                     <v-col cols="12">
                         <v-sheet class="my-5 pa-5" elevation="2">
                             <h2>Our Mission</h2>
-                            <p>RelayEntry was created to make it easier for anyone to start their own race (and event). </p>
-                            <p>Currently, our product supports team relay races, with plans to expand to other race types before Q4 2024.</p>
+                            <p>RelayEntry was created to make it easier for anyone to start their own race (and sporting event). In addition, we aim to have the best team relay race UX.</p>
+                            <p>Currently, our product supports running races of all race types (except for virtual races). We aim to ship support for virtual races EOY 2024.</p>
                         </v-sheet>
                     </v-col>
                     <v-col cols="12">

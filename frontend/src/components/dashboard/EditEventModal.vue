@@ -38,7 +38,7 @@ export default {
               return;
             }
           }
-           // Detect which fields have changed
+          // Detect which fields have changed
           const updatedFields = {};
           Object.entries(this.localEvent).forEach(([key, value]) => {
             // Only include fields that have changed
@@ -47,9 +47,9 @@ export default {
             }
           });
 
-            await api.updateEvent(updatedEvent.id, updatedFields);
-            this.showSnackbar('Event updated successfully', 'success');
-            this.$emit('event-updated');  // Emit a custom event to refresh the event
+          await api.updateEvent(updatedEvent.id, updatedFields);
+          this.showSnackbar('Event updated successfully', 'success');
+          this.$emit('event-updated');  // Emit a custom event to refresh the event
         } catch (error) {
             let errorMessage = '';
             if (error.response && error.response.data) {

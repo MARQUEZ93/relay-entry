@@ -598,7 +598,7 @@ def get_team_data(request, token):
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):
         return JsonResponse({'error': 'Invalid or expired token'}, status=400)
 
-@require_http_methods(["PUT"])
+@require_http_methods(["PATCH"])
 def verify_token_and_update_team(request, token):
     try:
         # Validate the token and extract data
@@ -612,32 +612,33 @@ def verify_token_and_update_team(request, token):
             data = convert_keys_to_snake_case(data)
             # Update team fields
             team_changed = False
-            if data.get('name') and data.get('name') != team.name:
-                team.name = data.get('name', team.name)
+            if 'name' in data and data['name'] != team.name:
+                team.name = data['name']
                 team_changed = True
-            if data.get('projected_team_time') and data.get('projected_team_time') != team.projected_team_time:
-                team.projected_team_time = data.get('projected_team_time', team.projected_team_time)
+            if 'projected_team_time' in data and data['projected_team_time'] != team.projected_team_time:
+                team.projected_team_time = data['projected_team_time']
                 team_changed = True
             if team_changed:
                 team.save()
-            # Update members
-            members_data = data.get('members', [])
-            existing_members = {member.email: member for member in team.members.all()}
-            for member_data in members_data:
-                email = member_data['email'].lower()  # Normalize email
-                leg_order = member_data['leg_order']
-                if email in existing_members:
-                    # Update existing member
-                    member = existing_members.pop(email)
-                    if leg_order != member.leg_order:
-                        member.leg_order = leg_order
-                        member.save()
-                else:
-                    # Create a new member
-                    TeamMember.objects.create(team=team, email=email, leg_order=leg_order)
-            # Delete members that are no longer in the list
-            for member in existing_members.values():
-                member.delete()
+            # Update members only if 'members' is present in the data
+            if 'members' in data:
+                members_data = data['members']
+                existing_members = {member.email: member for member in team.members.all()}
+                for member_data in members_data:
+                    email = member_data['email'].lower()  # Normalize email
+                    leg_order = member_data['leg_order']
+                    if email in existing_members:
+                        # Update existing member
+                        member = existing_members.pop(email)
+                        if leg_order != member.leg_order:
+                            member.leg_order = leg_order
+                            member.save()
+                    else:
+                        # Create a new member
+                        TeamMember.objects.create(team=team, email=email, leg_order=leg_order)
+                # Delete members that are no longer in the list
+                for member in existing_members.values():
+                    member.delete()
             logger.info(f"Team Updated: {team.id}")
             return JsonResponse({'message': 'Team updated successfully'})
     except (Team.DoesNotExist, signing.SignatureExpired, signing.BadSignature):

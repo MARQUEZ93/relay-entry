@@ -1,13 +1,16 @@
 <script>
 import api from '@/services/api';
 import { formattedRaceDate, customSameDistance, formatDateToUTC, formatMinute } from '@/utils/methods';
+import _ from 'lodash';
 
 export default {
   inject: ['showSnackbar'],
   data() {
     return {
-      team: null,  // Will hold the team data
+      isUpdating: false,
+      team: null,  // holds the team form data
       event: null,
+      originalTeam: null, // stores the original team data for comparison
     };
   },
   created() {
@@ -56,6 +59,7 @@ export default {
         .then(response => {
           this.team = response.data.team;
           this.event = response.data.event;
+          this.originalTeam = _.cloneDeep(response.data.team);
         })
         .catch((e) => {
           this.showSnackbar(`An error occurred while fetching data: ${e.response.data.error}`, 'error');
@@ -66,9 +70,30 @@ export default {
     },
     updateTeam() {
       const token = this.$route.params.token;
-      api.updateTeam(token, this.team)
+      // Detect which fields have changed
+      const updatedFields = {};
+      // Detect changed fields
+      Object.keys(this.team).forEach(key => {
+        if (!_.isEqual(this.team[key], this.originalTeam[key])) {
+          updatedFields[key] = this.team[key];
+        }
+      });
+
+      // Detect changes in members
+      if (!_.isEqual(this.team.members, this.originalTeam.members)) {
+        updatedFields.members = this.team.members;
+      }
+
+      // If no changes detected, notify the user and exit
+      if (Object.keys(updatedFields).length === 0) {
+        this.showSnackbar('No changes detected to update.', 'info');
+        return;
+      }
+      this.isUpdating = true; // Start loading
+      api.updateTeam(token, updatedFields)
         .then((response) => {
           this.showSnackbar(response.data.message, 'info');
+          this.originalTeam = _.cloneDeep(this.team); // Update original data
           // Wait 5 seconds, then toggle back to the previous state
           setTimeout(() => {
             this.goToEventPage();
@@ -76,6 +101,9 @@ export default {
         })
         .catch((e) => {
           this.showSnackbar(`An error occurred while updating the team: ${e.response.data.error}`, 'error');
+        })
+        .finally(() => {
+          this.isUpdating = false; // End loading
         });
     },
   }
@@ -158,7 +186,9 @@ export default {
             </v-col>
           </v-row>
           <v-divider class="my-4"></v-divider>
-          <v-btn type="submit" color="primary">Update Team</v-btn>
+          <v-btn :disabled="isUpdating" type="submit" color="primary">Update Team
+            <v-progress-circular v-if="isUpdating" indeterminate size="20"></v-progress-circular>
+          </v-btn>
         </v-form>
       </v-col>
     </v-row>

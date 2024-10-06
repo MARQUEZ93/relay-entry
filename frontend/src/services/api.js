@@ -89,8 +89,19 @@ export default {
   getUserRace(raceId) {
     return apiClient.get(`/dashboard/races/${raceId}/`);
   },
-  updateUserRace(raceId, data) {
-    return apiClient.patch(`/dashboard/races/update/${raceId}/`, data);
+  updateRace(raceId, data) {
+    return apiClient.patch(`/dashboard/races/update/${raceId}/`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  createRace(data) {
+    return apiClient.patch(`/dashboard/races/create/`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
   getUserEvent(id){
     return apiClient.get(`/dashboard/events/${id}/`);

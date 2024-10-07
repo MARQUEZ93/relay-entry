@@ -18,8 +18,9 @@ RUN npm install
 COPY . .
 
 # Build the application
+RUN echo "before npm run build"
 RUN npm run build
-RUN echo "Dockerfile build stage was hit!"
+RUN echo "after npm run build"
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:alpine

@@ -71,6 +71,12 @@ source venv/bin/activate
 docker-compose -f docker-compose.dev.yml down
 docker-compose -f docker-compose.dev.yml up --build
 ```
+### Add npm package
+```bash
+docker-compose -f docker-compose.dev.yml exec frontend npm install ${package_here}
+docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker-compose.dev.yml up --build
+```
 
 ## Stripe Test Cards
 

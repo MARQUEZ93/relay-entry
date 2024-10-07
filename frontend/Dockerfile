@@ -19,7 +19,7 @@ COPY . .
 
 # Build the application
 RUN echo "before npm run build"
-RUN npm run build
+RUN NODE_OPTIONS="--max_old_space_size=1024" npm run build
 RUN echo "after npm run build"
 
 # Stage 2: Serve the application with Nginx

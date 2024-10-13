@@ -93,7 +93,7 @@ export default {
     <v-footer app color="primary" dark>
       <v-row>
         <v-col cols="12">
-          &copy; 2024 RelayEntry - v1.2.1
+          &copy; 2024 RelayEntry - v1.2.6
         </v-col>
       </v-row>
     </v-footer>
@@ -193,4 +193,5 @@ export default {
     background-color: #e8f0fe;
     border-radius: 50%;
   }
+
 </style>

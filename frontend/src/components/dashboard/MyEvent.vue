@@ -11,6 +11,17 @@
         mounted() {
             this.baseUrl = process.env.VUE_APP_RE_URL;
         },
+        computed: {
+          socialIcons() {
+            return [
+              { name: 'facebook', icon: 'mdi-facebook', iconClass: 'facebook-icon', url: this.event.facebook_url },
+              { name: 'instagram', icon: 'mdi-instagram', iconClass: 'instagram-icon', url: this.event.instagram_url },
+              { name: 'twitter', icon: 'mdi-twitter', iconClass: 'twitter-icon', url: this.event.twitter_url },
+              { name: 'email', icon: 'mdi-email', iconClass: 'email-icon', url: `mailto:${this.event.email}` },
+              { name: 'website', icon: 'mdi-web', iconClass: 'website-icon', url: this.event.website_url },
+            ].filter(icon => icon.url);
+          },
+        },
         data() {
             return {
                 message: '',
@@ -114,7 +125,7 @@
 
                 <!-- Description -->
                 <p><strong>Description:</strong> 
-                    {{ event.description?.length > 100 ? event.description.substring(0, 100) + '...' : event.description }}
+                    {{ event.description?.length > 50 ? event.description.substring(0, 50) + '...' : event.description }}
                 </p>
 
                  <!-- URL Alias -->
@@ -123,24 +134,9 @@
                     {{ `${baseUrl}events/${event.url_alias}` }}
                     </a>
                 </p>
-                <!-- Links -->
-                <v-row v-if="event.facebook_url || event.instagram_url || event.twitter_url || event.website_url">
-                  <v-col cols="3" v-if="event.facebook_url">
-                    <p><a :href="event.facebook_url" target="_blank"><strong>Facebook</strong></a></p>
-                  </v-col>
-                  <v-col cols="3" v-if="event.instagram_url">
-                    <p><a :href="event.instagram_url" target="_blank"><strong>Instagram</strong></a></p>
-                  </v-col>
-                  <v-col v-if="event.twitter_url">
-                    <p><a :href="event.twitter_url" target="_blank"><strong>Twitter</strong></a></p>
-                  </v-col>
-                  <v-col v-if="event.website_url">
-                    <p><a :href="event.website_url" target="_blank"><strong>Website</strong></a></p>
-                  </v-col>
-                </v-row>
                 <!-- Waiver Text -->
                 <p><strong>Waiver Text:</strong> 
-                    {{ event.waiver_text?.length > 100 ? event.waiver_text.substring(0, 100) + '...' : event.waiver_text }}
+                    {{ event.waiver_text?.length > 50 ? event.waiver_text.substring(0, 50) + '...' : event.waiver_text }}
                 </p>
 
                 <!-- Created/Updated Dates -->
@@ -193,6 +189,15 @@
                         <v-img :src="event.logo" max-width="150"></v-img>
                     </div>
                 </div>
+                 <v-row v-if="event.facebook_url || event.instagram_url || event.twitter_url || event.website_url">
+                  <v-col cols="12" class="d-flex justify-center">
+                    <v-card-actions class="social-icons">
+                      <v-btn v-for="icon in socialIcons" :key="icon.name" :href="icon.url" target="_blank" icon>
+                        <v-icon :class="icon.iconClass">{{ icon.icon }}</v-icon>
+                      </v-btn>
+                    </v-card-actions>
+                  </v-col>
+                </v-row>
               </v-card-text>
           </v-card>
         </v-col>

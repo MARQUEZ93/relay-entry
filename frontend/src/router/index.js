@@ -22,6 +22,7 @@ import DashboardComponent from '../components/dashboard/DashboardComponent.vue';
 import CreateEvent from '../components/dashboard/CreateEvent.vue';
 import MyEvent from '../components/dashboard/MyEvent.vue';
 import EditRace from '@/components/dashboard/EditRace.vue';
+import CreateRace from '../components/dashboard/CreateRace.vue';
 
 
 import store from '@/store'; // Import the store
@@ -112,13 +113,19 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/dashboard/events/:eventId/create-race/',
+    name: 'CreateRace',
+    component: CreateRace,
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/dashboard/events/:id',
     name: 'MyEvent',
     component: MyEvent,
     meta: { requiresAuth: true },
   },
   {
-    path: '/dashboard/events/:eventId/races/:raceId/edit',
+    path: '/dashboard/events/:eventId/edit-race/:raceId/',
     name: 'EditRace',
     component: EditRace,
     meta: { requiresAuth: true },

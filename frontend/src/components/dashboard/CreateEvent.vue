@@ -52,7 +52,7 @@ export default {
 
         const eventDataSubmit = convertEmptyStringsToNull(this.eventData);
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB in bytes
-        const fileFields = ['logo', 'media_file', 'male_tshirt_image', 'female_tshirt_image']; 
+        const fileFields = ['course_map', 'media_file', 'male_tshirt_image', 'female_tshirt_image']; 
         for (const field of fileFields) {
           const file = this.eventData[field];  // Dynamically access each field
           if (file && file.size > MAX_FILE_SIZE) {

@@ -159,7 +159,6 @@ class Race(models.Model):
         default=AM,
     )
 
-    projected_team_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
     projected_time_choices = ArrayField(models.CharField(max_length=50), blank=True, null=True)
     registration_closed = models.BooleanField(default=False)
 
@@ -169,6 +168,11 @@ class Race(models.Model):
     female_tshirt_image = models.ImageField(upload_to='event_tshirts/', blank=True, null=True,
         validators=[validate_file_size]
     )
+
+    address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=2, choices=STATES, blank=True, null=True)
+    postal_code = models.CharField(max_length=10, blank=True, null=True)
 
     def delete(self, *args, **kwargs):
         # Check if this author has any associated registraitons
@@ -218,7 +222,7 @@ class Team(models.Model):
     captain = models.ForeignKey('Registration', null=True, blank=True, on_delete=models.SET_NULL, related_name='captained_teams')
     # deleting a race will delete all associated teams
     race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='teams')
-    projected_team_time = models.CharField(max_length=50, null=True, blank=True)
+    projected_time = models.CharField(max_length=50, null=True, blank=True)
 
     def complete(self):
         # Check if all team members have a related Registration
@@ -230,10 +234,10 @@ class Team(models.Model):
 
     def clean(self):
         super().clean()
-         # Ensure the projected_team_time is one of the race's projected_team_time_choices
-        # if self.projected_team_time and self.race.projected_team_time_choices:
-            # if self.projected_team_time not in self.race.projected_team_time_choices:
-                # raise ValidationError(f"Projected team time '{self.projected_team_time}' is not a valid choice for this race. Valid choices are: {', '.join(self.race.projected_team_time_choices)}")
+         # Ensure the projected_time is one of the race's projected_time_choices
+        # if self.projected_time and self.race.projected_time_choices:
+            # if self.projected_time not in self.race.projected_time_choices:
+                # raise ValidationError(f"Projected team time '{self.projected_time}' is not a valid choice for this race. Valid choices are: {', '.join(self.race.projected_time_choices)}")
         # Ensure the captain is only a captain for one team in the same event
         if self.captain:
             if Team.objects.filter(race__event=self.race.event, captain=self.captain).exclude(pk=self.pk).exists():

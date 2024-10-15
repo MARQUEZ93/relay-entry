@@ -101,7 +101,7 @@ export default {
     });
   },
   createRace(data) {
-    return apiClient.patch(`/dashboard/races/create/`, data, {
+    return apiClient.post(`/dashboard/races/create/`, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

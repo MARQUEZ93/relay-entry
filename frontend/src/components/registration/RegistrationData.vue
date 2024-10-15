@@ -33,7 +33,7 @@ export default {
         ...this.registrationData,
         teamData: {
           name: this.registrationData.teamData?.name || '',
-          projectedTeamTime: this.registrationData.teamData?.projectedTeamTime || '',
+          projectedTime: this.registrationData.teamData?.projectedTime || '',
           emails: this.registrationData.teamData?.emails || [],
         },
         selectedRace: this.registrationData.selectedRace || '',
@@ -43,7 +43,7 @@ export default {
         minor: this.registrationData.minor || false,
       },
       races: [],
-      projectedTeamTimeChoices: this.race?.projected_team_time_choices || [],
+      projectedTimeChoices: this.race?.projected_time_choices || [],
       nameRules: [
         v => !!v || 'Name is required',
         v => (v && v.length > 1) || 'Name must be more than 1 character',
@@ -139,7 +139,7 @@ export default {
       this.localRegistrationData["email"] = randomEmail;
       this.localRegistrationData["confirmEmail"] = randomEmail;
       this.localRegistrationData["gender"] = "Male";
-      this.localRegistrationData["teamData"]["projectedTeamTime"] = "7:00 / mile";
+      this.localRegistrationData["teamData"]["projectedTime"] = "7:00 / mile";
       this.localRegistrationData["teamData"]["name"] = this.getRandomString();
       for (let i = 0; i < 4; i++) {
         this.localRegistrationData.teamData.emails[i] = {
@@ -171,8 +171,8 @@ export default {
       }
     },
     initializeProjectTeamTimeChoices() {
-      if (this.race && this.race.projected_team_time_choices) {
-        this.projectedTeamTimeChoices = this.race.projected_team_time_choices;
+      if (this.race && this.race.projected_time_choices) {
+        this.projectedTimeChoices = this.race.projected_time_choices;
       }
     },
     initializeRaceChoices() {
@@ -203,10 +203,10 @@ export default {
         </v-col>
         <v-col cols="6">
           <v-select
-            v-model="localRegistrationData.teamData.projectedTeamTime"
-            :items="projectedTeamTimeChoices"
-            label="Projected Team Time"
-            :rules="[v => !!v || 'Projected Team Time is required']"
+            v-model="localRegistrationData.teamData.projectedTime"
+            :items="projectedTimeChoices"
+            label="Projected Time"
+            :rules="[v => !!v || 'Projected Time is required']"
             required
           ></v-select>
         </v-col>

@@ -17,7 +17,7 @@ class TeamSerializer(serializers.ModelSerializer):
     complete = serializers.SerializerMethodField()
     class Meta:
         model = Team
-        fields = ['id', 'name', 'captain', 'projected_team_time', 'members', 'complete']
+        fields = ['id', 'name', 'captain', 'projected_time', 'members', 'complete']
     def get_complete(self, obj):
         return obj.complete()
 
@@ -97,6 +97,4 @@ class TeamResultSerializer(serializers.ModelSerializer):
 class RaceDashboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Race
-        # TODO: fix this shit (google b/w updated team etc + passing entire object to DJANGO rather than pieces)
         fields = '__all__'
-    

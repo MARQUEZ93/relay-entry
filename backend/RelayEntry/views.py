@@ -209,7 +209,7 @@ def team_register(request):
                 team = Team.objects.create(
                     name=team_data['name'],
                     race=race,
-                    projected_team_time=team_data['projected_team_time'],
+                    projected_time=team_data['projected_time'],
                     captain=registration,
                 )
                 team_name = team.name
@@ -253,7 +253,7 @@ def team_register(request):
                     'team_data': {
                         'race': race.name,
                         'date': race.date,
-                        'projected_team_time': team.projected_team_time,
+                        'projected_time': team.projected_time,
                         'name': team.name,
                         'emails': [{'email': member.email, 'leg_order': member.leg_order} for member in team.members.all()],
                     }
@@ -583,8 +583,8 @@ def get_team_data(request, token):
         members = team.members.all().order_by('leg_order').values('email', 'leg_order')
         team_data = {
             'name': team.name,
-            'projected_team_time_choices': team.race.projected_team_time_choices,
-            'projected_team_time': team.projected_team_time,
+            'projected_time_choices': team.race.projected_time_choices,
+            'projected_time': team.projected_time,
             'members': list(members),
         }
         event_data = {
@@ -624,8 +624,8 @@ def verify_token_and_update_team(request, token):
             if 'name' in data and data['name'] != team.name:
                 team.name = data['name']
                 team_changed = True
-            if 'projected_team_time' in data and data['projected_team_time'] != team.projected_team_time:
-                team.projected_team_time = data['projected_team_time']
+            if 'projected_time' in data and data['projected_time'] != team.projected_time:
+                team.projected_time = data['projected_time']
                 team_changed = True
             if team_changed:
                 team.save()
@@ -808,10 +808,7 @@ class RaceCreateUpdateView(RetrieveUpdateAPIView, CreateAPIView):
         """
         user_profile = UserProfile.objects.get(user=self.request.user)
 
-        if 'race_id' in self.kwargs:
-            # When updating, we check if the race's event was created by the user
-            return Race.objects.filter(event__created_by=user_profile)
-        return None
+        return Race.objects.filter(event__created_by=user_profile)
 
     def get_object(self):
         """
@@ -833,22 +830,12 @@ class RaceCreateUpdateView(RetrieveUpdateAPIView, CreateAPIView):
         When creating, ensure the user is approved and save the race with the user's profile.
         """
         user_profile = UserProfile.objects.get(user=self.request.user)
-
-        if not user_profile.is_approved:
-            raise PermissionDenied("You are not approved to create races.")
-
-        # Save the race with the created_by field set to the user's profile
-        serializer.save(created_by=user_profile)
-
-    def create(self, request, *args, **kwargs):
-        """
-        Customize the response after creating a race.
-        """
-        response = super().create(request, *args, **kwargs)
-        return Response({
-            "message": "Race created successfully!",
-            "data": response.data
-        }, status=status.HTTP_201_CREATED)
+        event = self.request.data.get('event')
+        try:
+            event = Event.objects.get(id=event, created_by=user_profile)
+        except Event.DoesNotExist:
+            raise ValidationError({"event": "Invalid event or you do not have permission to access this event."})
+        serializer.save()
     
     def update(self, request, *args, **kwargs):
         """
@@ -866,18 +853,18 @@ class RaceCreateUpdateView(RetrieveUpdateAPIView, CreateAPIView):
             "data": serializer.data
         }, status=status.HTTP_200_OK)
     
-    def post(self, request, *args, **kwargs):
-        """
-        Direct POST requests to the create method.
-        """
-        return self.create(request, *args, **kwargs)
-
     def patch(self, request, *args, **kwargs):
         """
         Allow partial updates using PATCH.
         """
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        """
+        Direct POST requests to the create method.
+        """
+        return self.create(request, *args, **kwargs)
 
 # get single / all races for a user
 class UserRacesView(GenericAPIView):

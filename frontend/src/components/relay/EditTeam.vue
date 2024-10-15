@@ -152,8 +152,8 @@ export default {
 
             <v-col cols="6">
               <v-select
-                v-model="team.projected_team_time"
-                :items="team.projected_team_time_choices"
+                v-model="team.projected_time"
+                :items="team.projected_time_choices"
                 label="Projected Team Time"
                 required
               ></v-select>

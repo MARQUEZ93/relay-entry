@@ -27,6 +27,7 @@ class IsObjectEventCreator(BasePermission):
         
         # Check if the object is a Race (associated with an Event)
         elif isinstance(obj, Race):
+            print("hit")
             return obj.event.created_by == user_profile and user_profile.is_approved
 
         # If it's neither Event nor Race, deny permission

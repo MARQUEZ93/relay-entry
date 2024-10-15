@@ -55,7 +55,7 @@ export default {
                   <p class="mt-1"><strong>Team Name:</strong> {{ teamData.name }}</p>
                   <p class="mt-1"><strong>Event:</strong> {{ raceData.event }}</p>
                   <p class="mt-1"><strong>Race:</strong> {{ raceData.name }}</p>
-                  <p class="mt-1 mb-2"><strong>Projected Team Time:</strong> {{ teamData.projectedTeamTime }}</p>
+                  <p class="mt-1 mb-2"><strong>Projected Team Time:</strong> {{ teamData.projectedTime }}</p>
                   <v-row>
                     <v-col cols="12" md="6" v-for="(member, index) in teamData.emails" :key="'leg-emails-confirmation-' + index" class="d-flex align-center justify-center">
                       <v-icon class="mr-2">mdi-account</v-icon>

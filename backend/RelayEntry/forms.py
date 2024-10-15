@@ -12,7 +12,7 @@ class SignUpForm(UserCreationForm):
         fields = ('username', 'email', 'password1', 'password2')
 
 class RaceAdminForm(forms.ModelForm):
-    projected_team_time_choices = SimpleArrayField(
+    projected_time_choices = SimpleArrayField(
         base_field=forms.CharField(),
         delimiter=',',
         required=False,

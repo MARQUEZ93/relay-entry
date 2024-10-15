@@ -133,7 +133,7 @@ export default {
                     <div>
                         <v-list-item-title class="d-flex align-center justify-center prevent-overflow">{{ team.name }} <v-icon small class="ml-3 mdi mdi-chevron-down"></v-icon></v-list-item-title>
                         <v-list-item-subtitle><strong>Captain:</strong> {{ team.captain.first_name }} {{ team.captain.last_name }}</v-list-item-subtitle>
-                        <v-list-item-subtitle><strong>Projected Time:</strong> {{ team.projected_team_time }}</v-list-item-subtitle>
+                        <v-list-item-subtitle><strong>Projected Time:</strong> {{ team.projected_time }}</v-list-item-subtitle>
                         <v-list-item-subtitle class="d-flex align-center justify-center">
                           <strong class="pr-1">Registration Status:</strong> 
                           <v-icon v-if="team.complete" color="green" aria-label="Team is completely registered">

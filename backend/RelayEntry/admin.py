@@ -68,7 +68,7 @@ class EventFilter(admin.SimpleListFilter):
 @admin.register(Race)
 class RaceAdmin(admin.ModelAdmin):
     form = RaceAdminForm
-    list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator','projected_team_time_choices', 'registration_closed',)
+    list_display = ('name', 'date', 'description', 'distance', 'price', 'custom_distance_value', 'custom_distance_unit', 'is_relay', 'num_runners', 'team_type', 'same_distance', 'event', 'created_at', 'updated_at', 'course_map', 'hour', 'minute', 'time_indicator','projected_time_choices', 'registration_closed',)
     search_fields = ('name', 'event__name', 'distance',)
     raw_id_fields = ('event',)  # Use raw_id_fields to show a link
 
@@ -100,7 +100,7 @@ class TeamMemberInline(admin.TabularInline):
     
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'race_name', 'projected_team_time', 'captain_name', 'team_members_info', 'complete',)
+    list_display = ('name', 'race_name', 'projected_time', 'captain_name', 'team_members_info', 'complete',)
     search_fields = ('name', 'race__name',)
     list_filter = ('race', EventFilter,)
     inlines = [TeamMemberInline]

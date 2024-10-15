@@ -27,6 +27,7 @@
                 message: '',
                 username: '',
                 event: {},
+                races: [],
                 editModal: false,
                 isValid: false,
                 baseUrl: '',
@@ -55,6 +56,7 @@
                   }
                   const response = await api.getUserEvent(this.id);  // Fetch event by id
                   this.event = response.data;
+                  this.races = response.data.races;
               } catch (error) {
                   this.showSnackbar('Error loading event.', 'error'); // Adjusted message for clarity
               }
@@ -216,27 +218,58 @@
           </router-link>
         </v-col>
       </v-row>
-  
-      <!-- Fourth Row: List of Races -->
+
       <v-row justify="center">
         <v-col cols="12" md="8">
-          <v-card>
-            <v-card-title>My Races<v-spacer></v-spacer></v-card-title>
-            <v-list>
-              <v-list-item
+          <v-card class="elevation-3">
+            <v-card-title class="pb-0">
+              <span class="text-h5 font-weight-bold">My Races</span>
+            </v-card-title>
+
+            <v-divider class="my-4"></v-divider>
+
+            <v-row v-if="races.length">
+              <v-col
                 v-for="race in races"
                 :key="race.id"
-                @click="$router.push(`/dashboard/events/${event.id}/races/${race.id}/edit`)"
-                class="hoverable"
+                cols="12"
+                sm="6"
+                md="6"
+                class="pb-4"
               >
-                <v-list-item-title>{{ race.name }}</v-list-item-title>
-                <v-list-item-subtitle>{{ race.distance }}</v-list-item-subtitle>
-                <v-list-item-action>
-                  <v-icon color="primary">mdi-pencil</v-icon>
-                </v-list-item-action>
-              </v-list-item>
-            </v-list>
+                <v-card
+                  class="hoverable rounded-lg elevation-2 race-card"
+                  @click="$router.push(`/dashboard/events/${event.id}/races/${race.id}/edit`)"
+                >
+                  <v-card-title class="text-subtitle-1 font-weight-medium">
+                    {{ race.name }}
+                  </v-card-title>
+
+                  <v-card-actions>
+                    <v-btn
+                      icon
+                      @click.stop="$router.push(`/dashboard/events/${event.id}/races/${race.id}/edit`)"
+                    >
+                      <v-icon color="primary">mdi-pencil</v-icon>
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-alert v-else type="info" class="mx-4 my-3">
+              No races available. Add your first race by clicking the "+" button.
+            </v-alert>
           </v-card>
+
+          <v-btn
+            fab
+            color="primary"
+            @click="$router.push(`/dashboard/events/${event.id}/races/create`)"
+            class="position-fixed bottom-4 right-4"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
         </v-col>
       </v-row>
       <!-- Include the edit modal component -->

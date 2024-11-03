@@ -100,6 +100,9 @@ export default {
   </v-app>
 </template>
 <style>
+  .cursor{
+    cursor: pointer;
+  }
   .v-main {
     --v-layout-top: 8px !important;  /* Reduce the top offset globally */
   }

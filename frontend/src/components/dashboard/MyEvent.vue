@@ -113,8 +113,12 @@
               <v-spacer></v-spacer>
             </v-card-title>
             <v-card-text>
-                <p><strong>Event Name:</strong> {{ event.name }}</p>
 
+                <p><strong>Event URL: </strong> 
+                    <a :href="`${baseUrl}events/${event.url_alias}`" target="_blank">
+                    {{ `${baseUrl}events/${event.url_alias}` }}
+                    </a>
+                </p>
                 <!-- Dates -->
                 <p><strong>Start Date:</strong> {{ event.date }}</p>
                 <p v-if="event.end_date"><strong>End Date:</strong> {{ event.end_date }}</p>
@@ -131,11 +135,6 @@
                 </p>
 
                  <!-- URL Alias -->
-                <p><strong>Event URL: </strong> 
-                    <a :href="`${baseUrl}events/${event.url_alias}`" target="_blank">
-                    {{ `${baseUrl}events/${event.url_alias}` }}
-                    </a>
-                </p>
                 <!-- Waiver Text -->
                 <p><strong>Waiver Text:</strong> 
                     {{ event.waiver_text?.length > 50 ? event.waiver_text.substring(0, 50) + '...' : event.waiver_text }}
@@ -232,23 +231,29 @@
               <v-col
                 v-for="race in races"
                 :key="race.id"
-                cols="12"
-                sm="6"
-                md="6"
+                cols="6"
+                md="4"
                 class="pb-4"
               >
                 <v-card
-                  class="hoverable rounded-lg elevation-2 race-card"
-                  @click="$router.push(`/dashboard/events/${event.id}/races/${race.id}/edit`)"
+                  class="hoverable rounded-lg elevation-2 race-card cursor"
                 >
-                  <v-card-title class="text-subtitle-1 font-weight-medium">
+                  <v-card-title>
                     {{ race.name }}
                   </v-card-title>
+                  <v-card-subtitle class="text-subtitle-1 font-weight-medium">
+                    {{ race.distance }}
+                  </v-card-subtitle>
+                  <v-card-subtitle v-if="race.is_relay">
+                    {{ race.team_type }} Relay Race: {{ race.num_runners }} runners
+                  </v-card-subtitle>
+                  <v-card-subtitle v-if="race.custom_distance_value">
+                    {{ race.custom_distance_value }} {{race.custom_distance_unit}}
+                  </v-card-subtitle>
 
-                  <v-card-actions>
+                  <v-card-actions class="justify-center">
                     <v-btn
                       icon
-                      @click.stop="$router.push(`/dashboard/events/${event.id}/races/${race.id}/edit`)"
                     >
                       <v-icon color="primary">mdi-pencil</v-icon>
                     </v-btn>

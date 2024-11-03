@@ -23,9 +23,9 @@ export default {
                 <v-row>
                     <v-col cols="12">
                         <v-sheet class="my-5 pa-5" elevation="2">
-                            <h2>Our Mission</h2>
-                            <p>RelayEntry was created to make it easier for anyone to start their own race (and sporting event). In addition, we aim to have the best team relay race UX.</p>
-                            <p>Currently, our product supports running races of all race types (except for virtual races). We aim to ship support for virtual races EOY 2024.</p>
+                            <h2>Mission</h2>
+                            <p>RelayEntry was created to make it easier for anyone to start their own race.</p>
+                            <p>Currently, our product supports running races of all race types. We aim to ship support for virtual races EOY 2024.</p>
                         </v-sheet>
                     </v-col>
                     <v-col cols="12">

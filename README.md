@@ -45,6 +45,16 @@ ssh -i your-key-file-here.pem ec2-user@18.213.122.199
 ```bash
 docker-compose exec backend python manage.py migrate
 ```
+### Manual cerbot renewal (might have to re-install certbot-dns-route53 due to ongoing issues)
+```bash
+certbot renew --dry-run
+apk add certbot-dns-route53
+certbot renew
+```
+### Confirm cerbot renewal worked (from EC2)
+```bash
+sudo openssl x509 -in /etc/letsencrypt/live/relayentry.com/fullchain.pem -text -noout | grep "Not After"
+```
 
 ## Local Commands
 

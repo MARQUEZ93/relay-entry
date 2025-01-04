@@ -135,7 +135,7 @@ export default {
                                     <v-col cols="12">
                                         <v-select
                                             v-model="form.role"
-                                            :items="['Event Director', 'Registrant', 'Timer', 'Other']"
+                                            :items="['Event Director', 'Run Club', 'Registrant', 'Timer', 'Other']"
                                             :rules="roleRules"
                                             label="Who are you?"
                                             required

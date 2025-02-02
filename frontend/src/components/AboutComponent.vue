@@ -25,7 +25,6 @@ export default {
                         <v-sheet class="my-5 pa-5" elevation="2">
                             <h2>Mission</h2>
                             <p>RelayEntry was created by <a href="https://www.dromarquez.com/">Alejandro E. Marquez</a> after a bad UX experience encountered while registering for a team relay race.</p>
-                            <p>Currently, the product supports running races of all race types. RelayEntry aims to ship support for virtual races, via <a href="https://developers.strava.com/docs/reference/">Strava</a>, 2025.</p>
                         </v-sheet>
                     </v-col>
                     <v-col cols="12">

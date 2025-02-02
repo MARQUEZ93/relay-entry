@@ -45,10 +45,11 @@ ssh -i your-key-file-here.pem ec2-user@18.213.122.199
 ```bash
 docker-compose exec backend python manage.py migrate
 ```
-### Manual cerbot renewal (might have to re-install certbot-dns-route53 due to ongoing issues)
+### Manual cerbot renewal. Start from frontend shell. Reinstall certbot due to ongoing issues.
 ```bash
-certbot renew --dry-run
 apk add certbot-dns-route53
+docker exec -it relay-entry_frontend sh
+certbot renew --dry-run
 certbot renew
 ```
 ### Confirm cerbot renewal worked (from EC2)

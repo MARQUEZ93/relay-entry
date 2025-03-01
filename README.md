@@ -47,8 +47,8 @@ docker-compose exec backend python manage.py migrate
 ```
 ### Manual cerbot renewal. Start from frontend shell. Reinstall certbot due to ongoing issues.
 ```bash
+docker exec -it relay-entry_frontend_1 sh
 apk add certbot-dns-route53
-docker exec -it relay-entry_frontend sh
 certbot renew --dry-run
 certbot renew
 ```

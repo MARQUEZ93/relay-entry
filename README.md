@@ -2,7 +2,7 @@
 
 ## Why RelayEntry?
 
-I was injured, needed to get better at Django for my job & I was annoyed by RaceRoster's high transaction costs (I had paid 12% for a $30 5K lol). 
+I was injured, needed to get better at Django for my job & I was annoyed by RaceRoster's high transaction costs (up to 12%!). 
 
 I launched a working alternative. Got a local running club in Austin, TX to successfully use it for a small race (like $1.5K in sales for a couple hundred registrants).
 

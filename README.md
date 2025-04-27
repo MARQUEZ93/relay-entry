@@ -1,4 +1,12 @@
-# relay-entry
+# RelayEntry
+
+## Why
+
+I needed to get better at Django for my job + I was annoyed by high transaction costs of RaceRoster (I had paid 12% for a $30 5K lol). 
+
+I launched a working alternative. Got a local running club in Austin, TX to successfully use it for a small race (like $1.5K in sales for a couple hundred registrants).
+
+I'm focused on other things atm (primarily my job!) so I took it down from AWS. Making this public because why not? Any exposed keys in old commits (when the repo was closed) have been either deleted / rotated.
 
 ## Production Commands
 

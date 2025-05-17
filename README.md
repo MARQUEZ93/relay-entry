@@ -8,7 +8,7 @@ I launched a working alternative. Got a local running club in Austin, TX to succ
 
 I'm focused on other things atm (primarily my job!) so I took it down from AWS. Any exposed keys in old commits have either been deleted / rotated.
 
-<p align="center"><img src="https://i.imgur.com/59uIVyc.jpeg" width="200px" /></p>
+<p align="center"><img src="https://i.imgur.com/59uIVyc.jpeg" width="600px" /></p>
 
 ## Production Commands
 

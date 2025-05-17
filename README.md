@@ -2,11 +2,11 @@
 
 ## Why RelayEntry?
 
-I was injured, needed to get better at Django for my job & I was annoyed by RaceRoster's high transaction costs (up to 12%!). 
+I had a running injury & needed to get better at Django for my job. I was annoyed by RaceRoster's high transaction costs (up to 12%!). 
 
-I launched a working alternative. Got a local running club in Austin, TX to successfully use it for a small race (like $1.5K in sales for a couple hundred registrants).
+I launched a working alternative. Got a local running club in Austin, TX to successfully use it for a small race ($1.5K in sales for a couple hundred registrants in a team relay race).
 
-I'm focused on other things atm (primarily my job!) so I took it down from AWS. Making this public because why not? Any exposed keys in old commits (when the repo was closed) have been either deleted / rotated.
+I'm focused on other things atm (primarily my job!) so I took it down from AWS. Any exposed keys in old commits have either been deleted / rotated.
 
 ## Production Commands
 
